@@ -24,6 +24,7 @@ android {
         }
     }
 }
+ext.anko_version='0.10.5'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
@@ -31,8 +32,9 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
-    implementation "org.jetbrains.anko:anko-commons:0.10.5"
-    implementation "org.jetbrains.anko:anko-design:0.10.5"
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+    implementation "org.jetbrains.anko:anko-design:$anko_version"
+    implementation 'com.jakewharton.timber:timber:4.7.0'
 
     //dagger
     def daggerVer = "2.14.1"
