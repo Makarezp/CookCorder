@@ -1,10 +1,10 @@
 package fp.cookcorder
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import dagger.android.support.DaggerAppCompatActivity
 import fp.cookcorder.ui.main.MainFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : DaggerAppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,5 +15,4 @@ class MainActivity : AppCompatActivity() {
                     .commitNow()
         }
     }
-
 }
