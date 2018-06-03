@@ -2,15 +2,14 @@ package fp.cookcorder.recorder
 
 import android.content.Context
 import android.media.MediaRecorder
-import fp.cookcorder.model.Task
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
 class TaskRecorder @Inject constructor(private val context: Context) {
 
+    private val mediaRecorder = MediaRecorder()
     private class CurrentRecord(
-            val mediaRecorder: MediaRecorder,
             val fileName: String,
             val recordStart: Long)
 
@@ -22,7 +21,8 @@ class TaskRecorder @Inject constructor(private val context: Context) {
         val recordStart = System.currentTimeMillis()
         try {
             val file = File(context.filesDir, fileName)
-            val recorder = MediaRecorder().apply {
+            with(mediaRecorder){
+                reset()
                 setAudioSource(MediaRecorder.AudioSource.MIC)
                 setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
                 setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
@@ -30,22 +30,32 @@ class TaskRecorder @Inject constructor(private val context: Context) {
                 prepare()
                 start()
             }
-            currentRecord = CurrentRecord(recorder, fileName, recordStart)
+            currentRecord = CurrentRecord(fileName, recordStart)
         } catch (e: Exception) {
             Timber.e(e)
             throw e
         }
     }
 
+    fun cancelRecording() {
+        mediaRecorder.stop()
+        mediaRecorder.release()
+        currentRecord?.let {
+            File(context.filesDir, it.fileName).delete()
+        }
+    }
+
+    class FilenameToDuration(val fileName: String, val duration: Long)
+
     @Throws(Exception::class)
-    fun finishRecording(): Task {
+    fun finishRecording(): FilenameToDuration {
         val tempCurrRecord = currentRecord
         with(tempCurrRecord) {
             if (this != null) {
                 mediaRecorder.stop()
                 mediaRecorder.release()
                 val duration = System.currentTimeMillis() - recordStart
-                return Task(null, fileName, duration)
+                return FilenameToDuration(fileName, duration)
             } else {
                 val e = IllegalStateException("Can not finish recording, currentRecordIsNull")
                 Timber.e(e)
