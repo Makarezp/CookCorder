@@ -1,11 +1,15 @@
-package fp.cookcorder.di
+package fp.cookcorder.app.di
 
 import android.app.Application
 import android.content.Context
 import dagger.Binds
 import dagger.Module
+import fp.cookcorder.service.ServiceModule
+import fp.cookcorder.screen.main.MainFragmentModule
 
-@Module
+@Module(includes = [
+    MainFragmentModule::class,
+    ServiceModule::class])
 abstract class ApplicationModule {
 
     @Binds

@@ -1,4 +1,4 @@
-package fp.cookcorder.extensions
+package fp.cookcorder.app.extensions
 
 import android.view.View
 

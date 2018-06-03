@@ -1,8 +1,9 @@
-package fp.cookcorder
+package fp.cookcorder.screen
 
 import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
-import fp.cookcorder.ui.main.MainFragment
+import fp.cookcorder.R
+import fp.cookcorder.screen.main.MainFragment
 
 class MainActivity : DaggerAppCompatActivity() {
 
