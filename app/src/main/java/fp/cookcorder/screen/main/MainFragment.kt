@@ -40,55 +40,59 @@ class MainFragment : DaggerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(MainViewModel::class.java)
-        setupClicks()
+        setupClickListeners()
     }
 
-    private fun setupClicks() {
-        mainFragmentFABRecord.onClick { requestRecordIfPermissionIsGranted() }
-        mainFragmentFABRecord.setOnTouchListener { v, m ->
-            when (m.action) {
-                MotionEvent.ACTION_DOWN -> {
-                    Timber.d("Action down")
-                    viewModel.requestNewRecord()
-                    true
-                }
-                MotionEvent.ACTION_UP -> {
-                    viewModel.finishRecording()
-                    Timber.d("Action Up")
-                    true
-                }
-                MotionEvent.ACTION_MOVE -> {
-                    val rect = Rect()
-                    v.getHitRect(rect)
-                    if (rect.contains(v.left + m.x.toInt(), v.top + m.y.toInt())) {
-                        Timber.d("Inside")
-                    } else {
-                        Timber.d("Outside")
-                        viewModel.cancelRecording()
-                    }
-                    true
-                }
-                else -> false
-            }
+    private fun setupClickListeners() {
+        mainFragmentFABRecord.setOnTouchListener { view, motionEvent ->
+            handleRecordButtonClicks(view, motionEvent)
         }
-
         button.onClick { viewModel.playRecording() }
     }
 
-    private fun requestRecordIfPermissionIsGranted() {
+    private fun handleRecordButtonClicks(v: View, m: MotionEvent): Boolean {
+        val rect = Rect()
+        v.getHitRect(rect)
+        val isInside = rect.contains(v.left + m.x.toInt(), v.top + m.y.toInt())
 
-        fun requestPermissions() {
-            ActivityCompat.requestPermissions(activity!!, arrayOf(RECORD_AUDIO), RECORDING_PERMISSION_REQUEST)
+        return when (m.action) {
+            MotionEvent.ACTION_DOWN -> {
+                Timber.d("Action down")
+                if (!viewModel.permissionGranted) requestPermission()
+                viewModel.requestNewRecord()
+                true
+            }
+            MotionEvent.ACTION_UP -> {
+                Timber.d("Action Up")
+                if (isInside) {
+                    viewModel.finishRecording()
+                }
+                true
+            }
+            MotionEvent.ACTION_MOVE -> {
+                if (!isInside) {
+                    Timber.d("Outside")
+                    viewModel.cancelRecording()
+                }
+                true
+            }
+            else -> false
         }
+    }
+
+    private fun requestPermission() {
+
+        fun requestPermissions() = ActivityCompat
+                .requestPermissions(activity!!, arrayOf(RECORD_AUDIO), RECORDING_PERMISSION_REQUEST)
 
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) == PERMISSION_GRANTED) {
-            viewModel.requestNewRecord()
+            viewModel.permissionGranted = true
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, RECORD_AUDIO))
                 longSnackbar(view!!,
                         "We cannot continue without your permission ",
-                        "Grand permission"
-                ) { requestPermissions() }
+                        "Grand permission",
+                        { requestPermissions() })
             else requestPermissions()
         }
     }
@@ -96,9 +100,10 @@ class MainFragment : DaggerFragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == RECORDING_PERMISSION_REQUEST) {
             permissions
-                    .filterIndexed { index, s -> s == RECORD_AUDIO && grantResults[index] == PERMISSION_GRANTED }
-                    .forEach { viewModel.requestNewRecord() }
+                    .filter { it == RECORD_AUDIO }
+                    .forEachIndexed { index, s ->
+                        viewModel.permissionGranted = grantResults[index] == PERMISSION_GRANTED
+                    }
         }
     }
-
 }

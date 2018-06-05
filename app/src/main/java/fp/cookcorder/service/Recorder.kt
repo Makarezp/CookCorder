@@ -75,15 +75,17 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
                     val duration = System.currentTimeMillis() - it.recordStart
                     Timber.d("Record is finished successfully")
                     emitter.onSuccess(Recorder.FilenameToDuration(it.fileName, duration))
+                    return@create
                 } catch (e: Exception) {
                     Timber.d(e)
                     File(context.filesDir, it.fileName).delete()
                     emitter.onComplete()
+                    return@create
                 }
             }
             Timber.d("Cannot finish recording, there is no on going recording")
             emitter.onComplete()
-        }.delay(1, TimeUnit.SECONDS)
+        }.delaySubscription(1, TimeUnit.SECONDS)
     }
 
     private fun stopMediaRecorder() {

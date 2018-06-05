@@ -16,17 +16,24 @@ class MainViewModel @Inject constructor(
 
     val shouldShowRecordingScreen = MutableLiveData<Boolean>()
 
+    var permissionGranted = false
+
     fun requestNewRecord() {
-        recorder.startRecording("r")
+        if(permissionGranted) {
+            recorder.startRecording("r")
+            shouldShowRecordingScreen.value = true
+        }
     }
 
     fun cancelRecording() {
-         recorder.cancelRecording()
+        recorder.cancelRecording()
+        shouldShowRecordingScreen.value = false
     }
 
     fun finishRecording() {
         exe(recorder.finishRecording()) {
             Timber.d(it.toString())
+            shouldShowRecordingScreen.value = false
         }
     }
 

@@ -17,5 +17,4 @@ abstract class MainFragmentModule {
         @JvmStatic
         fun provideMainFragmentVm(vm: MainViewModel) = ViewModelProviderFactory<MainViewModel>(vm)
     }
-
 }
