@@ -2,8 +2,11 @@ package fp.cookcorder.service
 
 import android.content.Context
 import android.media.MediaRecorder
+import io.reactivex.Maybe
+import io.reactivex.Single
 import timber.log.Timber
 import java.io.File
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 interface Recorder {
@@ -11,65 +14,88 @@ interface Recorder {
 
     fun cancelRecording()
 
-    fun finishRecording(): FilenameToDuration?
+    fun finishRecording(): Maybe<FilenameToDuration>
 
-    class FilenameToDuration(val fileName: String, val duration: Long)
+    data class FilenameToDuration(val fileName: String, val duration: Long)
 }
 
 class RecorderImpl @Inject constructor(private val context: Context) : Recorder {
 
     private var mediaRecorder: MediaRecorder? = null
+    /**
+     * When current record is not null, it means that there is on going recording
+     */
+    private var currentRecord: CurrentRecord? = null
 
     private data class CurrentRecord(
             val fileName: String,
             val recordStart: Long)
 
-    private var currentRecord: CurrentRecord? = null
 
     override fun startRecording(fileName: String) {
-        val recordStart = System.currentTimeMillis()
-        try {
-            val file = File(context.filesDir, fileName)
-            mediaRecorder = MediaRecorder().apply {
-                setAudioSource(MediaRecorder.AudioSource.MIC)
-                setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                setOutputFile(file.path)
-                prepare()
-                start()
+        if (currentRecord == null) {
+            val recordStart = System.currentTimeMillis()
+            try {
+                val file = File(context.filesDir, fileName)
+                mediaRecorder = MediaRecorder().apply {
+                    setAudioSource(MediaRecorder.AudioSource.MIC)
+                    setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                    setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                    setOutputFile(file.path)
+                    prepare()
+                    start()
+                }
+                currentRecord = CurrentRecord(fileName, recordStart)
+            } catch (e: Exception) {
+                Timber.e(e)
             }
-            currentRecord = CurrentRecord(fileName, recordStart)
-        } catch (e: Exception) {
-            Timber.e(e)
+        } else {
+            Timber.d("couldn't start new recording, there is already ongoing recording")
         }
     }
 
     override fun cancelRecording() {
         currentRecord?.let {
+            Timber.d("Cancelling recording $currentRecord")
             try {
-                Timber.d("Cancelling recording $currentRecord")
-                mediaRecorder?.stop()
-                mediaRecorder?.release()
-                mediaRecorder = null
-                File(context.filesDir, it.fileName).delete()
-                currentRecord = null
+                stopMediaRecorder()
             } catch (e: Exception) {
                 Timber.e(e)
             }
+            File(context.filesDir, it.fileName).delete()
         }
     }
 
-    @Throws(Exception::class)
-    override fun finishRecording(): Recorder.FilenameToDuration? {
-        currentRecord?.let {
-            Timber.d("Finishing recording $currentRecord")
+    override fun finishRecording(): Maybe<Recorder.FilenameToDuration> {
+        return Maybe.create<Recorder.FilenameToDuration> { emitter ->
+            currentRecord?.let {
+                Timber.d("Finishing recording $currentRecord")
+                try {
+                    stopMediaRecorder()
+                    val duration = System.currentTimeMillis() - it.recordStart
+                    Timber.d("Record is finished successfully")
+                    emitter.onSuccess(Recorder.FilenameToDuration(it.fileName, duration))
+                } catch (e: Exception) {
+                    Timber.d(e)
+                    File(context.filesDir, it.fileName).delete()
+                    emitter.onComplete()
+                }
+            }
+            Timber.d("Cannot finish recording, there is no on going recording")
+            emitter.onComplete()
+        }.delay(1, TimeUnit.SECONDS)
+    }
+
+    private fun stopMediaRecorder() {
+        try {
             mediaRecorder?.stop()
+        } catch (e: Exception) {
+            throw e
+        } finally {
+            mediaRecorder?.reset()
             mediaRecorder?.release()
-            val duration = System.currentTimeMillis() - it.recordStart
-            currentRecord = null
             mediaRecorder = null
-            return Recorder.FilenameToDuration(it.fileName, duration)
+            currentRecord = null
         }
-        return null
     }
 }

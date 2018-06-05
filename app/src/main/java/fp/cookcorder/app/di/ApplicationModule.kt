@@ -14,5 +14,4 @@ abstract class ApplicationModule {
 
     @Binds
     abstract fun bindContext(app: Application): Context
-
 }
