@@ -1,7 +1,7 @@
 package fp.cookcorder.screen
 
 import android.arch.lifecycle.ViewModel
-import fp.cookcorder.app.Scheduler
+import fp.cookcorder.app.SchedulerFactory
 import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -13,7 +13,7 @@ import javax.inject.Inject
 abstract class BaseViewModel : ViewModel() {
 
     @Inject
-    lateinit var scheduler: Scheduler
+    lateinit var schedulerFactory: SchedulerFactory
 
     protected val compDisposable = CompositeDisposable()
 
@@ -26,8 +26,8 @@ abstract class BaseViewModel : ViewModel() {
             onNext: (T) -> Unit = {}) {
         compDisposable.add(
                 flowable
-                        .subscribeOn(scheduler.io())
-                        .observeOn(scheduler.ui())
+                        .subscribeOn(schedulerFactory.io())
+                        .observeOn(schedulerFactory.ui())
                         .subscribe(onNext, onError, onComplete))
     }
 
@@ -38,8 +38,8 @@ abstract class BaseViewModel : ViewModel() {
             onNext: (T) -> Unit = {}) {
         compDisposable.add(
                 observable
-                        .subscribeOn(scheduler.io())
-                        .observeOn(scheduler.ui())
+                        .subscribeOn(schedulerFactory.io())
+                        .observeOn(schedulerFactory.ui())
                         .subscribe(onNext, onError, onComplete))
     }
 
@@ -49,8 +49,8 @@ abstract class BaseViewModel : ViewModel() {
             onSuccess: (T) -> Unit = {}) {
         compDisposable.add(
                 single
-                        .subscribeOn(scheduler.io())
-                        .observeOn(scheduler.ui())
+                        .subscribeOn(schedulerFactory.io())
+                        .observeOn(schedulerFactory.ui())
                         .subscribe(onSuccess, onError))
     }
 
@@ -61,8 +61,8 @@ abstract class BaseViewModel : ViewModel() {
             onSuccess: (T) -> Unit = {}) {
         compDisposable.add(
                 maybe
-                        .subscribeOn(scheduler.io())
-                        .observeOn(scheduler.ui())
+                        .subscribeOn(schedulerFactory.io())
+                        .observeOn(schedulerFactory.ui())
                         .subscribe(onSuccess, onError, onComplete)
         )
     }

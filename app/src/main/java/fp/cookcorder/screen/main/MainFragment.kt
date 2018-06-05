@@ -14,7 +14,9 @@ import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.extensions.onClick
+import fp.cookcorder.app.util.observe
+import fp.cookcorder.app.util.onClick
+import fp.cookcorder.app.util.visibleOrGone
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
 import timber.log.Timber
@@ -41,6 +43,13 @@ class MainFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(MainViewModel::class.java)
         setupClickListeners()
+        observeLiveData()
+    }
+
+    private fun observeLiveData() {
+        observe(viewModel.shouldShowRecordingScreen) {
+            mainFragmentFLRecordIndicator.visibleOrGone(it)
+        }
     }
 
     private fun setupClickListeners() {
@@ -64,9 +73,7 @@ class MainFragment : DaggerFragment() {
             }
             MotionEvent.ACTION_UP -> {
                 Timber.d("Action Up")
-                if (isInside) {
-                    viewModel.finishRecording()
-                }
+                if (isInside) viewModel.finishRecording()
                 true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -82,7 +89,7 @@ class MainFragment : DaggerFragment() {
 
     private fun requestPermission() {
 
-        fun requestPermissions() = ActivityCompat
+        fun request() = ActivityCompat
                 .requestPermissions(activity!!, arrayOf(RECORD_AUDIO), RECORDING_PERMISSION_REQUEST)
 
         if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) == PERMISSION_GRANTED) {
@@ -92,8 +99,8 @@ class MainFragment : DaggerFragment() {
                 longSnackbar(view!!,
                         "We cannot continue without your permission ",
                         "Grand permission",
-                        { requestPermissions() })
-            else requestPermissions()
+                        { request() })
+            else request()
         }
     }
 
