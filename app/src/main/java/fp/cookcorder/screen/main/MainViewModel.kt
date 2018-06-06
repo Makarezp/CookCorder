@@ -20,19 +20,24 @@ class MainViewModel @Inject constructor(
 
     fun requestNewRecord() {
         if(permissionGranted) {
-            recorder.startRecording("r")
-            shouldShowRecordingScreen.value = true
+            exe(recorder.startRecording("r")) {
+                shouldShowRecordingScreen.value = true
+            }
         }
     }
 
     fun cancelRecording() {
-        recorder.cancelRecording()
-        shouldShowRecordingScreen.value = false
+        exe(recorder.cancelRecording()) {
+            shouldShowRecordingScreen.value = false
+        }
     }
 
     fun finishRecording() {
-        exe(recorder.finishRecording()) {
-            Timber.d(it.toString())
+        val onError = {e: Throwable ->
+            Timber.d(e)
+            shouldShowRecordingScreen.value = false
+        }
+        exe(recorder.finishRecording(), onError = onError) {
             shouldShowRecordingScreen.value = false
         }
     }

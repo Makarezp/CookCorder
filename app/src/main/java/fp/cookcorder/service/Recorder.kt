@@ -10,9 +10,9 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 interface Recorder {
-    fun startRecording(fileName: String)
+    fun startRecording(fileName: String): Maybe<Any>
 
-    fun cancelRecording()
+    fun cancelRecording(): Maybe<Any>
 
     fun finishRecording(): Maybe<FilenameToDuration>
 
@@ -32,37 +32,47 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
             val recordStart: Long)
 
 
-    override fun startRecording(fileName: String) {
-        if (currentRecord == null) {
-            val recordStart = System.currentTimeMillis()
-            try {
-                val file = File(context.filesDir, fileName)
-                mediaRecorder = MediaRecorder().apply {
-                    setAudioSource(MediaRecorder.AudioSource.MIC)
-                    setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-                    setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
-                    setOutputFile(file.path)
-                    prepare()
-                    start()
+    override fun startRecording(fileName: String): Maybe<Any> {
+        return Maybe.create { emitter ->
+            if (currentRecord == null) {
+                val recordStart = System.currentTimeMillis()
+                try {
+                    val file = File(context.filesDir, fileName)
+                    mediaRecorder = MediaRecorder().apply {
+                        setAudioSource(MediaRecorder.AudioSource.MIC)
+                        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                        setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+                        setOutputFile(file.path)
+                        prepare()
+                        start()
+                    }
+                    currentRecord = CurrentRecord(fileName, recordStart)
+                    emitter.onSuccess(Any())
+                } catch (e: Exception) {
+                    Timber.e(e)
+                    emitter.onComplete()
                 }
-                currentRecord = CurrentRecord(fileName, recordStart)
-            } catch (e: Exception) {
-                Timber.e(e)
+            } else {
+                Timber.d("couldn't start new recording, there is already ongoing recording")
+                emitter.onComplete()
             }
-        } else {
-            Timber.d("couldn't start new recording, there is already ongoing recording")
         }
     }
 
-    override fun cancelRecording() {
-        currentRecord?.let {
-            Timber.d("Cancelling recording $currentRecord")
-            try {
-                stopMediaRecorder()
-            } catch (e: Exception) {
-                Timber.e(e)
+    override fun cancelRecording(): Maybe<Any> {
+        return Maybe.create { emitter ->
+            currentRecord?.let {
+                Timber.d("Cancelling recording $currentRecord")
+                try {
+                    stopMediaRecorder()
+                } catch (e: Exception) {
+                    Timber.e(e)
+                }
+                File(context.filesDir, it.fileName).delete()
+                emitter.onSuccess(Any())
+                return@create
             }
-            File(context.filesDir, it.fileName).delete()
+            emitter.onComplete()
         }
     }
 
@@ -73,13 +83,13 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
                 try {
                     stopMediaRecorder()
                     val duration = System.currentTimeMillis() - it.recordStart
-                    Timber.d("Record is finished successfully")
+                    Timber.d("Record finished successfully")
                     emitter.onSuccess(Recorder.FilenameToDuration(it.fileName, duration))
                     return@create
                 } catch (e: Exception) {
                     Timber.d(e)
                     File(context.filesDir, it.fileName).delete()
-                    emitter.onComplete()
+                    emitter.onError(IllegalStateException("recording hasn't been saved"))
                     return@create
                 }
             }
