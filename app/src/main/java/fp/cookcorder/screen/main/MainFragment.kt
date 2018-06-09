@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
+import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -32,6 +33,9 @@ class MainFragment : DaggerFragment() {
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<MainViewModel>
 
+    @Inject
+    lateinit var taskAdapter: TaskAdapter
+
     private lateinit var viewModel: MainViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -44,6 +48,12 @@ class MainFragment : DaggerFragment() {
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(MainViewModel::class.java)
         setupClickListeners()
         observeLiveData()
+        setupRecycler()
+    }
+
+    private fun setupRecycler() {
+        mainFragmentRV.layoutManager = LinearLayoutManager(context)
+        mainFragmentRV.adapter = taskAdapter
     }
 
     private fun observeLiveData() {

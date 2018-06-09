@@ -15,7 +15,6 @@ interface TaskRepo {
 
 }
 
-
 class TaskRepoImpl @Inject constructor(): TaskRepo {
 
     private val tasks = BehaviorSubject.createDefault<List<Task>>(emptyList())
