@@ -13,8 +13,14 @@ abstract class MainFragmentModule {
 
     @Module
     companion object {
+
         @Provides
         @JvmStatic
         fun provideMainFragmentVm(vm: MainViewModel) = ViewModelProviderFactory<MainViewModel>(vm)
+
+        @Provides
+        @JvmStatic
+        fun provideTaskClickListener(clickListener: MainViewModel): TaskAdapter.TaskClickListener
+                = clickListener
     }
 }

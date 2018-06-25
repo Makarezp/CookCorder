@@ -6,19 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import fp.cookcorder.R
+import fp.cookcorder.app.util.onClick
 import fp.cookcorder.model.Task
 import javax.inject.Inject
 
-class TaskAdapter @Inject constructor(): RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
+class TaskAdapter @Inject constructor(
+        private val taskClickListener: TaskClickListener
+) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
 
-    var taskList: List<Task> = emptyList()
-    set(value) {
-        field = taskList
-        notifyDataSetChanged()
+    interface TaskClickListener {
+        fun onTaskClicked(task: Task)
     }
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-         val text: TextView by lazy { view.findViewById<TextView>(R.id.itemTaskTV) }
+    var taskList: List<Task> = emptyList()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val text: TextView by lazy { view.findViewById<TextView>(R.id.itemTaskTV) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -28,9 +35,10 @@ class TaskAdapter @Inject constructor(): RecyclerView.Adapter<TaskAdapter.ViewHo
 
     override fun getItemCount(): Int = taskList.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: TaskAdapter.ViewHolder, position: Int) {
         with(holder) {
             text.text = taskList[position].name
+            text.onClick { taskClickListener.onTaskClicked(taskList[position]) }
         }
     }
 }

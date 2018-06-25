@@ -2,10 +2,7 @@ package fp.cookcorder.screen
 
 import android.arch.lifecycle.ViewModel
 import fp.cookcorder.app.SchedulerFactory
-import io.reactivex.Flowable
-import io.reactivex.Maybe
-import io.reactivex.Observable
-import io.reactivex.Single
+import io.reactivex.*
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
 import javax.inject.Inject
@@ -66,6 +63,19 @@ abstract class BaseViewModel : ViewModel() {
                         .subscribe(onSuccess, onError, onComplete)
         )
     }
+
+    protected fun exe(
+            completable: Completable,
+            onError: (Throwable) -> Unit = handleError,
+            onComplete: () -> Unit) {
+        compDisposable.add(
+                completable
+                        .subscribeOn(schedulerFactory.io())
+                        .observeOn(schedulerFactory.ui())
+                        .subscribe(onComplete, onError)
+        )
+    }
+
 
 
     override fun onCleared() {

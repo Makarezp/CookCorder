@@ -49,6 +49,11 @@ class MainFragment : DaggerFragment() {
         setupClickListeners()
         observeLiveData()
         setupRecycler()
+        observeTasks()
+    }
+
+    private fun observeTasks() {
+        observe(viewModel.tasks) { taskAdapter.taskList = it }
     }
 
     private fun setupRecycler() {
@@ -66,7 +71,6 @@ class MainFragment : DaggerFragment() {
         mainFragmentFABRecord.setOnTouchListener { view, motionEvent ->
             handleRecordButtonClicks(view, motionEvent)
         }
-        button.onClick { viewModel.playRecording() }
     }
 
     private fun handleRecordButtonClicks(v: View, m: MotionEvent): Boolean {

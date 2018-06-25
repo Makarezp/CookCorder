@@ -9,13 +9,14 @@ import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.service.Player
 import fp.cookcorder.service.Recorder
 import timber.log.Timber
+import java.util.*
 import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
         private val recorder: Recorder,
         private val player: Player,
         private val taskRepo: TaskRepo
-) : BaseViewModel() {
+) : BaseViewModel(), TaskAdapter.TaskClickListener {
 
     val shouldShowRecordingScreen = MutableLiveData<Boolean>()
 
@@ -23,9 +24,16 @@ class MainViewModel @Inject constructor(
 
     val tasks = MutableLiveData<List<Task>>()
 
+    @Inject
+    fun init() {
+        exe(taskRepo.getTasks()) {
+            tasks.value = it
+        }
+    }
+
     fun requestNewRecord() {
-        if(permissionGranted) {
-            exe(recorder.startRecording("r")) {
+        if (permissionGranted) {
+            exe(recorder.startRecording("r${Random().nextInt()}")) {
                 shouldShowRecordingScreen.value = true
             }
         }
@@ -38,16 +46,19 @@ class MainViewModel @Inject constructor(
     }
 
     fun finishRecording() {
-        val onError = {e: Throwable ->
+        val onError = { e: Throwable ->
             Timber.d(e)
             shouldShowRecordingScreen.value = false
         }
-        exe(recorder.finishRecording(), onError = onError) {
+        exe(recorder
+                .finishRecording()
+                .flatMapCompletable { taskRepo.saveTask(Task(10L, it.fileName, it.duration)) },
+                onError) {
             shouldShowRecordingScreen.value = false
         }
     }
 
-    fun playRecording() {
-        player.startPlaying("r")
+    override fun onTaskClicked(task: Task) {
+        player.startPlaying(task.name)
     }
 }
