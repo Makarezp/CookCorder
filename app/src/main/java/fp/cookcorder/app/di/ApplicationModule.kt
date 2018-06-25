@@ -11,7 +11,6 @@ import javax.inject.Singleton
 
 @Singleton
 @Module(includes = [
-    MainFragmentModule::class,
     RepoModule::class,
     ServiceModule::class])
 abstract class ApplicationModule {

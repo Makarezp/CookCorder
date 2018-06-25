@@ -26,15 +26,15 @@ import javax.inject.Inject
 class MainFragment : DaggerFragment() {
 
     companion object {
+        const val TITLE = "Record"
+
         private const val RECORDING_PERMISSION_REQUEST = 1
+
         fun newInstance() = MainFragment()
     }
 
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<MainViewModel>
-
-    @Inject
-    lateinit var taskAdapter: TaskAdapter
 
     private lateinit var viewModel: MainViewModel
 
@@ -49,16 +49,10 @@ class MainFragment : DaggerFragment() {
         setupClickListeners()
         observeLiveData()
         setupRecycler()
-        observeTasks()
-    }
-
-    private fun observeTasks() {
-        observe(viewModel.tasks) { taskAdapter.taskList = it }
     }
 
     private fun setupRecycler() {
         mainFragmentRV.layoutManager = LinearLayoutManager(context)
-        mainFragmentRV.adapter = taskAdapter
     }
 
     private fun observeLiveData() {

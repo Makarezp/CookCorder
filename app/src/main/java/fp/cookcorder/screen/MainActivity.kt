@@ -3,17 +3,18 @@ package fp.cookcorder.screen
 import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
 import fp.cookcorder.R
-import fp.cookcorder.screen.main.MainFragment
+import kotlinx.android.synthetic.main.main_activity.*
+import javax.inject.Inject
 
 class MainActivity : DaggerAppCompatActivity() {
+
+    @Inject
+    lateinit var pageAdapter: SimplePagerAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, MainFragment.newInstance())
-                    .commitNow()
-        }
+        mainActivityVP.adapter = pageAdapter
+        mainActivityTL.setupWithViewPager(mainActivityVP)
     }
 }

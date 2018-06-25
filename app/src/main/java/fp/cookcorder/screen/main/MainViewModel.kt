@@ -14,22 +14,12 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor(
         private val recorder: Recorder,
-        private val player: Player,
         private val taskRepo: TaskRepo
-) : BaseViewModel(), TaskAdapter.TaskClickListener {
+) : BaseViewModel() {
 
     val shouldShowRecordingScreen = MutableLiveData<Boolean>()
 
     var permissionGranted = false
-
-    val tasks = MutableLiveData<List<Task>>()
-
-    @Inject
-    fun init() {
-        exe(taskRepo.getTasks()) {
-            tasks.value = it
-        }
-    }
 
     fun requestNewRecord() {
         if (permissionGranted) {
@@ -56,9 +46,5 @@ class MainViewModel @Inject constructor(
                 onError) {
             shouldShowRecordingScreen.value = false
         }
-    }
-
-    override fun onTaskClicked(task: Task) {
-        player.startPlaying(task.name)
     }
 }
