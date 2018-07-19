@@ -10,7 +10,6 @@ import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.app.util.observe
-import fp.cookcorder.screen.main.TaskAdapter
 import kotlinx.android.synthetic.main.play_fragment.*
 import javax.inject.Inject
 

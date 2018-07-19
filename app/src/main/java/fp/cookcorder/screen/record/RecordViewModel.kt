@@ -1,18 +1,15 @@
-package fp.cookcorder.screen.main
+package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
-import android.arch.lifecycle.ViewModel
-import android.os.Handler
 import fp.cookcorder.model.Task
 import fp.cookcorder.repo.TaskRepo
 import fp.cookcorder.screen.BaseViewModel
-import fp.cookcorder.service.Player
 import fp.cookcorder.service.Recorder
 import timber.log.Timber
 import java.util.*
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor(
+class RecordViewModel @Inject constructor(
         private val recorder: Recorder,
         private val taskRepo: TaskRepo
 ) : BaseViewModel() {

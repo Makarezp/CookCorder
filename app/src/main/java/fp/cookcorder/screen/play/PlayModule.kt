@@ -4,7 +4,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.screen.main.TaskAdapter
+import fp.cookcorder.screen.MainActivity
 
 @Module
 abstract class PlayModule {

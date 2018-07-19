@@ -6,7 +6,6 @@ import dagger.Binds
 import dagger.Module
 import fp.cookcorder.repo.RepoModule
 import fp.cookcorder.service.ServiceModule
-import fp.cookcorder.screen.main.MainFragmentModule
 import javax.inject.Singleton
 
 @Singleton

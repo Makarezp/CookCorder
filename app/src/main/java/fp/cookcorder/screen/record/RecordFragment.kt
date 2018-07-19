@@ -1,4 +1,4 @@
-package fp.cookcorder.screen.main
+package fp.cookcorder.screen.record
 
 import android.Manifest.permission.RECORD_AUDIO
 import android.arch.lifecycle.ViewModelProviders
@@ -16,27 +16,33 @@ import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.app.util.observe
-import fp.cookcorder.app.util.onClick
 import fp.cookcorder.app.util.visibleOrGone
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainFragment : DaggerFragment() {
+class RecordFragment : DaggerFragment() {
 
     companion object {
         const val TITLE = "Record"
 
         private const val RECORDING_PERMISSION_REQUEST = 1
 
-        fun newInstance() = MainFragment()
+        fun newInstance() = RecordFragment()
+    }
+
+    interface RecordingListener {
+        val isRecording: (Boolean) -> Unit
     }
 
     @Inject
-    lateinit var vmFactory: ViewModelProviderFactory<MainViewModel>
+    lateinit var recordingListener: RecordingListener
 
-    private lateinit var viewModel: MainViewModel
+    @Inject
+    lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
+
+    private lateinit var viewModel: RecordViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -45,7 +51,7 @@ class MainFragment : DaggerFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity!!, vmFactory).get(MainViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, vmFactory).get(RecordViewModel::class.java)
         setupClickListeners()
         observeLiveData()
         setupRecycler()
@@ -57,6 +63,7 @@ class MainFragment : DaggerFragment() {
 
     private fun observeLiveData() {
         observe(viewModel.shouldShowRecordingScreen) {
+            recordingListener.isRecording(it)
             mainFragmentFLRecordIndicator.visibleOrGone(it)
         }
     }

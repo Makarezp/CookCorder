@@ -1,4 +1,4 @@
-package fp.cookcorder.screen.main
+package fp.cookcorder.screen.play
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
@@ -35,7 +35,7 @@ class TaskAdapter @Inject constructor(
 
     override fun getItemCount(): Int = taskList.size
 
-    override fun onBindViewHolder(holder: TaskAdapter.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder) {
             text.text = taskList[position].name
             text.onClick { taskClickListener.onTaskClicked(taskList[position]) }

@@ -1,4 +1,4 @@
-package fp.cookcorder.screen.main
+package fp.cookcorder.screen.record
 
 import android.support.v4.app.FragmentManager
 import dagger.Module
@@ -8,17 +8,17 @@ import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.screen.MainActivity
 
 @Module
-abstract class MainFragmentModule {
+abstract class RecordFragmentModule {
 
     @ContributesAndroidInjector
-    abstract fun provideMainFragment(): MainFragment
+    abstract fun provideMainFragment(): RecordFragment
 
     @Module
     companion object {
 
         @Provides
         @JvmStatic
-        fun provideMainFragmentVm(vm: MainViewModel) = ViewModelProviderFactory<MainViewModel>(vm)
+        fun provideMainFragmentVm(vm: RecordViewModel) = ViewModelProviderFactory(vm)
 
 
         @Provides
@@ -26,5 +26,10 @@ abstract class MainFragmentModule {
         fun provideFragmentManager(activity: MainActivity): FragmentManager {
             return activity.supportFragmentManager
         }
+
+        @Provides
+        @JvmStatic
+        fun provideIsRecordingFunction(
+                activity: MainActivity): RecordFragment.RecordingListener = activity
     }
 }
