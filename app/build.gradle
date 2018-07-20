@@ -26,11 +26,16 @@ android {
 }
 ext.anko_version='0.10.5'
 
+//this is for epoxy
+kapt {
+    correctErrorTypes = true
+}
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'com.android.support:appcompat-v7:27.1.1'
-    implementation 'com.android.support.constraint:constraint-layout:1.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation "org.jetbrains.anko:anko-commons:$anko_version"
     implementation "org.jetbrains.anko:anko-design:$anko_version"
@@ -38,11 +43,17 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.1.9'
     implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
     //dagger
-    def daggerVer = "2.14.1"
-    implementation "com.google.dagger:dagger:$daggerVer"
-    implementation "com.google.dagger:dagger-android-support:$daggerVer"
-    kapt "com.google.dagger:dagger-android-processor:$daggerVer"
-    kapt "com.google.dagger:dagger-compiler:$daggerVer"
+    implementation "com.google.dagger:dagger:2.16"
+    implementation "com.google.dagger:dagger-android-support:2.16"
+    kapt "com.google.dagger:dagger-android-processor:2.16"
+    kapt "com.google.dagger:dagger-compiler:2.16"
+    //epoxy
+    implementation 'com.airbnb.android:epoxy:2.14.0'
+    kapt 'com.airbnb.android:epoxy-processor:2.14.0'
+    //room
+    implementation 'android.arch.persistence.room:runtime:1.1.1'
+    implementation 'android.arch.persistence.room:rxjava2:1.1.1'
+    kapt 'android.arch.persistence.room:compiler:1.1.1'
     //test
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

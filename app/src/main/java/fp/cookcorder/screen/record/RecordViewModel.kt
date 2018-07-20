@@ -33,15 +33,17 @@ class RecordViewModel @Inject constructor(
     }
 
     fun finishRecording() {
-        val onError = { e: Throwable ->
-            Timber.d(e)
-            shouldShowRecordingScreen.value = false
-        }
         exe(recorder
                 .finishRecording()
-                .flatMapCompletable { taskRepo.saveTask(Task(10L, it.fileName, it.duration)) },
-                onError) {
-            shouldShowRecordingScreen.value = false
-        }
+                .doAfterSuccess {
+                    taskRepo.saveTask(Task(it.fileName, it.duration))
+                    shouldShowRecordingScreen.postValue(false)
+                },
+                onError = {
+                    Timber.d(it)
+                    shouldShowRecordingScreen.value = false
+                })
+
     }
 }
+

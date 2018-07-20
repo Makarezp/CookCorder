@@ -5,7 +5,6 @@ import dagger.Module
 import javax.inject.Singleton
 
 @Module
-@Singleton
 abstract class ServiceModule {
 
     @Binds

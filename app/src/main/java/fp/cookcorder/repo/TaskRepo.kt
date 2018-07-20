@@ -1,35 +1,44 @@
 package fp.cookcorder.repo
 
 import fp.cookcorder.model.Task
+import fp.cookcorder.repo.db.TaskDao
 import io.reactivex.Completable
-import io.reactivex.Observable
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.Flowable
+import java.io.File
 import javax.inject.Inject
 
 interface TaskRepo {
 
-    fun saveTask(task: Task): Completable
+    fun saveTask(task: Task)
 
-    fun getTasks(): Observable<List<Task>>
+    fun getTasks(): Flowable<List<Task>>
 
-    fun deleteTask(task: Task)
-
+    fun deleteTask(task: Task): Completable
 }
 
-class TaskRepoImpl @Inject constructor(): TaskRepo {
+class TaskRepoImpl @Inject constructor(
+        private val taskDao: TaskDao,
+        private val fileRemover: FileRemover) : TaskRepo {
 
-    private val tasks = BehaviorSubject.createDefault<List<Task>>(emptyList())
-
-    override fun saveTask(task: Task): Completable {
-        tasks.onNext(tasks.value.plus(task))
-        return Completable.complete()
+    override fun saveTask(task: Task) {
+        taskDao.insert(task)
     }
 
-    override fun getTasks(): Observable<List<Task>> {
-        return tasks
+    override fun getTasks(): Flowable<List<Task>> {
+        return taskDao.getAll()
     }
 
-    override fun deleteTask(task: Task) {
-        tasks.onNext(tasks.value.filter { it != task })
+    override fun deleteTask(task: Task): Completable {
+       return Completable.fromCallable {
+            fileRemover.deleteFile(task.name)
+            taskDao.delete(task)
+        }
+    }
+}
+
+class FileRemover @Inject constructor() {
+
+    fun deleteFile(path: String) {
+        File(path).delete()
     }
 }

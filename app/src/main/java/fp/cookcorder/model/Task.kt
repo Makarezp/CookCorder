@@ -1,7 +1,11 @@
 package fp.cookcorder.model
 
+import android.arch.persistence.room.Entity
+import android.arch.persistence.room.PrimaryKey
+
+@Entity
 data class Task(
-        val id: Long?,
+        @PrimaryKey
         val name: String,
         var duration: Long
 )
