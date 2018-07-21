@@ -8,6 +8,7 @@ import android.widget.TextView
 import fp.cookcorder.R
 import fp.cookcorder.app.util.onClick
 import fp.cookcorder.model.Task
+import fp.cookcorder.screen.utils.elevateOnTouch
 import javax.inject.Inject
 
 class TaskAdapter @Inject constructor(
@@ -24,7 +25,7 @@ class TaskAdapter @Inject constructor(
             notifyDataSetChanged()
         }
 
-    class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         val text: TextView by lazy { view.findViewById<TextView>(R.id.itemTaskTV) }
     }
 
@@ -37,6 +38,7 @@ class TaskAdapter @Inject constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder) {
+            view.setOnTouchListener(elevateOnTouch)
             text.text = taskList[position].name
             text.onClick { taskClickListener.onTaskClicked(taskList[position]) }
         }

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="card_margin_horizontal">8dp</dimen>
+    <dimen name="card_margin_vertical">8dp</dimen>
+    <dimen name="card_margin_horizontal_big_activity">8dp</dimen>
+    <dimen name="card_margin_vertical_big_activity">4dp</dimen>
+    <dimen name="card_recycler_corner_radius">2dp</dimen>
+    <dimen name="card_recycler_elevation">2dp</dimen>
+
+    <dimen name="main_card_margin_horizontal">8dp</dimen>
+    <dimen name="main_card_margin_vertical">8dp</dimen>
+    <dimen name="main_card_margin_horizontal_big_activity">8dp</dimen>
+
+    <dimen name="card_title_margin_top">24dp</dimen>
+    <dimen name="card_title_margin">16dp</dimen>
+    <dimen name="card_subtitle_margin">16dp</dimen>
+    <dimen name="card_button_margin">8dp</dimen>
+
+</resources>

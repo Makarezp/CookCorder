@@ -1,6 +1,7 @@
 package fp.cookcorder.screen.record
 
 import android.Manifest.permission.RECORD_AUDIO
+import android.animation.ObjectAnimator
 import android.arch.lifecycle.ViewModelProviders
 import android.graphics.Rect
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
@@ -101,6 +104,8 @@ class RecordFragment : DaggerFragment() {
             else -> false
         }
     }
+
+
 
     private fun requestPermission() {
 
