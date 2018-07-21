@@ -18,11 +18,6 @@ abstract class PlayModule {
         @JvmStatic
         @Provides
         fun provideVmFactory(vm: PlayViewModel) = ViewModelProviderFactory(vm)
-
-
-        @Provides
-        @JvmStatic
-        fun provideTaskClickListener(clickListener: PlayViewModel): TaskAdapter.TaskClickListener = clickListener
     }
 
 }

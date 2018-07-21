@@ -22,8 +22,6 @@ class PlayFragment : DaggerFragment() {
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<PlayViewModel>
 
-    @Inject
-    lateinit var taskAdapter: TaskAdapter
 
     private lateinit var viewModel: PlayViewModel
 
@@ -35,15 +33,10 @@ class PlayFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this, vmFactory).get(PlayViewModel::class.java)
         setupRecycler()
-        observeTasks()
     }
 
     private fun setupRecycler() {
         playFragRV.layoutManager = LinearLayoutManager(context!!)
-        playFragRV.adapter = taskAdapter
-    }
-
-    private fun observeTasks() {
-        observe(viewModel.tasks) { taskAdapter.taskList = it }
+        playFragRV.adapter = viewModel.adapter
     }
 }
