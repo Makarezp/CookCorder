@@ -4,6 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import fp.cookcorder.R
 import fp.cookcorder.app.util.onClick
@@ -16,7 +17,8 @@ class TaskAdapter @Inject constructor(
 ) : RecyclerView.Adapter<TaskAdapter.ViewHolder>() {
 
     interface TaskClickListener {
-        fun onTaskClicked(task: Task)
+        fun onPlay(task: Task)
+        fun onDelete(task: Task)
     }
 
     var taskList: List<Task> = emptyList()
@@ -26,7 +28,9 @@ class TaskAdapter @Inject constructor(
         }
 
     class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        val upperContainer: View by lazy { view.findViewById<View>(R.id.constraintLayout) }
         val text: TextView by lazy { view.findViewById<TextView>(R.id.itemTaskTV) }
+        val deleteIV: ImageView by lazy { view.findViewById<ImageView>(R.id.deleteIV) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,9 +42,14 @@ class TaskAdapter @Inject constructor(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         with(holder) {
-            view.setOnTouchListener(elevateOnTouch)
+            upperContainer.setOnTouchListener(
+                    elevateOnTouch  {
+                        taskClickListener.onPlay(taskList[position])
+                    })
+            deleteIV.setOnTouchListener( elevateOnTouch {
+                taskClickListener.onDelete(taskList[position])
+            })
             text.text = taskList[position].name
-            text.onClick { taskClickListener.onTaskClicked(taskList[position]) }
         }
     }
 }

@@ -5,6 +5,7 @@ import fp.cookcorder.model.Task
 import fp.cookcorder.repo.TaskRepo
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.service.Player
+import timber.log.Timber
 import javax.inject.Inject
 
 class PlayViewModel @Inject constructor(
@@ -21,7 +22,13 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    override fun onTaskClicked(task: Task) {
+    override fun onPlay(task: Task) {
         player.startPlaying(task.name)
+    }
+
+    override fun onDelete(task: Task) {
+        exe(taskRepo.deleteTask(task)) {
+            Timber.d("Task with id ${task.name} has been deleted")
+        }
     }
 }
