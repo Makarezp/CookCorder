@@ -113,8 +113,8 @@ class RecordFragment : DaggerFragment() {
             if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, RECORD_AUDIO))
                 longSnackbar(view!!,
                         "We cannot continue without your permission ",
-                        "Grand permission",
-                        { request() })
+                        "Grand permission"
+                ) { request() }
             else request()
         }
     }
