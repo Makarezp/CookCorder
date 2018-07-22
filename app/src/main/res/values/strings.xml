@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CookCorder</string>
+    <string name="notif_channel_name">Task Notifications</string>
 </resources>
