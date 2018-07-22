@@ -38,7 +38,7 @@ class TaskSchedulerImpl @Inject constructor(private val context: Context) : Task
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.setExact(
-                AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 500, pendingIntent)
+                AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
     }
 }
 

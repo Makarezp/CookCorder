@@ -22,5 +22,8 @@ fun <T> LifecycleOwner.observe(liveData: LiveData<T?>, lambda: (T) -> Unit) {
 
 fun LifecycleOwner.observe(liveData: SingleLiveEvent<Void>, lambda: () -> Unit) {
     liveData.observe(this, Observer { lambda() })
+}
 
+fun Int.minutestToMilliseconds(): Long {
+    return this.toLong() * 60000
 }

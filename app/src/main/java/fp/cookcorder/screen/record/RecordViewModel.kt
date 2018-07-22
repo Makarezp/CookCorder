@@ -40,8 +40,8 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    fun finishRecording() {
-        exe(taskManager.finishRecordingNewTask(), onError = {
+    fun finishRecording(msToSchedule: Long) {
+        exe(taskManager.finishRecordingNewTask(msToSchedule), onError = {
             Timber.d(it)
             shouldShowRecordingScreen.value = false
         }) {

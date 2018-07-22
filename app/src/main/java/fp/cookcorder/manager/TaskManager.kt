@@ -15,7 +15,7 @@ interface TaskManager {
 
     fun startRecordingNewTask(): Maybe<Any>
 
-    fun finishRecordingNewTask(): Maybe<Task>
+    fun finishRecordingNewTask(msToSchedule: Long): Maybe<Task>
 
     fun cancelRecordingNewTask(): Maybe<Any>
 
@@ -37,11 +37,14 @@ class TaskManagerImpl @Inject constructor(
         return recorder.startRecording("r${Random().nextInt()}")
     }
 
-    override fun finishRecordingNewTask(): Maybe<Task> {
+    override fun finishRecordingNewTask(msToSchedule: Long): Maybe<Task> {
         return recorder.finishRecording()
-                .map { taskRepo.saveTask(Task(0, it.fileName, it.duration, 10)) }
+                .map {
+                    val scheduleTime = System.currentTimeMillis() + msToSchedule
+                    taskRepo.saveTask(Task(0, it.fileName, it.duration, scheduleTime))
+                }
                 .doAfterSuccess {
-                   taskScheduler.scheduleTask(it)
+                    taskScheduler.scheduleTask(it)
                 }
     }
 
