@@ -5,12 +5,14 @@ import android.content.Context
 import dagger.Binds
 import dagger.Module
 import fp.cookcorder.repo.RepoModule
-import fp.cookcorder.service.ServiceModule
+import fp.cookcorder.infrastructure.InfrastructureModule
+import fp.cookcorder.manager.ManagerModule
 import javax.inject.Singleton
 
 @Module(includes = [
     RepoModule::class,
-    ServiceModule::class])
+    InfrastructureModule::class,
+    ManagerModule::class])
 abstract class ApplicationModule {
 
     @Binds

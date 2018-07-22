@@ -34,7 +34,6 @@ abstract class RecordCell : EpoxyModelWithHolder<RecordCell.Holder>() {
             minutesText = itemView.findViewById(R.id.itemRecordTV)
         }
     }
-
 }
 
 

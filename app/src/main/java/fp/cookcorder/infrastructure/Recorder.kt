@@ -1,4 +1,4 @@
-package fp.cookcorder.service
+package fp.cookcorder.infrastructure
 
 import android.content.Context
 import android.media.MediaRecorder

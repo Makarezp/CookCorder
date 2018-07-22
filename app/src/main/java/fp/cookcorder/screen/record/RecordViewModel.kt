@@ -2,17 +2,14 @@ package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
 import fp.cookcorder.model.Task
-import fp.cookcorder.repo.TaskRepo
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
-import fp.cookcorder.service.Recorder
+import fp.cookcorder.manager.TaskManager
 import timber.log.Timber
-import java.util.*
 import javax.inject.Inject
 
 class RecordViewModel @Inject constructor(
-        private val recorder: Recorder,
-        private val taskRepo: TaskRepo,
+        private val taskManager: TaskManager,
         private val recordCellController: RecordCellController
 ) : BaseViewModel() {
 
@@ -32,29 +29,25 @@ class RecordViewModel @Inject constructor(
 
     fun requestNewRecord() {
         if (permissionGranted) {
-            exe(recorder.startRecording("r${Random().nextInt()}")) {
+            exe(taskManager.startRecordingNewTask()) {
                 shouldShowRecordingScreen.value = true
             }
         } else requestRecordingPermission.call()
     }
 
     fun cancelRecording() {
-        exe(recorder.cancelRecording()) {
+        exe(taskManager.cancelRecordingNewTask()) {
             shouldShowRecordingScreen.value = false
         }
     }
 
     fun finishRecording() {
-        exe(recorder
-                .finishRecording()
-                .doAfterSuccess {
-                    taskRepo.saveTask(Task(it.fileName, it.duration))
-                    shouldShowRecordingScreen.postValue(false)
-                },
-                onError = {
-                    Timber.d(it)
-                    shouldShowRecordingScreen.value = false
-                })
+        exe(taskManager.finishRecordingNewTask(), onError = {
+            Timber.d(it)
+            shouldShowRecordingScreen.value = false
+        }) {
+            shouldShowRecordingScreen.postValue(false)
+        }
 
     }
 }

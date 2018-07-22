@@ -12,7 +12,7 @@ import io.reactivex.Maybe
 abstract class TaskDao {
 
     @Insert
-    abstract fun insert(task: Task)
+    abstract fun insert(task: Task): Long
 
     @Query("SELECT * from Task")
     abstract fun getAll(): Flowable<List<Task>>

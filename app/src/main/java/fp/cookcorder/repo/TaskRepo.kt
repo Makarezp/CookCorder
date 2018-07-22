@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 interface TaskRepo {
 
-    fun saveTask(task: Task)
+    fun saveTask(task: Task): Long
 
     fun getTasks(): Flowable<List<Task>>
 
@@ -20,8 +20,8 @@ class TaskRepoImpl @Inject constructor(
         private val taskDao: TaskDao,
         private val fileRemover: FileRemover) : TaskRepo {
 
-    override fun saveTask(task: Task) {
-        taskDao.insert(task)
+    override fun saveTask(task: Task): Long {
+        return taskDao.insert(task)
     }
 
     override fun getTasks(): Flowable<List<Task>> {

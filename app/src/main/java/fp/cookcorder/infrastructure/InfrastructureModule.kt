@@ -1,11 +1,11 @@
-package fp.cookcorder.service
+package fp.cookcorder.infrastructure
 
 import dagger.Binds
 import dagger.Module
 import javax.inject.Singleton
 
 @Module
-abstract class ServiceModule {
+abstract class InfrastructureModule {
 
     @Binds
     @Singleton
