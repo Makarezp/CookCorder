@@ -43,7 +43,7 @@
             app:layout_constraintTop_toBottomOf="@id/itemTaskTV"/>
 
         <TextView
-            android:id="@+id/tv_card_main3_details"
+            android:id="@+id/itemTaskTvDetails"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/card_subtitle_margin"
@@ -61,15 +61,8 @@
             android:layout_marginTop="@dimen/card_title_margin"
             android:background="@color/gray_light"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_card_main3_details"/>
+            app:layout_constraintTop_toBottomOf="@id/itemTaskTvDetails"/>
 
-        <Chronometer
-            android:id="@+id/itemTaskChrono"
-            android:layout_width="96dp"
-            android:layout_height="match_parent"
-            android:scaleType="fitXY"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
 
     </android.support.constraint.ConstraintLayout>
 

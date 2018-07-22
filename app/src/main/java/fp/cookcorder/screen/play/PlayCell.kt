@@ -1,7 +1,6 @@
 package fp.cookcorder.screen.play
 
 import android.view.View
-import android.widget.Chronometer
 import android.widget.ImageView
 import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
@@ -11,7 +10,10 @@ import com.airbnb.epoxy.EpoxyModelWithHolder
 import fp.cookcorder.R
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import org.threeten.bp.Instant
+import org.threeten.bp.temporal.ChronoUnit
 import timber.log.Timber
+
 
 @EpoxyModelClass(layout = R.layout.item_task)
 abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
@@ -42,7 +44,9 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
             deleteIV.setOnClickListener { pcOnDeleteClicked() }
             timerDisposable = pcTimer?.subscribe(
                     {
-                        subTitle.text = (pcScheduleTime - System.currentTimeMillis()).toString()
+                        val minutesToSeconds = calculateTimeDifference(pcScheduleTime)
+                        subTitle.text = minutesToSeconds.first.toString()
+                        details.text = minutesToSeconds.second.toString()
                     },
                     {
                         Timber.d(it)
@@ -50,6 +54,15 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
             )
 
         }
+    }
+
+    private fun calculateTimeDifference(timeToCompare: Long): Pair<Long, Long> {
+        val time1 = Instant.ofEpochMilli(timeToCompare)
+        val time2 = Instant.now()
+
+        val minutes = ChronoUnit.MINUTES.between(time2, time1)
+        val seconds = ChronoUnit.SECONDS.between(time2, time1) % 60
+        return minutes to seconds
     }
 
     override fun unbind(holder: Holder) {
@@ -62,15 +75,15 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
         lateinit var upperContainer: View
         lateinit var title: TextView
         lateinit var subTitle: TextView
+        lateinit var details: TextView
         lateinit var deleteIV: ImageView
-        lateinit var chronoMeter: Chronometer
 
         override fun bindView(itemView: View) {
             upperContainer = itemView.findViewById<View>(R.id.constraintLayout)
             title = itemView.findViewById(R.id.itemTaskTV)
             subTitle = itemView.findViewById(R.id.itemTaskTVSubtitle)
+            details = itemView.findViewById(R.id.itemTaskTvDetails)
             deleteIV = itemView.findViewById(R.id.deleteIV)
-            chronoMeter = itemView.findViewById(R.id.itemTaskChrono)
         }
     }
 }
