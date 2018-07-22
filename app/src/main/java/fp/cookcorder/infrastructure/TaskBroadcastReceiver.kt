@@ -17,9 +17,4 @@ class TaskBroadcastReceiver: DaggerBroadcastReceiver() {
         Timber.d("bydle")
         Timber.d(player.toString())
     }
-
-    companion object {
-
-       const val action = "action:com.fp.taskbroadcastreceiver"
-    }
 }

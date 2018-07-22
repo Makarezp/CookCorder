@@ -15,4 +15,8 @@ abstract class InfrastructureModule {
     @Singleton
     abstract fun bindPlayer(impl: PlayerImpl): Player
 
+    @Binds
+    @Singleton
+    abstract fun bindScheduler(impl: TaskSchedulerImpl): TaskScheduler
+
 }

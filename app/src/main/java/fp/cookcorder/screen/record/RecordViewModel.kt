@@ -1,7 +1,6 @@
 package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
-import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.manager.TaskManager

@@ -2,6 +2,7 @@ package fp.cookcorder.manager
 
 import fp.cookcorder.infrastructure.Player
 import fp.cookcorder.infrastructure.Recorder
+import fp.cookcorder.infrastructure.TaskScheduler
 import fp.cookcorder.model.Task
 import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Completable
@@ -14,7 +15,7 @@ interface TaskManager {
 
     fun startRecordingNewTask(): Maybe<Any>
 
-    fun finishRecordingNewTask(): Maybe<Any>
+    fun finishRecordingNewTask(): Maybe<Task>
 
     fun cancelRecordingNewTask(): Maybe<Any>
 
@@ -28,16 +29,20 @@ interface TaskManager {
 class TaskManagerImpl @Inject constructor(
         private val recorder: Recorder,
         private val player: Player,
-        private val taskRepo: TaskRepo
+        private val taskRepo: TaskRepo,
+        private val taskScheduler: TaskScheduler
 ) : TaskManager {
 
     override fun startRecordingNewTask(): Maybe<Any> {
         return recorder.startRecording("r${Random().nextInt()}")
     }
 
-    override fun finishRecordingNewTask(): Maybe<Any> {
+    override fun finishRecordingNewTask(): Maybe<Task> {
         return recorder.finishRecording()
                 .map { taskRepo.saveTask(Task(0, it.fileName, it.duration, 10)) }
+                .doAfterSuccess {
+                   taskScheduler.scheduleTask(it)
+                }
     }
 
     override fun cancelRecordingNewTask() = recorder.cancelRecording()

@@ -23,11 +23,8 @@
         </activity>
 
 
-        <receiver android:name=".infrastructure.TaskBroadcastReceiver">
-            <intent-filter>
-                <action android:name="action:com.fp.taskbroadcastreceiver"/>
-            </intent-filter>
-        </receiver>
+        <receiver android:name=".infrastructure.TaskBroadcastReceiver"
+            android:enabled="true"/>
     </application>
 
 </manifest>
