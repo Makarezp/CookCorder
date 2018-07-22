@@ -3,7 +3,6 @@ package fp.cookcorder.service
 import android.content.Context
 import android.media.MediaRecorder
 import io.reactivex.Maybe
-import io.reactivex.Single
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -16,7 +15,7 @@ interface Recorder {
 
     fun finishRecording(): Maybe<FilenameToDuration>
 
-    data class FilenameToDuration(val fileName: String, val duration: Long)
+    data class FilenameToDuration(val fileName: String, val duration: Int)
 }
 
 class RecorderImpl @Inject constructor(private val context: Context) : Recorder {
@@ -82,7 +81,7 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
                 Timber.d("Finishing recording $currentRecord")
                 try {
                     stopMediaRecorder()
-                    val duration = System.currentTimeMillis() - it.recordStart
+                    val duration = (System.currentTimeMillis() - it.recordStart).toInt()
                     Timber.d("Record finished successfully")
                     emitter.onSuccess(Recorder.FilenameToDuration(it.fileName, duration))
                     return@create

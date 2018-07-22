@@ -55,13 +55,13 @@ class RecordFragment : DaggerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this, vmFactory).get(RecordViewModel::class.java)
-        setupClickListeners()
         observeLiveData()
         setupRecycler()
     }
 
     private fun setupRecycler() {
         mainFragmentRV.layoutManager = LinearLayoutManager(context)
+        mainFragmentRV.adapter = viewModel.adapter
     }
 
     private fun observeLiveData() {
@@ -69,43 +69,11 @@ class RecordFragment : DaggerFragment() {
             recordingListener.isRecording(it)
             mainFragmentFLRecordIndicator.visibleOrGone(it)
         }
-    }
 
-    private fun setupClickListeners() {
-        mainFragmentFABRecord.setOnTouchListener { view, motionEvent ->
-            handleRecordButtonClicks(view, motionEvent)
+        observe(viewModel.requestRecordingPermission) {
+            requestPermission()
         }
     }
-
-    private fun handleRecordButtonClicks(v: View, m: MotionEvent): Boolean {
-        val rect = Rect()
-        v.getHitRect(rect)
-        val isInside = rect.contains(v.left + m.x.toInt(), v.top + m.y.toInt())
-
-        return when (m.action) {
-            MotionEvent.ACTION_DOWN -> {
-                Timber.d("Action down")
-                if (!viewModel.permissionGranted) requestPermission()
-                viewModel.requestNewRecord()
-                true
-            }
-            MotionEvent.ACTION_UP -> {
-                Timber.d("Action Up")
-                if (isInside) viewModel.finishRecording()
-                true
-            }
-            MotionEvent.ACTION_MOVE -> {
-                if (!isInside) {
-                    Timber.d("Outside")
-                    viewModel.cancelRecording()
-                }
-                true
-            }
-            else -> false
-        }
-    }
-
-
 
     private fun requestPermission() {
 

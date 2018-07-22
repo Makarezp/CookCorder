@@ -7,5 +7,5 @@ import android.arch.persistence.room.PrimaryKey
 data class Task(
         @PrimaryKey
         val name: String,
-        var duration: Long
+        var duration: Int
 )
