@@ -1,10 +1,13 @@
 package fp.cookcorder.screen.play
 
 import com.airbnb.epoxy.TypedEpoxyController
+import fp.cookcorder.app.SchedulerFactory
 import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.manager.TaskManager
+import io.reactivex.Observable
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class PlayViewModel @Inject constructor(
@@ -34,9 +37,17 @@ class PlayViewModel @Inject constructor(
     }
 }
 
-class PlayCellController @Inject constructor() : TypedEpoxyController<List<Task>>() {
+class PlayCellController @Inject constructor(
+        schedulerFactory: SchedulerFactory) : TypedEpoxyController<List<Task>>() {
 
     lateinit var viewModel: PlayViewModel
+
+    /**
+     * This is timer that is shared between all bound cells
+     */
+    private val timer = Observable.interval(1, TimeUnit.SECONDS)
+            .subscribeOn(schedulerFactory.io())
+            .observeOn(schedulerFactory.ui())
 
     override fun buildModels(data: List<Task>) {
         data.forEach {
@@ -45,6 +56,8 @@ class PlayCellController @Inject constructor() : TypedEpoxyController<List<Task>
                 pcTitle(it.name)
                 pcOnPlayClicked { viewModel.play(it) }
                 pcOnDeleteClicked { viewModel.delete(it) }
+                pcScheduleTime(it.scheduleTime)
+                pcTimer(timer)
             }
         }
     }

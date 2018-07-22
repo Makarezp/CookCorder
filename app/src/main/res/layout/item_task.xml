@@ -32,7 +32,7 @@
             app:layout_constraintStart_toStartOf="parent"/>
 
         <TextView
-            android:id="@+id/tv_card_main3_subtitle"
+            android:id="@+id/itemTaskTVSubtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/card_subtitle_margin"
@@ -52,7 +52,7 @@
             tools:text="bydle"
             android:textColor="@color/gray_deep"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_card_main3_subtitle"/>
+            app:layout_constraintTop_toBottomOf="@id/itemTaskTVSubtitle"/>
 
         <View
             android:id="@+id/divider"
@@ -63,8 +63,8 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_card_main3_details"/>
 
-        <ImageView
-            android:id="@+id/img_card_main_3"
+        <Chronometer
+            android:id="@+id/itemTaskChrono"
             android:layout_width="96dp"
             android:layout_height="match_parent"
             android:scaleType="fitXY"
