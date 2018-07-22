@@ -6,7 +6,7 @@ import android.arch.persistence.room.Insert
 import android.arch.persistence.room.Query
 import fp.cookcorder.model.Task
 import io.reactivex.Flowable
-import io.reactivex.Maybe
+import io.reactivex.Single
 
 @Dao
 abstract class TaskDao {
@@ -16,6 +16,9 @@ abstract class TaskDao {
 
     @Query("SELECT * from Task")
     abstract fun getAll(): Flowable<List<Task>>
+
+    @Query("SELECT * from Task WHERE id = :id")
+    abstract fun get(id: Long): Single<Task>
 
     @Delete
     abstract fun delete(task: Task)
