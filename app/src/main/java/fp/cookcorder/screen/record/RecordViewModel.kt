@@ -25,7 +25,7 @@ class RecordViewModel @Inject constructor(
     @Inject
     fun init() {
         recordCellController.viewModel = this
-        recordCellController.setData(1.rangeTo(5).toList())
+        recordCellController.setData(1.rangeTo(100).toList())
     }
 
     fun requestNewRecord() {
