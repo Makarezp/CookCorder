@@ -26,10 +26,5 @@ abstract class RecordFragmentModule {
         fun provideFragmentManager(activity: MainActivity): FragmentManager {
             return activity.supportFragmentManager
         }
-
-        @Provides
-        @JvmStatic
-        fun provideIsRecordingFunction(
-                activity: MainActivity): RecordFragment.RecordingListener = activity
     }
 }

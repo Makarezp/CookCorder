@@ -12,7 +12,7 @@ class RecordViewModel @Inject constructor(
         private val recordCellController: RecordCellController
 ) : BaseViewModel() {
 
-    val shouldShowRecordingScreen = MutableLiveData<Boolean>()
+    val isRecording = MutableLiveData<Boolean>()
 
     var permissionGranted = false
 
@@ -29,23 +29,23 @@ class RecordViewModel @Inject constructor(
     fun requestNewRecord() {
         if (permissionGranted) {
             exe(taskManager.startRecordingNewTask()) {
-                shouldShowRecordingScreen.value = true
+                isRecording.value = true
             }
         } else requestRecordingPermission.call()
     }
 
     fun cancelRecording() {
         exe(taskManager.cancelRecordingNewTask()) {
-            shouldShowRecordingScreen.value = false
+            isRecording.value = false
         }
     }
 
     fun finishRecording(msToSchedule: Long) {
         exe(taskManager.finishRecordingNewTask(msToSchedule), onError = {
             Timber.d(it)
-            shouldShowRecordingScreen.value = false
+            isRecording.value = false
         }) {
-            shouldShowRecordingScreen.postValue(false)
+            isRecording.postValue(false)
         }
 
     }

@@ -1,20 +1,15 @@
 package fp.cookcorder.screen.record
 
 import android.Manifest.permission.RECORD_AUDIO
-import android.animation.ObjectAnimator
 import android.arch.lifecycle.ViewModelProviders
-import android.graphics.Rect
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
@@ -22,7 +17,6 @@ import fp.cookcorder.app.util.observe
 import fp.cookcorder.app.util.visibleOrGone
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
-import timber.log.Timber
 import javax.inject.Inject
 
 class RecordFragment : DaggerFragment() {
@@ -35,12 +29,6 @@ class RecordFragment : DaggerFragment() {
         fun newInstance() = RecordFragment()
     }
 
-    interface RecordingListener {
-        val isRecording: (Boolean) -> Unit
-    }
-
-    @Inject
-    lateinit var recordingListener: RecordingListener
 
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
@@ -67,8 +55,7 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun observeLiveData() {
-        observe(viewModel.shouldShowRecordingScreen) {
-            recordingListener.isRecording(it)
+        observe(viewModel.isRecording) {
             mainFragmentFLRecordIndicator.visibleOrGone(it)
         }
 
