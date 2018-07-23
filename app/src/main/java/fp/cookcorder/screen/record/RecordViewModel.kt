@@ -18,6 +18,8 @@ class RecordViewModel @Inject constructor(
 
     val requestRecordingPermission = SingleLiveEvent<Void>()
 
+    var blockStartingNewRecording = false
+
     val adapter = recordCellController.adapter
 
     @Inject
@@ -47,7 +49,7 @@ class RecordViewModel @Inject constructor(
         }) {
             isRecording.postValue(false)
         }
-
     }
+
 }
 
