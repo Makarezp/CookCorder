@@ -20,17 +20,17 @@ abstract class RecordCell : EpoxyModelWithHolder<RecordCell.Holder>() {
     override fun bind(holder: Holder) {
         with(holder) {
             minutesText.text = rcMinutesToTrigger
-            container.setOnTouchListener(rcCellTouchListener)
+            recordIcon.setOnTouchListener(rcCellTouchListener)
         }
     }
 
     class Holder: EpoxyHolder() {
 
-        lateinit var container: View
+        lateinit var recordIcon: View
         lateinit var minutesText: TextView
 
         override fun bindView(itemView: View) {
-            container = itemView
+            recordIcon = itemView.findViewById(R.id.itemRecordIV             )
             minutesText = itemView.findViewById(R.id.itemRecordTV)
         }
     }

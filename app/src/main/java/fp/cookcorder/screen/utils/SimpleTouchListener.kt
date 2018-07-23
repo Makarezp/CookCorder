@@ -20,6 +20,8 @@ fun handleCancellableTouch(onStart: () -> Unit,
 
     when (m.action) {
         MotionEvent.ACTION_DOWN -> {
+            //used to disable stealing touch event by scroll view while recording
+            v.parent.requestDisallowInterceptTouchEvent(true)
             Timber.d("Action down")
             onStart()
             true
@@ -29,7 +31,8 @@ fun handleCancellableTouch(onStart: () -> Unit,
             if (isInside) onFinish()
             true
         }
-        MotionEvent.ACTION_MOVE, MotionEvent.ACTION_CANCEL -> {
+        MotionEvent.ACTION_MOVE,
+        MotionEvent.ACTION_CANCEL -> {
             if (!isInside) {
                 Timber.d("Outside")
                 onCancel()
