@@ -30,7 +30,7 @@ class RecordFragment : DaggerFragment() {
     companion object {
         const val TITLE = "Record"
 
-        private const val RECORDING_PERMISSION_REQUEST = 1
+        const val RECORDING_PERMISSION_REQUEST = 1
 
         fun newInstance() = RecordFragment()
     }
@@ -54,7 +54,9 @@ class RecordFragment : DaggerFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, vmFactory).get(RecordViewModel::class.java)
+        viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
+        viewModel.permissionGranted = isPermissionGranted()
+        if(!viewModel.permissionGranted) requestPermission()
         observeLiveData()
         setupRecycler()
     }
@@ -80,25 +82,16 @@ class RecordFragment : DaggerFragment() {
         fun request() = ActivityCompat
                 .requestPermissions(activity!!, arrayOf(RECORD_AUDIO), RECORDING_PERMISSION_REQUEST)
 
-        if (ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) == PERMISSION_GRANTED) {
-            viewModel.permissionGranted = true
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, RECORD_AUDIO))
-                longSnackbar(view!!,
-                        "We cannot continue without your permission ",
-                        "Grant permission"
-                ) { request() }
-            else request()
-        }
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, RECORD_AUDIO))
+            longSnackbar(view!!,
+                    "We cannot continue without your permission ",
+                    "Grant permission"
+            ) { request() }
+        else request()
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == RECORDING_PERMISSION_REQUEST) {
-            permissions
-                    .filter { it == RECORD_AUDIO }
-                    .forEachIndexed { index, s ->
-                        viewModel.permissionGranted = grantResults[index] == PERMISSION_GRANTED
-                    }
-        }
+
+    private fun isPermissionGranted(): Boolean {
+        return ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) == PERMISSION_GRANTED
     }
 }
