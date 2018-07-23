@@ -76,7 +76,7 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
     }
 
     override fun finishRecording(): Maybe<Recorder.FilenameToDuration> {
-        return Maybe.create<Recorder.FilenameToDuration> { emitter ->
+        val maybe =  Maybe.create<Recorder.FilenameToDuration> { emitter ->
             currentRecord?.let {
                 Timber.d("Finishing recording $currentRecord")
                 try {
@@ -94,7 +94,15 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
             }
             Timber.d("Cannot finish recording, there is no on going recording")
             emitter.onComplete()
-        }.delaySubscription(1, TimeUnit.SECONDS)
+        }
+
+        //there a bug in media recorder, if recording is too short it crashes recording
+        var shouldDelay = false
+        currentRecord?.let {
+           shouldDelay = System.currentTimeMillis() - it.recordStart < 1000
+        }
+
+        return if(shouldDelay) maybe.delaySubscription(1, TimeUnit.SECONDS) else maybe
     }
 
     private fun stopMediaRecorder() {
