@@ -1,10 +1,10 @@
 package fp.cookcorder.screen.utils
 
-import android.content.Context
 import android.graphics.Rect
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import android.view.animation.DecelerateInterpolator
 import timber.log.Timber
 
 /**
@@ -27,19 +27,21 @@ var handleCancellableTouch = { onStart: () -> Unit,
                     }
                 })
 
-       val touchListenerToReturn = { v: View, m: MotionEvent ->
+        val touchListenerToReturn = { v: View, m: MotionEvent ->
 
             val rect = Rect()
             v.getHitRect(rect)
             val isInside = rect.contains(v.left + m.x.toInt(), v.top + m.y.toInt())
 
-           gestureDetector.onTouchEvent(m)
+            gestureDetector.onTouchEvent(m)
             when (m.action) {
                 MotionEvent.ACTION_DOWN -> {
+                   elevateAnimation(v)
                     true
                 }
                 MotionEvent.ACTION_UP -> {
                     Timber.d("Action Up")
+                    delevateAnimation(v)
                     if (isInside) onFinish()
                     true
                 }
@@ -47,6 +49,7 @@ var handleCancellableTouch = { onStart: () -> Unit,
                 MotionEvent.ACTION_CANCEL -> {
                     if (!isInside) {
                         Timber.d("Outside")
+                        delevateAnimation(v)
                         onCancel()
                         v.parent.requestDisallowInterceptTouchEvent(false)
                     }
@@ -58,3 +61,5 @@ var handleCancellableTouch = { onStart: () -> Unit,
         touchListenerToReturn
     }
 }
+
+
