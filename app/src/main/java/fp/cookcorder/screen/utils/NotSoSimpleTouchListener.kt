@@ -15,7 +15,8 @@ import timber.log.Timber
  */
 var handleCancellableTouch = { onStart: () -> Unit,
                                onFinish: () -> Unit,
-                               onCancel: () -> Unit ->
+                               onCancel: () -> Unit,
+                               isFirsItem: Boolean ->
     { view: View ->
 
         val gestureDetector = GestureDetector(view.context,
@@ -36,7 +37,8 @@ var handleCancellableTouch = { onStart: () -> Unit,
             gestureDetector.onTouchEvent(m)
             when (m.action) {
                 MotionEvent.ACTION_DOWN -> {
-                   elevateAnimation(v)
+                    if(isFirsItem) view.parent.requestDisallowInterceptTouchEvent(true)
+                    elevateAnimation(v)
                     true
                 }
                 MotionEvent.ACTION_UP -> {

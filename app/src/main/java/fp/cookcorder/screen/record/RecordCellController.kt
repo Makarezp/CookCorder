@@ -11,14 +11,15 @@ class RecordCellController @Inject constructor() : TypedEpoxyController<List<Int
     lateinit var viewModel: RecordViewModel
 
     override fun buildModels(data: List<Int>) {
-        data.forEach {
+        data.forEachIndexed { index, it ->
             recordCell {
                 id(it)
                 rcMinutesToTrigger(it.toString())
                 rcCellTouchListener(handleCancellableTouch(
                         { viewModel.requestNewRecord() },
                         { viewModel.finishRecording(it.minutestToMilliseconds()) },
-                        { viewModel.cancelRecording() }
+                        { viewModel.cancelRecording() },
+                        index == 0
                 ))
             }
         }
