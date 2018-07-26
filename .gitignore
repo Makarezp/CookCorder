@@ -1,6 +1,7 @@
 *.iml
 .gradle
 /local.properties
+app/fabric.properties
 /.idea/caches/build_file_checksum.ser
 /.idea/libraries
 /.idea/modules.xml
