@@ -1,10 +1,12 @@
 package fp.cookcorder.screen.record
 
+import android.Manifest
 import android.Manifest.permission.RECORD_AUDIO
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -44,7 +46,7 @@ class RecordFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
-        if(!viewModel.permissionGranted) requestPermission()
+        if (!viewModel.permissionGranted) requestPermission()
         observeLiveData()
         setupRecycler()
     }
@@ -80,5 +82,17 @@ class RecordFragment : DaggerFragment() {
 
     private fun isPermissionGranted(): Boolean {
         return ContextCompat.checkSelfPermission(context!!, RECORD_AUDIO) == PERMISSION_GRANTED
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        if (requestCode == RecordFragment.RECORDING_PERMISSION_REQUEST) {
+            permissions
+                    .filter { it == Manifest.permission.RECORD_AUDIO }
+                    .forEachIndexed { index, s ->
+                        viewModel.permissionGranted =
+                                grantResults[index] == PermissionChecker.PERMISSION_GRANTED
+                    }
+        }
     }
 }
