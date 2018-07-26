@@ -15,8 +15,11 @@ import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.app.util.invisible
 import fp.cookcorder.app.util.observe
 import fp.cookcorder.app.util.visibleOrGone
+import fp.cookcorder.screen.utils.circularHide
+import fp.cookcorder.screen.utils.circularReval
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
 import javax.inject.Inject
@@ -58,7 +61,15 @@ class RecordFragment : DaggerFragment() {
 
     private fun observeLiveData() {
         observe(viewModel.isRecording) {
-            mainFragmentFLRecordIndicator.visibleOrGone(it)
+            with(mainFragmentFLRecordIndicator) {
+                if (it) {
+                    val xToY = viewModel.recordViewPosition!!
+                    this.x = xToY.first - (this.width / 2)
+                    this.y = xToY.second - (this.height / 2)
+                    circularReval(this)
+                } else
+                    circularHide(this)
+            }
         }
 
         observe(viewModel.requestRecordingPermission) {

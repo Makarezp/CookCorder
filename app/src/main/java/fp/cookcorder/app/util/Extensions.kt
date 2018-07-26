@@ -13,6 +13,14 @@ fun View.visibleOrGone(visible: Boolean) {
     this.visibility = if (visible) View.VISIBLE else View.GONE
 }
 
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
+fun View.visible() {
+    this.visibility = View.VISIBLE
+}
+
 fun <T> LifecycleOwner.observe(liveData: LiveData<T?>, lambda: (T) -> Unit) {
     liveData.observe(this,
             Observer {

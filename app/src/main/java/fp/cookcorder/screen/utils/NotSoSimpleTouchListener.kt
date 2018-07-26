@@ -5,6 +5,7 @@ import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.DecelerateInterpolator
+import fp.cookcorder.R
 import timber.log.Timber
 
 /**
@@ -13,7 +14,7 @@ import timber.log.Timber
  * [onFinish] when finger is lifted up while being on view
  * [onCancel] when finger moves outside view or action is cancelled
  */
-var handleCancellableTouch = { onStart: () -> Unit,
+var handleCancellableTouch = { onStart: (Float, Float) -> Unit,
                                onFinish: () -> Unit,
                                onCancel: () -> Unit,
                                isFirsItem: Boolean ->
@@ -21,10 +22,10 @@ var handleCancellableTouch = { onStart: () -> Unit,
 
         val gestureDetector = GestureDetector(view.context,
                 object : GestureDetector.SimpleOnGestureListener() {
-                    override fun onLongPress(e: MotionEvent?) {
+                    override fun onLongPress(e: MotionEvent) {
                         //used to disable stealing touch event by scroll view while recording
                         view.parent.requestDisallowInterceptTouchEvent(true)
-                        onStart()
+                        onStart(e.rawX, e.rawY)
                     }
                 })
 

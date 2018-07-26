@@ -22,15 +22,22 @@ class RecordViewModel @Inject constructor(
 
     val adapter = recordCellController.adapter
 
+    var recordViewPosition: Pair<Float, Float>? = null
+
     @Inject
     fun init() {
         recordCellController.viewModel = this
         recordCellController.setData(1.rangeTo(100).toList())
     }
 
-    fun requestNewRecord() {
+    /**
+     * [x] view position at which record was requested
+     * [y] view position at which record was requested
+     */
+    fun requestNewRecord(x: Float, y: Float) {
         if (permissionGranted) {
             exe(taskManager.startRecordingNewTask()) {
+                recordViewPosition = x to y
                 isRecording.value = true
             }
         } else requestRecordingPermission.call()
