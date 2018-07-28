@@ -2,7 +2,12 @@ package fp.cookcorder.screen.record
 
 import android.Manifest
 import android.Manifest.permission.RECORD_AUDIO
+import android.app.Dialog
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
+import android.content.DialogInterface
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -10,9 +15,8 @@ import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.Button
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
@@ -20,6 +24,7 @@ import fp.cookcorder.app.util.observe
 import fp.cookcorder.screen.utils.circularHide
 import fp.cookcorder.screen.utils.circularReval
 import kotlinx.android.synthetic.main.main_fragment.*
+import kotlinx.android.synthetic.main.record_dialog.*
 import org.jetbrains.anko.design.longSnackbar
 import javax.inject.Inject
 
@@ -39,6 +44,10 @@ class RecordFragment : DaggerFragment() {
 
     private lateinit var viewModel: RecordViewModel
 
+    private val dialogView: View by lazy {  View.inflate(context, R.layout.record_dialog, null) }
+
+    private val dialog: Dialog by lazy { Dialog(context, R.style.AlertDialogStyle) }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
@@ -49,6 +58,7 @@ class RecordFragment : DaggerFragment() {
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestPermission()
+        prepareDialog()
         observeLiveData()
         setupRecycler()
         setupRecordView()
@@ -67,19 +77,45 @@ class RecordFragment : DaggerFragment() {
 
     private fun observeLiveData() {
         observe(viewModel.isRecording) {
-            with(mainFragmentFLRecordIndicator) {
-                if (it) {
-                    val xToY = viewModel.recordViewPosition!!
-                    this.x = xToY.first  - (this.width / 2)
-                    this.y = xToY.second - (this.height / 2)
-                    circularReval(this)
-                } else
-                    circularHide(this)
-            }
+            if(it) {
+                showRecordDialog(viewModel.recordViewPosition!!)
+            } else {
+                circularHide(dialogView)
+                dialog.dismiss() }
         }
         observe(viewModel.requestRecordingPermission) {
             requestPermission()
         }
+    }
+
+    private fun prepareDialog() {
+        dialog.setContentView(dialogView)
+        dialogView.findViewById<Button>(R.id.button).setOnClickListener {
+            viewModel.finishRecording(100)
+        }
+        dialogView.findViewById<Button>(R.id.button2).setOnClickListener {
+            viewModel.cancelRecording()
+        }
+        dialog.setOnKeyListener(DialogInterface.OnKeyListener { dialogInterface, i, keyEvent ->
+            if (i == KeyEvent.KEYCODE_BACK) {
+
+                viewModel.cancelRecording()
+                return@OnKeyListener true
+            }
+            false
+        })
+
+        dialog.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+    }
+
+    private fun showRecordDialog(startRevalFrom: Pair<Int, Int>) {
+        dialog.setOnShowListener { circularReval(dialogView, startRevalFrom) }
+        dialog.show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        dialog.dismiss()
     }
 
     private fun requestPermission() {
@@ -112,3 +148,6 @@ class RecordFragment : DaggerFragment() {
         }
     }
 }
+
+
+

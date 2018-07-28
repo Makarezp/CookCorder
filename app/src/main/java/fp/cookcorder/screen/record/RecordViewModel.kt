@@ -22,7 +22,7 @@ class RecordViewModel @Inject constructor(
 
     val adapter = recordCellController.adapter
 
-    var recordViewPosition: Pair<Float, Float>? = null
+    var recordViewPosition: Pair<Int, Int>? = null
 
     val showSummary = SingleLiveEvent<Void>()
 
@@ -36,10 +36,10 @@ class RecordViewModel @Inject constructor(
      * [x] view position at which record was requested
      * [y] view position at which record was requested
      */
-    fun requestNewRecord() {
+    fun requestNewRecord(x: Int, y: Int) {
         if (permissionGranted) {
             exe(taskManager.startRecordingNewTask()) {
-                recordViewPosition = 10F to 10F
+                recordViewPosition = x to y
                 isRecording.value = true
             }
         } else requestRecordingPermission.call()
