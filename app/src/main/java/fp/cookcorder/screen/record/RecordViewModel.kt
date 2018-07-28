@@ -24,6 +24,8 @@ class RecordViewModel @Inject constructor(
 
     var recordViewPosition: Pair<Float, Float>? = null
 
+    val showSummary = SingleLiveEvent<Void>()
+
     @Inject
     fun init() {
         recordCellController.viewModel = this
@@ -55,6 +57,7 @@ class RecordViewModel @Inject constructor(
             isRecording.value = false
         }) {
             isRecording.postValue(false)
+            showSummary.call()
         }
     }
 

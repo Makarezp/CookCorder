@@ -1,6 +1,7 @@
 package fp.cookcorder.screen.utils
 
 import android.graphics.Rect
+import android.opengl.ETC1.getHeight
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -31,14 +32,11 @@ var handleCancellableTouch = { onStart: (Float, Float) -> Unit,
 
         val touchListenerToReturn = { v: View, m: MotionEvent ->
 
-            val rect = Rect()
-            v.getHitRect(rect)
-            val isInside = rect.contains(v.left + m.x.toInt(), v.top + m.y.toInt())
-
+            val isInside = (m.x <= v.width && m.x >= 0) && (m.y <= v.height && m.y >= 0)
             gestureDetector.onTouchEvent(m)
             when (m.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    if(isFirsItem) view.parent.requestDisallowInterceptTouchEvent(true)
+                    if (isFirsItem) view.parent.requestDisallowInterceptTouchEvent(true)
                     elevateAnimation(v)
                     true
                 }
