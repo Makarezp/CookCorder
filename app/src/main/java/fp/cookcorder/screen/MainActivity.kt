@@ -32,6 +32,7 @@ class MainActivity : DaggerAppCompatActivity() {
     private fun setupViewPager() {
         mainActivityVP.adapter = pageAdapter
         mainActivityTL.setupWithViewPager(mainActivityVP)
+        mainActivityVP.offscreenPageLimit = 3
         mainActivityVP.addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
             override fun onPageScrollStateChanged(state: Int) {
                 recordViewModel.blockStartingNewRecording = state == ViewPager.SCROLL_STATE_DRAGGING

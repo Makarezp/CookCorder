@@ -13,17 +13,19 @@ class SimplePagerAdapter @Inject constructor(fragmentManager: FragmentManager)
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> RecordFragment.newInstance()
-            1 -> PlayFragment.newInstance()
+            1 -> PlayFragment.newInstance(isCurrent = true)
+            2 -> PlayFragment.newInstance(isCurrent = false)
             else -> throw IllegalArgumentException("Unknown position")
         }
     }
 
-    override fun getCount(): Int = 2
+    override fun getCount(): Int = 3
 
     override fun getPageTitle(position: Int): CharSequence? {
         return when (position) {
             0 -> RecordFragment.TITLE
             1 -> "Play"
+            2 -> "Past tasks"
             else -> throw IllegalArgumentException("Unknown position")
         }
     }

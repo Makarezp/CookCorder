@@ -23,6 +23,8 @@ interface TaskManager {
 
     fun getCurrentTasks(): Flowable<List<Task>>
 
+    fun getPastTasks(): Flowable<List<Task>>
+
     fun deleteTask(task: Task): Completable
 }
 
@@ -62,6 +64,13 @@ class TaskManagerImpl @Inject constructor(
         return taskRepo.getAllTasks().map {
             val currTime = System.currentTimeMillis()
             it.filter { it.scheduleTime - currTime > 0  }
+        }
+    }
+
+    override fun getPastTasks(): Flowable<List<Task>> {
+        return taskRepo.getAllTasks().map {
+            val currTime = System.currentTimeMillis()
+            it.filter { it.scheduleTime - currTime < 0  }
         }
     }
 

@@ -9,19 +9,25 @@ import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.util.observe
 import kotlinx.android.synthetic.main.play_fragment.*
 import javax.inject.Inject
 
 class PlayFragment : DaggerFragment() {
 
     companion object {
-        fun newInstance() = PlayFragment()
+        const val KEY_IS_CURRENT = "KEY_IS_CURRENT"
+
+        fun newInstance(isCurrent: Boolean) : PlayFragment {
+            val fragment = PlayFragment()
+            val bundle = Bundle()
+            bundle.putBoolean(KEY_IS_CURRENT, isCurrent)
+            fragment.arguments = bundle
+            return fragment
+        }
     }
 
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<PlayViewModel>
-
 
     private lateinit var viewModel: PlayViewModel
 
