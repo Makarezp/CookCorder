@@ -12,7 +12,7 @@ interface TaskRepo {
 
     fun saveTask(task: Task): Task
 
-    fun getTasks(): Flowable<List<Task>>
+    fun getAllTasks(): Flowable<List<Task>>
 
     fun getTask(id: Long): Single<Task>
 
@@ -28,7 +28,7 @@ class TaskRepoImpl @Inject constructor(
         return task.copy(id = id)
     }
 
-    override fun getTasks(): Flowable<List<Task>> {
+    override fun getAllTasks(): Flowable<List<Task>> {
         return taskDao.getAll()
     }
 

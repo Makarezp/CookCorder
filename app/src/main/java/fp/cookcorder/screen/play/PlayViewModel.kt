@@ -20,7 +20,7 @@ class PlayViewModel @Inject constructor(
     @Inject
     fun init() {
         playCellController.viewModel = this
-        exe(taskManager.getTasks()) {
+        exe(taskManager.getCurrentTasks()) {
             playCellController.setData(it)
         }
 

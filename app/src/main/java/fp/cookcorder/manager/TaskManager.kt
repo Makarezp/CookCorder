@@ -8,7 +8,6 @@ import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
-import io.reactivex.subjects.BehaviorSubject
 import java.util.*
 import javax.inject.Inject
 
@@ -22,7 +21,7 @@ interface TaskManager {
 
     fun playTask(task: Task)
 
-    fun getTasks(): Flowable<List<Task>>
+    fun getCurrentTasks(): Flowable<List<Task>>
 
     fun deleteTask(task: Task): Completable
 }
@@ -59,7 +58,12 @@ class TaskManagerImpl @Inject constructor(
         player.startPlaying(task.name)
     }
 
-    override fun getTasks(): Flowable<List<Task>> = taskRepo.getTasks()
+    override fun getCurrentTasks(): Flowable<List<Task>> {
+        return taskRepo.getAllTasks().map {
+            val currTime = System.currentTimeMillis()
+            it.filter { it.scheduleTime - currTime > 0  }
+        }
+    }
 
     override fun deleteTask(task: Task): Completable = taskRepo.deleteTask(task)
 }

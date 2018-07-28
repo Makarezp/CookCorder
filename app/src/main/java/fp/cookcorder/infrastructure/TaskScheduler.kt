@@ -65,6 +65,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                             Timber.d(it.toString())
                             showNotif(context, it.id.toInt())
                             player.startPlaying(it.name)
+                            taskRepo.saveTask(it)
                         },
                         {
                             Timber.d(it)
