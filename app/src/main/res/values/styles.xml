@@ -1,24 +1,27 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:windowBackground">@color/colorPrimary</item>
+
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
-        <!--<item name="android:statusBarColor">@android:color/transparent</item>-->
-    </style>
 
     <style name="AppTheme.NoActionBar_StatusBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <style name="Card">
+        <item name="cardBackgroundColor">@color/colorPrimaryDark</item>
+        <item name="android:foreground">?attr/selectableItemBackground</item>
+        <item name="cardCornerRadius">@dimen/card_recycler_corner_radius</item>
+        <item name="cardElevation">@dimen/card_recycler_elevation</item>
     </style>
 
 </resources>

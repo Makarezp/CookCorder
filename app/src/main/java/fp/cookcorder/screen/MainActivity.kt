@@ -26,7 +26,6 @@ class MainActivity : DaggerAppCompatActivity() {
         recordViewModel = ViewModelProviders.of(this, recordVmFactory).get(RecordViewModel::class.java)
         setContentView(R.layout.main_activity)
         setupViewPager()
-
         observeIsRecording()
     }
 
