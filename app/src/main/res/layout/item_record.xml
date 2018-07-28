@@ -8,20 +8,17 @@
         android:layout_width="match_parent"
         android:layout_height="150dp">
 
-        <TextView
-            android:id="@+id/itemRecordTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:textSize="36sp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="5 min"/>
+
+    <top.defaults.view.TextButton
+        android:id="@+id/itemRecordTV"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:text="5 min"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:padding="4dp"
+        app:effectDuration="200"
+        app:textEffect="animateSize"/>
+
 
     </android.support.constraint.ConstraintLayout>

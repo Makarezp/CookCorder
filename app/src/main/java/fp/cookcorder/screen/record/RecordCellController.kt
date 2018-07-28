@@ -1,6 +1,7 @@
 package fp.cookcorder.screen.record
 
 
+import android.view.View
 import com.airbnb.epoxy.TypedEpoxyController
 import javax.inject.Inject
 
@@ -13,7 +14,9 @@ class RecordCellController @Inject constructor() : TypedEpoxyController<List<Int
             recordCell {
                 id(it)
                 rcMinutesToTrigger(it.toString())
-                rcCellTouchListener { v -> viewModel.requestNewRecord(v.left, v.top)}
+                rcCellTouchListener { v ->
+                    val parent =v.parent as View
+                    viewModel.requestNewRecord(parent.left, parent.top)}
             }
         }
     }

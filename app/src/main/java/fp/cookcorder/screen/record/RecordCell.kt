@@ -20,7 +20,7 @@ abstract class RecordCell : EpoxyModelWithHolder<RecordCell.Holder>() {
     override fun bind(holder: Holder) {
         with(holder) {
             minutesText.text = rcMinutesToTrigger
-            container.setOnClickListener(rcCellTouchListener)
+            minutesText.setOnClickListener(rcCellTouchListener)
         }
     }
 
