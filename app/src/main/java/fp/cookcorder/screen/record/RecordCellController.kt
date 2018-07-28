@@ -15,12 +15,7 @@ class RecordCellController @Inject constructor() : TypedEpoxyController<List<Int
             recordCell {
                 id(it)
                 rcMinutesToTrigger(it.toString())
-                rcCellTouchListener(handleCancellableTouch(
-                        {x, y -> viewModel.requestNewRecord(x, y) },
-                        { viewModel.finishRecording(it.minutestToMilliseconds()) },
-                        { viewModel.cancelRecording() },
-                        index == 0
-                ))
+                rcCellTouchListener { v -> viewModel.requestNewRecord()}
             }
         }
     }

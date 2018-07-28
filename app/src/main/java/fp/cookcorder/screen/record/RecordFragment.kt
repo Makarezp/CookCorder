@@ -8,6 +8,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
@@ -50,10 +51,17 @@ class RecordFragment : DaggerFragment() {
         if (!viewModel.permissionGranted) requestPermission()
         observeLiveData()
         setupRecycler()
+        setupRecordView()
+    }
+
+    private fun setupRecordView() {
+        mainFragmentFLRecordIndicator.setOnClickListener {
+            viewModel.finishRecording(1000)
+        }
     }
 
     private fun setupRecycler() {
-        mainFragmentRV.layoutManager = LinearLayoutManager(context)
+        mainFragmentRV.layoutManager = GridLayoutManager(context, 3)
         mainFragmentRV.adapter = viewModel.adapter
     }
 

@@ -36,10 +36,10 @@ class RecordViewModel @Inject constructor(
      * [x] view position at which record was requested
      * [y] view position at which record was requested
      */
-    fun requestNewRecord(x: Float, y: Float) {
+    fun requestNewRecord() {
         if (permissionGranted) {
             exe(taskManager.startRecordingNewTask()) {
-                recordViewPosition = x to y
+                recordViewPosition = 10F to 10F
                 isRecording.value = true
             }
         } else requestRecordingPermission.call()

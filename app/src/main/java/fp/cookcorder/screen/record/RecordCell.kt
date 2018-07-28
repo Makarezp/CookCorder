@@ -1,6 +1,5 @@
 package fp.cookcorder.screen.record
 
-import android.view.MotionEvent
 import android.view.View
 import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
@@ -16,12 +15,12 @@ abstract class RecordCell : EpoxyModelWithHolder<RecordCell.Holder>() {
     var rcMinutesToTrigger = ""
 
     @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
-    lateinit var rcCellTouchListener: (View) -> (View, MotionEvent) -> Boolean
+    lateinit var rcCellTouchListener: (View) -> Unit
 
     override fun bind(holder: Holder) {
         with(holder) {
             minutesText.text = rcMinutesToTrigger
-            container.setOnTouchListener(rcCellTouchListener(container))
+            container.setOnClickListener(rcCellTouchListener)
         }
     }
 

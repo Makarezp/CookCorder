@@ -1,33 +1,9 @@
 package fp.cookcorder.screen.utils
 
 import android.view.View
-import android.view.animation.DecelerateInterpolator
 import android.view.ViewAnimationUtils
 import android.animation.Animator
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
 import android.animation.AnimatorListenerAdapter
-import android.opengl.ETC1.getHeight
-import android.opengl.ETC1.getWidth
-
-
-fun elevateAnimation(v: View) {
-    v.animate().apply {
-        translationZBy(16F)
-        duration = 150
-        interpolator = DecelerateInterpolator()
-        start()
-    }
-}
-
-fun delevateAnimation(v: View) {
-    v.animate().apply {
-        translationZ(0F)
-        duration = 150
-        interpolator = DecelerateInterpolator()
-        start()
-    }
-}
 
 
 fun circularReval(myView: View) {
