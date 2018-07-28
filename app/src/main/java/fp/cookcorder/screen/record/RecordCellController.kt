@@ -3,6 +3,7 @@ package fp.cookcorder.screen.record
 
 import android.view.View
 import com.airbnb.epoxy.TypedEpoxyController
+import fp.cookcorder.app.util.minutestToMilliseconds
 import javax.inject.Inject
 
 class RecordCellController @Inject constructor() : TypedEpoxyController<List<Int>>() {
@@ -16,7 +17,7 @@ class RecordCellController @Inject constructor() : TypedEpoxyController<List<Int
                 rcMinutesToTrigger(it.toString())
                 rcCellTouchListener { v ->
                     val parent =v.parent as View
-                    viewModel.requestNewRecord(parent.left, parent.top)}
+                    viewModel.requestNewRecord(it.minutestToMilliseconds(), parent.left, parent.top)}
             }
         }
     }

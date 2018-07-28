@@ -61,13 +61,6 @@ class RecordFragment : DaggerFragment() {
         prepareDialog()
         observeLiveData()
         setupRecycler()
-        setupRecordView()
-    }
-
-    private fun setupRecordView() {
-        mainFragmentFLRecordIndicator.setOnClickListener {
-            viewModel.finishRecording(1000)
-        }
     }
 
     private fun setupRecycler() {
@@ -91,7 +84,7 @@ class RecordFragment : DaggerFragment() {
     private fun prepareDialog() {
         dialog.setContentView(dialogView)
         dialogView.findViewById<Button>(R.id.button).setOnClickListener {
-            viewModel.finishRecording(100)
+            viewModel.finishRecording()
         }
         dialogView.findViewById<Button>(R.id.button2).setOnClickListener {
             viewModel.cancelRecording()

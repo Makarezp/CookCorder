@@ -8,14 +8,15 @@ import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.subjects.BehaviorSubject
 import java.util.*
 import javax.inject.Inject
 
 interface TaskManager {
 
-    fun startRecordingNewTask(): Maybe<Any>
+    fun startRecordingNewTask(msToSchedule: Long): Maybe<Any>
 
-    fun finishRecordingNewTask(msToSchedule: Long): Maybe<Task>
+    fun finishRecordingNewTask(): Maybe<Task>
 
     fun cancelRecordingNewTask(): Maybe<Any>
 
@@ -33,14 +34,18 @@ class TaskManagerImpl @Inject constructor(
         private val taskScheduler: TaskScheduler
 ) : TaskManager {
 
-    override fun startRecordingNewTask(): Maybe<Any> {
+    private var lastMsToSchedule: Long = 0
+
+
+    override fun startRecordingNewTask(msToSchedule: Long): Maybe<Any> {
+        lastMsToSchedule = msToSchedule
         return recorder.startRecording("r${Random().nextInt()}")
     }
 
-    override fun finishRecordingNewTask(msToSchedule: Long): Maybe<Task> {
+    override fun finishRecordingNewTask(): Maybe<Task> {
         return recorder.finishRecording()
                 .map {
-                    val scheduleTime = System.currentTimeMillis() + msToSchedule
+                    val scheduleTime = System.currentTimeMillis() + lastMsToSchedule
                     taskRepo.saveTask(Task(0, it.fileName, it.duration, scheduleTime))
                 }
                 .doAfterSuccess {

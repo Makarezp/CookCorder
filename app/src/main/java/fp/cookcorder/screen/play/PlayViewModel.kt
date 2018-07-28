@@ -52,7 +52,7 @@ class PlayCellController @Inject constructor(
     override fun buildModels(data: List<Task>) {
         data.forEach {
             playCell {
-                id(it.name)
+                id(it.id)
                 pcTitle(it.name)
                 pcOnPlayClicked { viewModel.play(it) }
                 pcOnDeleteClicked { viewModel.delete(it) }

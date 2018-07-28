@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.manager.TaskManager
+import io.reactivex.subjects.BehaviorSubject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -24,7 +25,6 @@ class RecordViewModel @Inject constructor(
 
     var recordViewPosition: Pair<Int, Int>? = null
 
-    val showSummary = SingleLiveEvent<Void>()
 
     @Inject
     fun init() {
@@ -36,9 +36,9 @@ class RecordViewModel @Inject constructor(
      * [x] view position at which record was requested
      * [y] view position at which record was requested
      */
-    fun requestNewRecord(x: Int, y: Int) {
+    fun requestNewRecord(msToSchedule: Long, x: Int, y: Int) {
         if (permissionGranted) {
-            exe(taskManager.startRecordingNewTask()) {
+            exe(taskManager.startRecordingNewTask(msToSchedule)) {
                 recordViewPosition = x to y
                 isRecording.value = true
             }
@@ -51,13 +51,12 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    fun finishRecording(msToSchedule: Long) {
-        exe(taskManager.finishRecordingNewTask(msToSchedule), onError = {
+    fun finishRecording() {
+        exe(taskManager.finishRecordingNewTask(), onError = {
             Timber.d(it)
             isRecording.value = false
         }) {
             isRecording.postValue(false)
-            showSummary.call()
         }
     }
 
