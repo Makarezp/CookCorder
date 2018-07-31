@@ -55,7 +55,7 @@
         app:layout_constraintStart_toStartOf="@id/relativeLayout"
         app:layout_constraintTop_toTopOf="@id/relativeLayout"
         app:lottie_autoPlay="true"
-        app:lottie_fileName="beacon.json"
+        app:lottie_fileName="record.json"
         app:lottie_loop="true"/>
 
     <Button

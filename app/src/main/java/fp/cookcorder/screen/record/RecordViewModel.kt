@@ -1,10 +1,14 @@
 package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
+import fp.cookcorder.app.util.minutestToMilliseconds
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.manager.TaskManager
+import io.reactivex.Observable
 import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.subjects.PublishSubject
+import io.reactivex.subjects.Subject
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -25,6 +29,15 @@ class RecordViewModel @Inject constructor(
 
     var recordViewPosition: Pair<Int, Int>? = null
 
+    val successAtPosition = SingleLiveEvent<Int>()
+
+    var requestedMinutes: Int = 0
+
+    val successObservable: Observable<Int>
+    get() = successSubject
+
+    private val successSubject = PublishSubject.create<Int>()
+
 
     @Inject
     fun init() {
@@ -36,10 +49,11 @@ class RecordViewModel @Inject constructor(
      * [x] view position at which record was requested
      * [y] view position at which record was requested
      */
-    fun requestNewRecord(msToSchedule: Long, x: Int, y: Int) {
+    fun requestNewRecord(minutes: Int, x: Int, y: Int) {
         if (permissionGranted) {
-            exe(taskManager.startRecordingNewTask(msToSchedule)) {
+            exe(taskManager.startRecordingNewTask(minutes.minutestToMilliseconds())) {
                 recordViewPosition = x to y
+                requestedMinutes = minutes
                 isRecording.value = true
             }
         } else requestRecordingPermission.call()
@@ -57,6 +71,8 @@ class RecordViewModel @Inject constructor(
             isRecording.value = false
         }) {
             isRecording.postValue(false)
+            successAtPosition.postValue(requestedMinutes)
+            successSubject.onNext(requestedMinutes)
         }
     }
 

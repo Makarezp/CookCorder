@@ -20,5 +20,18 @@
         app:effectDuration="200"
         app:textEffect="animateSize"/>
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/success"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_fileName="success.json"
+        android:visibility="gone"
+        app:lottie_loop="true"/>
+
 
     </android.support.constraint.ConstraintLayout>
