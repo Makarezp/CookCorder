@@ -3,6 +3,7 @@ package fp.cookcorder.screen.record
 import android.Manifest
 import android.Manifest.permission.RECORD_AUDIO
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
@@ -25,6 +26,12 @@ import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
+import android.os.VibrationEffect
+import android.os.Build
+import android.content.Context.VIBRATOR_SERVICE
+import android.os.Vibrator
+
+
 
 class RecordFragment : DaggerFragment() {
 
@@ -60,6 +67,7 @@ class RecordFragment : DaggerFragment() {
     private fun observeLiveData() {
         observe(viewModel.isRecording) {
             if (it) {
+                vibrate()
                 floatingActionButton.invisible()
                 circularReval(recordAnimation)
                 recordAnimation.playAnimation()
@@ -96,6 +104,17 @@ class RecordFragment : DaggerFragment() {
                         { viewModel.cancelRecording() }
                 ).invoke()
         )
+    }
+
+    private fun vibrate() {
+        val v = context!!.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        // Vibrate for 500 milliseconds
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            v.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+        } else {
+            //deprecated in API 26
+            v.vibrate(100)
+        }
     }
 
     private fun getMinutesToSchedule(): Int {

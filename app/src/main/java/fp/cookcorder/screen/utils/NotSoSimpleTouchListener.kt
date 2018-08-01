@@ -29,7 +29,7 @@ var handleCancellableTouch = { onStart: () -> Unit,
                 }
                 MotionEvent.ACTION_UP -> {
                     Timber.d("Action Up")
-                    if (isInside) onFinish()
+                    if (isInside) onFinish() else onCancel()
                     true
                 }
                 MotionEvent.ACTION_MOVE,
