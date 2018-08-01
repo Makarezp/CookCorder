@@ -8,11 +8,19 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
+import android.support.v4.view.ViewCompat.animate
 import android.view.*
+import com.github.florent37.kotlin.pleaseanimate.please
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.app.util.invisible
 import fp.cookcorder.app.util.observe
+import fp.cookcorder.app.util.visible
+import fp.cookcorder.screen.utils.circularHide
+import fp.cookcorder.screen.utils.circularReval
+import fp.cookcorder.screen.utils.handleCancellableTouch
+import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
 import javax.inject.Inject
 
@@ -43,19 +51,44 @@ class RecordFragment : DaggerFragment() {
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestPermission()
         observeLiveData()
+        setupRecordingButton()
     }
+
 
     private fun observeLiveData() {
         observe(viewModel.isRecording) {
             if (it) {
-
+                circularHide(floatingActionButton){
+                    circularReval(recordAnimation)
+                }
+                recordAnimation.playAnimation()
             } else {
+                recordAnimation.pauseAnimation()
+                circularHide(recordAnimation) {
+                    circularReval(floatingActionButton)
+                }
 
             }
         }
         observe(viewModel.requestRecordingPermission) {
             requestPermission()
         }
+    }
+
+    private fun setupRecordingButton() {
+        floatingActionButton.setOnTouchListener(
+                handleCancellableTouch(
+                        {viewModel.requestNewRecord()},
+                        {viewModel.finishRecording(getMinutesToSchedule())},
+                        {viewModel.cancelRecording()}
+                ))
+
+    }
+
+    fun getMinutesToSchedule(): Int {
+        val hours = mainFragmentMinutePicker.hours * 60
+        val minutes = mainFragmentMinutePicker.minutes
+        return hours + minutes
     }
 
 

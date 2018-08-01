@@ -22,9 +22,9 @@ class RecordViewModel @Inject constructor(
 
     var blockStartingNewRecording = false
 
-    fun requestNewRecord(minutes: Int) {
+    fun requestNewRecord() {
         if (permissionGranted) {
-            exe(taskManager.startRecordingNewTask(minutes.minutestToMilliseconds())) {
+            exe(taskManager.startRecordingNewTask()) {
                 isRecording.value = true
             }
         } else requestRecordingPermission.call()
@@ -36,8 +36,9 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    fun finishRecording() {
-        exe(taskManager.finishRecordingNewTask(), onError = {
+    fun finishRecording(minutesToSchedule: Int) {
+        exe(taskManager.finishRecordingNewTask(minutesToSchedule.minutestToMilliseconds()),
+                onError = {
             Timber.d(it)
             isRecording.value = false
         }) {

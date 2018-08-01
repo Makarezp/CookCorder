@@ -6,7 +6,7 @@ import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 
 
-fun circularReval(myView: View, xToY: Pair<Int, Int>) {
+fun circularReval(myView: View) {
 
     val cx = myView.width / 2
     val cy = myView.height / 2
@@ -15,7 +15,7 @@ fun circularReval(myView: View, xToY: Pair<Int, Int>) {
     val finalRadius = Math.hypot(cx.toDouble(), cy.toDouble()).toFloat()
 
     // create the animator for this view (the start radius is zero)
-    val anim = ViewAnimationUtils.createCircularReveal(myView, xToY.first, xToY.second, 0f, finalRadius)
+    val anim = ViewAnimationUtils.createCircularReveal(myView, cx, cy, 0f, finalRadius)
 
     // make the view visible and start the animation
     myView.visibility = View.VISIBLE
@@ -23,7 +23,7 @@ fun circularReval(myView: View, xToY: Pair<Int, Int>) {
 
 }
 
-fun circularHide(myView: View) {
+fun circularHide(myView: View, onAnimationEnd: () -> Unit = {}) {
     if(myView.isAttachedToWindow) {
         val cx = myView.width / 2
         val cy = myView.height / 2
@@ -37,6 +37,7 @@ fun circularHide(myView: View) {
                 super.onAnimationEnd(animation)
                 if (myView.isAttachedToWindow) {
                     myView.visibility = View.INVISIBLE
+                    onAnimationEnd()
                 }
             }
         })
