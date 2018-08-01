@@ -22,6 +22,10 @@ class RecordViewModel @Inject constructor(
 
     var blockStartingNewRecording = false
 
+    val recordSuccess = SingleLiveEvent<Void>()
+
+    val recordCancelled = SingleLiveEvent<Void>()
+
     fun requestNewRecord() {
         if (permissionGranted) {
             exe(taskManager.startRecordingNewTask()) {
@@ -33,6 +37,7 @@ class RecordViewModel @Inject constructor(
     fun cancelRecording() {
         exe(taskManager.cancelRecordingNewTask()) {
             isRecording.value = false
+            recordCancelled.call()
         }
     }
 
@@ -42,6 +47,7 @@ class RecordViewModel @Inject constructor(
             Timber.d(it)
             isRecording.value = false
         }) {
+            recordSuccess.call()
             isRecording.postValue(false)
         }
     }

@@ -22,6 +22,8 @@ import fp.cookcorder.screen.utils.circularReval
 import fp.cookcorder.screen.utils.handleCancellableTouch
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.snackbar
+import timber.log.Timber
 import javax.inject.Inject
 
 class RecordFragment : DaggerFragment() {
@@ -58,9 +60,8 @@ class RecordFragment : DaggerFragment() {
     private fun observeLiveData() {
         observe(viewModel.isRecording) {
             if (it) {
-                circularHide(floatingActionButton){
-                    circularReval(recordAnimation)
-                }
+                floatingActionButton.invisible()
+                circularReval(recordAnimation)
                 recordAnimation.playAnimation()
             } else {
                 recordAnimation.pauseAnimation()
@@ -70,6 +71,18 @@ class RecordFragment : DaggerFragment() {
 
             }
         }
+
+        observe(viewModel.recordSuccess) {
+            snackbar(view!!,
+                    "Sukces!, tu mozna wjebac dokladny czas schedula!")
+        }
+
+        observe(viewModel.recordCancelled) {
+            snackbar(view!!,
+                    "Nagrywanie zskaneslowane")
+        }
+
+
         observe(viewModel.requestRecordingPermission) {
             requestPermission()
         }
@@ -78,14 +91,14 @@ class RecordFragment : DaggerFragment() {
     private fun setupRecordingButton() {
         floatingActionButton.setOnTouchListener(
                 handleCancellableTouch(
-                        {viewModel.requestNewRecord()},
-                        {viewModel.finishRecording(getMinutesToSchedule())},
-                        {viewModel.cancelRecording()}
-                ))
-
+                        { viewModel.requestNewRecord() },
+                        { viewModel.finishRecording(getMinutesToSchedule()) },
+                        { viewModel.cancelRecording() }
+                ).invoke()
+        )
     }
 
-    fun getMinutesToSchedule(): Int {
+    private fun getMinutesToSchedule(): Int {
         val hours = mainFragmentMinutePicker.hours * 60
         val minutes = mainFragmentMinutePicker.minutes
         return hours + minutes

@@ -14,12 +14,16 @@ import timber.log.Timber
 var handleCancellableTouch = { onStart: () -> Unit,
                                onFinish: () -> Unit,
                                onCancel: () -> Unit ->
-     { v: View, m: MotionEvent ->
+    {
+        var isCannceled = true
+        { v: View, m: MotionEvent ->
 
             val isInside = (m.x <= v.width && m.x >= 0) && (m.y <= v.height && m.y >= 0)
             when (m.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    v.parent.requestDisallowInterceptTouchEvent(true)
+                    isCannceled = false
+                    //this is only cause we know that to level up in hierachy we should intercept events
+                    v.parent.parent.requestDisallowInterceptTouchEvent(true)
                     onStart()
                     true
                 }
@@ -32,14 +36,15 @@ var handleCancellableTouch = { onStart: () -> Unit,
                 MotionEvent.ACTION_CANCEL -> {
                     if (!isInside) {
                         Timber.d("Outside")
-                        onCancel()
-                        v.parent.requestDisallowInterceptTouchEvent(false)
+                        if(!isCannceled) onCancel()
+                        isCannceled = true
                     }
                     true
                 }
                 else -> false
             }
         }
+    }
 }
 
 

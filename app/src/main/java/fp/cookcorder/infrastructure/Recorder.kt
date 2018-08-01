@@ -69,8 +69,10 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
                 }
                 File(context.filesDir, it.fileName).delete()
                 emitter.onSuccess(Any())
+                Timber.d("kurwa1")
                 return@create
             }
+            Timber.d("kurwa2")
             emitter.onComplete()
         }
     }
