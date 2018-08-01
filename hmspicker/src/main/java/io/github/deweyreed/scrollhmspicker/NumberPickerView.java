@@ -24,7 +24,7 @@ import android.view.ViewConfiguration;
  * github : https://github.com/Carbs0126/NumberPickerView
  */
 @SuppressWarnings({"FieldCanBeLocal", "unused", "deprecation"})
-class NumberPickerView extends View {
+public class NumberPickerView extends View {
 
     // default text color of not selected item
     private static final int DEFAULT_TEXT_COLOR_NORMAL = 0XFF333333;
@@ -294,6 +294,7 @@ class NumberPickerView extends View {
     }
 
     private void init(Context context) {
+
         mScroller = ScrollerCompat.create(context);
         mMiniVelocityFling = ViewConfiguration.get(getContext()).getScaledMinimumFlingVelocity();
         mScaledTouchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();

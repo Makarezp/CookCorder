@@ -15,10 +15,23 @@
         android:clipToPadding="false"
         android:paddingTop="@dimen/padding_standard"
         android:paddingBottom="@dimen/padding_standard"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
+    <io.github.deweyreed.scrollhmspicker.ScrollHmsPicker
+        android:id="@+id/mainFragmentMinutePicker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        app:shp_normal_color="@color/white"
+        app:shp_selected_color="@color/colorAccent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>

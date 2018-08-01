@@ -21,8 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_marginEnd="64dp"
         android:text="@string/scroll_hms_picker_hours_label" />
 
     <io.github.deweyreed.scrollhmspicker.NumberPickerView
@@ -41,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginEnd="12dp"
-        android:layout_marginRight="12dp"
         android:text="@string/scroll_hms_picker_minutes_label" />
 
     <io.github.deweyreed.scrollhmspicker.NumberPickerView
@@ -51,6 +49,7 @@
         android:layout_height="wrap_content"
         app:npv_MaxValue="59"
         app:npv_MinValue="0"
+        android:visibility="gone"
         app:npv_TextArray="@array/array_0to59" />
 
     <TextView
@@ -59,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
+        android:visibility="gone"
         android:text="@string/scroll_hms_picker_seconds_label" />
 
 </LinearLayout>

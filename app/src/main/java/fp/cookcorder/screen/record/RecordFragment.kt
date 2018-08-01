@@ -64,6 +64,11 @@ class RecordFragment : DaggerFragment() {
         prepareDialog()
         observeLiveData()
         setupRecycler()
+        setupNumberPicker()
+    }
+
+    private fun setupNumberPicker() {
+
     }
 
     private fun setupRecycler() {
