@@ -32,7 +32,6 @@ import android.content.Context.VIBRATOR_SERVICE
 import android.os.Vibrator
 
 
-
 class RecordFragment : DaggerFragment() {
 
     companion object {
@@ -42,7 +41,6 @@ class RecordFragment : DaggerFragment() {
 
         fun newInstance() = RecordFragment()
     }
-
 
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
@@ -63,36 +61,13 @@ class RecordFragment : DaggerFragment() {
         setupRecordingButton()
     }
 
-
     private fun observeLiveData() {
-        observe(viewModel.isRecording) {
-            if (it) {
-                vibrate()
-                floatingActionButton.invisible()
-                circularReval(recordAnimation)
-                recordAnimation.playAnimation()
-            } else {
-                recordAnimation.pauseAnimation()
-                circularHide(recordAnimation) {
-                    circularReval(floatingActionButton)
-                }
-
-            }
-        }
-
-        observe(viewModel.recordSuccess) {
-            snackbar(view!!,
-                    "Sukces!, tu mozna wjebac dokladny czas schedula!")
-        }
-
-        observe(viewModel.recordCancelled) {
-            snackbar(view!!,
-                    "Nagrywanie zskaneslowane")
-        }
-
-
-        observe(viewModel.requestRecordingPermission) {
-            requestPermission()
+        with(viewModel) {
+            observe(isRecording) { handleRecordingState(it) }
+            observe(recordSuccess) { snackbar(view!!, "Success!") }
+            observe(recordCancelled) { snackbar(view!!, "Cancelled") }
+            observe(requestRecordingPermission) { requestPermission() }
+            observe(currentRecordTime) { mainFragmentTVTime.text = it }
         }
     }
 
@@ -104,6 +79,20 @@ class RecordFragment : DaggerFragment() {
                         { viewModel.cancelRecording() }
                 ).invoke()
         )
+    }
+
+    private fun handleRecordingState(isRecording: Boolean) {
+        if (isRecording) {
+            vibrate()
+            floatingActionButton.invisible()
+            circularReval(recordAnimation)
+            recordAnimation.playAnimation()
+        } else {
+            recordAnimation.pauseAnimation()
+            circularHide(recordAnimation) {
+                circularReval(floatingActionButton)
+            }
+        }
     }
 
     private fun vibrate() {
