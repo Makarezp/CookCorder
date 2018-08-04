@@ -20,6 +20,7 @@
             android:id="@+id/mainActivityTL"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:tabMode="fixed"
             app:tabGravity="fill"/>
 
     </android.support.design.widget.AppBarLayout>

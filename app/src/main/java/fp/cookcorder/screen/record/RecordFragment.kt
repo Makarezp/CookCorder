@@ -35,7 +35,6 @@ import android.os.Vibrator
 class RecordFragment : DaggerFragment() {
 
     companion object {
-        const val TITLE = "Record"
 
         const val RECORDING_PERMISSION_REQUEST = 1
 
