@@ -18,5 +18,7 @@
     <dimen name="card_button_margin">8dp</dimen>
 
     <dimen name="padding_standard">16dp</dimen>
+    <dimen name="standard">8dp</dimen>
+    <dimen name="xl">16dp</dimen>
 
 </resources>

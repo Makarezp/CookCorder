@@ -35,4 +35,12 @@
         <item name="android:textColor">@android:color/white</item>
     </style>
 
+    <style name="Picker_Auxilary">
+        <item name="android:textSize">13sp</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:lineSpacingExtra">15sp</item>
+        <item name="android:textColor">@color/white</item>
+    </style>
+
 </resources>
