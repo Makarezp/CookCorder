@@ -2,9 +2,9 @@ package fp.cookcorder.screen.record
 
 import android.Manifest
 import android.Manifest.permission.RECORD_AUDIO
+import android.animation.Animator
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
-import android.os.Bundle
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
@@ -22,13 +22,12 @@ import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
 import javax.inject.Inject
-import android.os.VibrationEffect
-import android.os.Build
 import android.graphics.Rect
-import android.os.Vibrator
+import android.os.*
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.github.florent37.kotlin.pleaseanimate.please
 import fp.cookcorder.app.util.visible
 
 
@@ -46,6 +45,13 @@ class RecordFragment : DaggerFragment() {
 
     private lateinit var viewModel: RecordViewModel
 
+
+    /**
+     * State variable used to manipulate with success animations
+     */
+    private var animationSuccess = false
+
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
@@ -59,17 +65,58 @@ class RecordFragment : DaggerFragment() {
         observeLiveData()
         setupRecordingButton()
         setEditTextFocusRemoval()
+        setupSuccessAnimationListener()
     }
+
 
     private fun observeLiveData() {
         with(viewModel) {
             observe(isRecording) { handleRecordingState(it) }
-            observe(recordSuccess) { snackbar(view!!, "Success!") }
+            observe(recordSuccess) { showSuccess() }
             observe(recordCancelled) { snackbar(view!!, "Cancelled") }
             observe(requestRecordingPermission) { requestPermission() }
             observe(currentRecordTime) { mainFragmentTVTime.text = it }
         }
     }
+
+    private fun showSuccess() {
+        with(success) {
+            visible()
+            speed = 1.0F
+            playAnimation()
+            animationSuccess = true
+        }
+    }
+
+    private fun setupSuccessAnimationListener() {
+        success.addAnimatorListener(object : Animator.AnimatorListener {
+            override fun onAnimationRepeat(animation: Animator?) {
+
+            }
+
+            override fun onAnimationEnd(animation: Animator?) {
+                if (animationSuccess) {
+                    Handler().postDelayed({
+                        if (success.isAttachedToWindow) {
+                            success.speed = -1.3F
+                            success.playAnimation()
+                            animationSuccess = false
+
+                        }
+                    }, 400)
+                } else {
+                    if (success.isAttachedToWindow) success.visibility = View.GONE
+                }
+            }
+
+            override fun onAnimationCancel(animation: Animator?) {
+            }
+
+            override fun onAnimationStart(animation: Animator?) {
+            }
+        })
+    }
+
 
     private fun setupRecordingButton() {
         floatingActionButton.setOnTouchListener(
@@ -170,7 +217,7 @@ class RecordFragment : DaggerFragment() {
     private fun removeEditTextFocusOnDone() {
         mainFragmentETTitle.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-               clearFocusAndHideKeyboard(v)
+                clearFocusAndHideKeyboard(v)
                 true
             } else false
         }

@@ -36,7 +36,6 @@ class RecordViewModel @Inject constructor(
             exe(taskManager.startRecordingNewTask()) { _ ->
                 isRecording.value = true
                 timerDisposable = recordTimeCounter()
-                        .doOnSubscribe { currentRecordTime.postValue("00:00") }
                         .subscribe { currentRecordTime.postValue(it) }
             }
         } else requestRecordingPermission.call()
