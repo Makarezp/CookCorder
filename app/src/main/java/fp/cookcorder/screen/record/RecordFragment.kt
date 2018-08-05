@@ -9,28 +9,24 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
-import android.support.v4.view.ViewCompat.animate
 import android.view.*
-import com.github.florent37.kotlin.pleaseanimate.please
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.app.util.invisible
 import fp.cookcorder.app.util.observe
-import fp.cookcorder.app.util.visible
 import fp.cookcorder.screen.utils.circularHide
 import fp.cookcorder.screen.utils.circularReval
 import fp.cookcorder.screen.utils.handleCancellableTouch
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
 import org.jetbrains.anko.design.snackbar
-import timber.log.Timber
 import javax.inject.Inject
 import android.os.VibrationEffect
 import android.os.Build
-import android.content.Context.VIBRATOR_SERVICE
 import android.graphics.Rect
 import android.os.Vibrator
+import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 
@@ -147,6 +143,11 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun setEditTextFocusRemoval() {
+        removeEditTextFocusOnClickOutside()
+        removeEditTextFocusOnDone()
+    }
+
+    private fun removeEditTextFocusOnClickOutside() {
         main.setOnTouchListener { _, event ->
             if (event.action == MotionEvent.ACTION_DOWN) {
                 val v = activity!!.currentFocus
@@ -154,13 +155,26 @@ class RecordFragment : DaggerFragment() {
                     val outRect = Rect()
                     v.getGlobalVisibleRect(outRect)
                     if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
-                        v.clearFocus()
-                        val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                        imm.hideSoftInputFromWindow(v.windowToken, 0)
+                        clearFocusAndHideKeyboard(v)
                     }
                 }
             }
             false
+        }
+    }
+
+    fun clearFocusAndHideKeyboard(v: View) {
+        v.clearFocus()
+        val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(v.windowToken, 0)
+    }
+
+    private fun removeEditTextFocusOnDone() {
+        mainFragmentETTitle.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+               clearFocusAndHideKeyboard(v)
+                true
+            } else false
         }
     }
 }
