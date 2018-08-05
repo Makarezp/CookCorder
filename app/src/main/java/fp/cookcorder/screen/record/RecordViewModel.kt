@@ -63,10 +63,11 @@ class RecordViewModel @Inject constructor(
     }
 
     private fun recordTimeCounter(): Observable<String> {
-        return Observable.interval(1, TimeUnit.SECONDS).map {
-            val seconds = (it) % 60
-            val minutes = (it / 60 * 60) % 60
-            "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}"
+        return Observable.interval(1, TimeUnit.MILLISECONDS).map {
+            val milliseconds = it % 100
+            val seconds = (it / 1000) % 60
+            val minutes = (it / 1000) / 60
+            "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}:${String.format("%02d", milliseconds)}"
         }
     }
 
