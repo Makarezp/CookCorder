@@ -13,6 +13,7 @@ import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import fp.cookcorder.R
+import kotlinx.android.synthetic.main.layout_scrollhmspicker.view.*
 
 
 @Suppress("unused")
@@ -67,11 +68,11 @@ class ScrollHmsPicker @JvmOverloads constructor(
         pickerHours = findViewById<NumberPickerView>(R.id.pickerHours).apply {
             maxValue = 23
         }
-        textHours = findViewById(R.id.textHours)
+        textHours = findViewById(R.id.pickerTVHours)
         pickerMinutes = findViewById<NumberPickerView>(R.id.pickerMinutes).apply {
             maxValue = 59
         }
-        textMinutes = findViewById(R.id.textMinutes)
+        textMinutes = findViewById(R.id.pickerTVMinutes)
         pickerSeconds = findViewById<NumberPickerView>(R.id.pickerSeconds).apply {
             maxValue = 59
         }
@@ -105,6 +106,8 @@ class ScrollHmsPicker @JvmOverloads constructor(
                 it.topMargin = textMarginTop
             }
         }
+
+        extendPickerTouchRange()
     }
 
     fun setColorNormal(@ColorRes res: Int) {
@@ -181,6 +184,16 @@ class ScrollHmsPicker @JvmOverloads constructor(
             seconds = state.seconds
         } else {
             super.onRestoreInstanceState(state)
+        }
+    }
+
+    private fun extendPickerTouchRange() {
+        pickerTVHours.setOnTouchListener { _, event ->
+            pickerHours.dispatchTouchEvent(event)
+        }
+
+        pickerTVMinutes.setOnTouchListener { _, event ->
+            pickerMinutes.dispatchTouchEvent(event)
         }
     }
 
