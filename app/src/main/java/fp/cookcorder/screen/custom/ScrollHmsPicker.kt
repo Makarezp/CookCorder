@@ -6,6 +6,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.support.annotation.ColorInt
 import android.support.annotation.ColorRes
+import android.support.constraint.ConstraintLayout
 import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -102,7 +103,7 @@ class ScrollHmsPicker @JvmOverloads constructor(
         arrayOf(textHours, textMinutes, textSeconds).forEach {
             it.setTextColor(colorSelected)
             // align texts to the bottom of the selected text
-            it.layoutParams = (it.layoutParams as LinearLayout.LayoutParams).also {
+            it.layoutParams = (it.layoutParams as ConstraintLayout.LayoutParams).also {
                 it.topMargin = textMarginTop
             }
         }

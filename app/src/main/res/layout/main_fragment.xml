@@ -10,7 +10,7 @@
 
     <TextView
         android:id="@+id/mainFragmentTVAxillaryUpper"
-        style="@style/Picker_Auxilary"
+        style="@style/Picker.Axillary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -80,7 +80,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="@string/from_now"
-        style="@style/Picker_Auxilary"
+        style="@style/Picker.Axillary"
         app:layout_constraintEnd_toEndOf="@+id/mainFragmentMinutePicker"
         app:layout_constraintTop_toBottomOf="@+id/mainFragmentMinutePicker"/>
 

@@ -1,72 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:id="@+id/linearLayout"
+                                             android:layout_width="wrap_content"
+                                             android:layout_height="wrap_content">
 
     <fp.cookcorder.screen.custom.NumberPickerView
         android:id="@+id/pickerHours"
         style="@style/ScrollNumberPickerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/pickerTVHours"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/pickerSeconds"
         app:npv_MaxValue="23"
         app:npv_MinValue="0"
         app:npv_TextArray="@array/array_0to23"
-        app:npv_WrapSelectorWheel="false" />
+        app:npv_WrapSelectorWheel="false"/>
 
     <TextView
         android:id="@+id/pickerTVHours"
         style="@style/Label"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:text="@string/scroll_hms_picker_hours_label" />
+        android:layout_height="0dp"
+        android:layout_marginEnd="21dp"
+        android:gravity="center"
+        android:text="@string/scroll_hms_picker_hours_label"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/textAnd"
+        app:layout_constraintStart_toEndOf="@+id/pickerHours"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <TextView
         android:id="@+id/textAnd"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
+        style="@style/Picker.Axillary"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:text="@string/scroll_hms_picker_and_label"/>
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="20dp"
+        android:gravity="center"
+        android:text="@string/scroll_hms_picker_and_label"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/pickerMinutes"
+        app:layout_constraintStart_toEndOf="@+id/pickerTVHours"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.55"/>
 
     <fp.cookcorder.screen.custom.NumberPickerView
         android:id="@+id/pickerMinutes"
         style="@style/ScrollNumberPickerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toStartOf="@+id/pickerTVMinutes"
+        app:layout_constraintStart_toEndOf="@+id/textAnd"
+        app:layout_constraintTop_toTopOf="@+id/pickerTVMinutes"
         app:npv_MaxValue="59"
         app:npv_MinValue="0"
-        app:npv_TextArray="@array/array_0to59" />
+        app:npv_TextArray="@array/array_0to59"/>
 
     <TextView
         android:id="@+id/pickerTVMinutes"
         style="@style/Label"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="center_vertical"
-        android:layout_marginEnd="12dp"
-        android:text="@string/scroll_hms_picker_minutes_label" />
+        android:layout_height="0dp"
+        android:gravity="center"
+        android:text="@string/scroll_hms_picker_minutes_label"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/pickerMinutes"
+        app:layout_constraintTop_toTopOf="parent"/>
 
     <fp.cookcorder.screen.custom.NumberPickerView
         android:id="@+id/pickerSeconds"
         style="@style/ScrollNumberPickerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
         app:npv_MaxValue="59"
         app:npv_MinValue="0"
-        android:visibility="gone"
-        app:npv_TextArray="@array/array_0to59" />
+        app:npv_TextArray="@array/array_0to59"/>
 
     <TextView
         android:id="@+id/textSeconds"
         style="@style/Label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
+        android:text="@string/scroll_hms_picker_seconds_label"
         android:visibility="gone"
-        android:text="@string/scroll_hms_picker_seconds_label" />
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
 
-</LinearLayout>
+</android.support.constraint.ConstraintLayout>
