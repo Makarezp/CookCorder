@@ -29,7 +29,10 @@ import javax.inject.Inject
 import android.os.VibrationEffect
 import android.os.Build
 import android.content.Context.VIBRATOR_SERVICE
+import android.graphics.Rect
 import android.os.Vibrator
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 
 
 class RecordFragment : DaggerFragment() {
@@ -58,6 +61,7 @@ class RecordFragment : DaggerFragment() {
         if (!viewModel.permissionGranted) requestPermission()
         observeLiveData()
         setupRecordingButton()
+        setEditTextFocusRemoval()
     }
 
     private fun observeLiveData() {
@@ -139,6 +143,24 @@ class RecordFragment : DaggerFragment() {
                         viewModel.permissionGranted =
                                 grantResults[index] == PermissionChecker.PERMISSION_GRANTED
                     }
+        }
+    }
+
+    private fun setEditTextFocusRemoval() {
+        main.setOnTouchListener { _, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                val v = activity!!.currentFocus
+                if (v is EditText) {
+                    val outRect = Rect()
+                    v.getGlobalVisibleRect(outRect)
+                    if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                        v.clearFocus()
+                        val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                        imm.hideSoftInputFromWindow(v.windowToken, 0)
+                    }
+                }
+            }
+            false
         }
     }
 }
