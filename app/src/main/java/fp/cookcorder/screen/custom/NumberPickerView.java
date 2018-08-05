@@ -1,4 +1,4 @@
-package io.github.deweyreed.scrollhmspicker;
+package fp.cookcorder.screen.custom;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -17,6 +17,8 @@ import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
 import android.view.ViewConfiguration;
+
+import fp.cookcorder.R;
 
 /**
  * Created by Carbs.Wang.

@@ -1,4 +1,4 @@
-package io.github.deweyreed.scrollhmspicker
+package fp.cookcorder.screen.custom
 
 import android.content.Context
 import android.graphics.Typeface
@@ -12,6 +12,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import fp.cookcorder.R
+
 
 @Suppress("unused")
 /**

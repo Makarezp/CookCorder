@@ -1,1 +1,1 @@
-include ':app', ':hmspicker'
+include ':app'

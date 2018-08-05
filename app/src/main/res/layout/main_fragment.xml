@@ -19,7 +19,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <io.github.deweyreed.scrollhmspicker.ScrollHmsPicker
+    <fp.cookcorder.screen.custom.ScrollHmsPicker
         android:id="@+id/mainFragmentMinutePicker"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

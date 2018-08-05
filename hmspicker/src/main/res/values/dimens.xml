@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!-- use dp instead of sp to avoid UI not fully shown
-    if users use big system font size-->
-    <dimen name="text_size_normal_item">25dp</dimen>
-    <dimen name="text_size_selected_item">35dp</dimen>
-    <dimen name="text_size_label">25dp</dimen>
-</resources>
