@@ -29,6 +29,7 @@ import android.os.Vibrator
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import fp.cookcorder.app.util.visible
 
 
 class RecordFragment : DaggerFragment() {
@@ -83,14 +84,11 @@ class RecordFragment : DaggerFragment() {
     private fun handleRecordingState(isRecording: Boolean) {
         if (isRecording) {
             vibrate()
-            floatingActionButton.invisible()
-            circularReval(recordAnimation)
+            recordAnimation.visible()
             recordAnimation.playAnimation()
         } else {
-            recordAnimation.pauseAnimation()
-            circularHide(recordAnimation) {
-                circularReval(floatingActionButton)
-            }
+            recordAnimation.invisible()
+            recordAnimation.playAnimation()
         }
     }
 
