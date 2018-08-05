@@ -9,4 +9,5 @@
     <string name="scroll_hms_picker_minutes_label">MINUTES</string>
     <string name="scroll_hms_picker_and_label">AND</string>
     <string name="scroll_hms_picker_seconds_label">S</string>
+    <string name="title">Title(Optional)</string>
 </resources>
