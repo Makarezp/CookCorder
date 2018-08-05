@@ -22,8 +22,8 @@
     <dimen name="xl">16dp</dimen>
 
     <!--HMS picker-->
-    <dimen name="text_size_normal_item">25dp</dimen>
-    <dimen name="text_size_selected_item">35dp</dimen>
-    <dimen name="text_size_label">25dp</dimen>
+    <dimen name="text_size_normal_item">18dp</dimen>
+    <dimen name="text_size_selected_item">25dp</dimen>
+    <dimen name="text_size_label">15dp</dimen>
 
 </resources>
