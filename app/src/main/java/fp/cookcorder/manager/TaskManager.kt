@@ -15,7 +15,7 @@ interface TaskManager {
 
     fun startRecordingNewTask(): Maybe<Any>
 
-    fun finishRecordingNewTask(msToSchedule: Long): Maybe<Task>
+    fun finishRecordingNewTask(msToSchedule: Long, title: String?): Maybe<Task>
 
     fun cancelRecordingNewTask(): Maybe<Any>
 
@@ -35,17 +35,19 @@ class TaskManagerImpl @Inject constructor(
         private val taskScheduler: TaskScheduler
 ) : TaskManager {
 
-
-
     override fun startRecordingNewTask(): Maybe<Any> {
         return recorder.startRecording("r${Random().nextInt()}")
     }
 
-    override fun finishRecordingNewTask(msToSchedule: Long): Maybe<Task> {
+    override fun finishRecordingNewTask(msToSchedule: Long, title: String?): Maybe<Task> {
         return recorder.finishRecording()
-                .map {
+                .map { record ->
                     val scheduleTime = System.currentTimeMillis() + msToSchedule
-                    taskRepo.saveTask(Task(0, it.fileName, it.duration, scheduleTime))
+                    taskRepo.saveTask(Task(0,
+                            title = title,
+                            name = record.fileName,
+                            duration = record.duration,
+                            scheduleTime = scheduleTime))
                 }
                 .doAfterSuccess {
                     taskScheduler.scheduleTask(it)
@@ -61,14 +63,14 @@ class TaskManagerImpl @Inject constructor(
     override fun getCurrentTasks(): Flowable<List<Task>> {
         return taskRepo.getAllTasks().map {
             val currTime = System.currentTimeMillis()
-            it.filter { it.scheduleTime - currTime > 0  }
+            it.filter { it.scheduleTime - currTime > 0 }
         }
     }
 
     override fun getPastTasks(): Flowable<List<Task>> {
         return taskRepo.getAllTasks().map {
             val currTime = System.currentTimeMillis()
-            it.filter { it.scheduleTime - currTime < 0  }
+            it.filter { it.scheduleTime - currTime < 0 }
         }
     }
 

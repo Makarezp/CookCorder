@@ -49,8 +49,8 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    fun finishRecording(minutesToSchedule: Int) {
-        exe(taskManager.finishRecordingNewTask(minutesToSchedule.minutestToMilliseconds()),
+    fun finishRecording(minutesToSchedule: Int, title: String?) {
+        exe(taskManager.finishRecordingNewTask(minutesToSchedule.minutestToMilliseconds(), title),
                 onError = {
                     Timber.d(it)
                     isRecording.value = false
