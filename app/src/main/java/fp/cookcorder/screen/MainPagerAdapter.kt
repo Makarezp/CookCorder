@@ -25,13 +25,13 @@ class MainPagerAdapter @Inject constructor(
                     @DrawableRes val iconRes: Int) {
         RECORD(0,
                 { RecordFragment.newInstance() },
-                R.drawable.ic_multitrack_audio),
+                R.drawable.ic_tab_record),
         PLAY(1,
                 { PlayFragment.newInstance(isCurrent = true) },
-                R.drawable.ic_av_timer),
+                R.drawable.ic_tab_scheduled),
         HISTORY(2,
                 { PlayFragment.newInstance(isCurrent = false) },
-                R.drawable.ic_history);
+                R.drawable.ic_tab_history);
 
         fun getPageIcon(context: Context) = context.getDrawable(iconRes)
 
