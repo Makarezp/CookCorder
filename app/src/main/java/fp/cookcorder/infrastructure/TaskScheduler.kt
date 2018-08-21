@@ -64,7 +64,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                         {
                             Timber.d(it.toString())
                             showNotif(context, it.id.toInt())
-                            player.startPlaying(it.name)
+                            player.play(it.name)
                             taskRepo.saveTask(it)
                         },
                         {
@@ -114,6 +114,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                 startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
     }
+
 
 
 }
