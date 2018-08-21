@@ -26,6 +26,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import fp.cookcorder.app.util.visible
+import timber.log.Timber
 
 
 class RecordFragment : DaggerFragment() {
@@ -58,7 +59,7 @@ class RecordFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
-        if (!viewModel.permissionGranted) requestPermission()
+        if (!viewModel.permissionGranted) requestAudioRecordingPermission()
 
         observeLiveData()
         setupRecordingButton()
@@ -72,7 +73,7 @@ class RecordFragment : DaggerFragment() {
             observe(isRecording) { handleRecordingState(it) }
             observe(recordSuccess) { showSuccess() }
             observe(recordCancelled) { snackbar(view!!, "Cancelled") }
-            observe(requestRecordingPermission) { requestPermission() }
+            observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { mainFragmentTVTime.text = it }
         }
     }
@@ -155,10 +156,9 @@ class RecordFragment : DaggerFragment() {
     }
 
 
-    private fun requestPermission() {
+    private fun requestAudioRecordingPermission() {
 
-        fun request() = ActivityCompat
-                .requestPermissions(activity!!, arrayOf(RECORD_AUDIO), RECORDING_PERMISSION_REQUEST)
+        fun request() = requestPermissions(arrayOf(RECORD_AUDIO), RECORDING_PERMISSION_REQUEST)
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, RECORD_AUDIO))
             longSnackbar(view!!,
@@ -175,6 +175,7 @@ class RecordFragment : DaggerFragment() {
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray) {
+        Timber.e(requestCode.toString())
         if (requestCode == RecordFragment.RECORDING_PERMISSION_REQUEST) {
             permissions
                     .filter { it == Manifest.permission.RECORD_AUDIO }
