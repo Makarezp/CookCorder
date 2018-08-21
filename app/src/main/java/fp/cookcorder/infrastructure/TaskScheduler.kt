@@ -87,7 +87,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
         val notif = NotificationCompat.Builder(context, KEY_NOTIFICATION_CHANNEL)
                 .apply {
                     color = ContextCompat.getColor(context, R.color.colorAccent)
-                    setSmallIcon(R.drawable.ic_mic)
+                    setSmallIcon(R.drawable.ic_tab_scheduled)
                     setContentTitle("palyer")
                     setAutoCancel(true)
                     setContentIntent(createContentIntent(context))

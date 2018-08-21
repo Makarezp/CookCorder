@@ -25,9 +25,9 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         val focusRequest = if (SDK_INT >= 26) FocusRequestAPI26(audioManager) else
             FocusRequestBelowAPI26(audioManager)
 
-        focusRequest.requestAudioFocus(fileName) { file: String, onComplete: () -> Unit ->
-                    startPlaying(file, onComplete)
-                }
+        focusRequest.requestAudioFocus { onComplete: () -> Unit ->
+            startPlaying(fileName, onComplete)
+        }
     }
 
 
@@ -50,14 +50,14 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
 
 private interface FocusRequest {
 
-    fun requestAudioFocus(fileName: String, startPlaying: (String, () -> Unit) -> Unit)
+    fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit)
 }
 
 private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusRequest {
     @RequiresApi(26)
-    override fun requestAudioFocus(fileName: String, startPlaying: (String, () -> Unit) -> Unit) {
+    override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
         requestFocusApi26().let { audioFocusRequest ->
-            startPlaying(fileName) {
+            startPlaying {
                 audioManager.requestAudioFocus(audioFocusRequest).let {
                     if (it == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
                         abandonFocusApi26(audioFocusRequest)
@@ -74,9 +74,6 @@ private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusR
         }.let { audioAttributes ->
             AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE).run {
                 setAudioAttributes(audioAttributes)
-                setOnAudioFocusChangeListener {
-                    Timber.d("Gowno $it")
-                }
                 build()
             }
         }
@@ -92,11 +89,11 @@ private class FocusRequestBelowAPI26(private val audioManager: AudioManager) : F
 
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { }
 
-    override fun requestAudioFocus(fileName: String, startPlaying: (String, () -> Unit) -> Unit) {
+    override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
         audioManager.requestAudioFocus(audioFocusChangeListener,
                 AudioManager.STREAM_ALARM,
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
-        startPlaying(fileName) { abandonAudioFocus() }
+        startPlaying { abandonAudioFocus() }
     }
 
     private fun abandonAudioFocus() {
