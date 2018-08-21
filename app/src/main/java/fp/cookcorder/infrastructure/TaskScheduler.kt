@@ -43,7 +43,6 @@ class TaskSchedulerImpl @Inject constructor(private val context: Context) : Task
 }
 
 private const val KEY_NOTIFICATION_CHANNEL = "KEY_NOTIFICATION_CHANNEL"
-private const val KEY_NOTIFICATION_GROUP = "KEY_NOTIFICATION_GROUP"
 
 class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
 
@@ -88,23 +87,11 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
         val notif = NotificationCompat.Builder(context, KEY_NOTIFICATION_CHANNEL)
                 .apply {
                     color = ContextCompat.getColor(context, R.color.colorAccent)
-                    setGroup(KEY_NOTIFICATION_GROUP)
                     setSmallIcon(R.drawable.ic_mic)
                     setContentTitle("palyer")
                     setAutoCancel(true)
                     setContentIntent(createContentIntent(context))
                 }
-        val notifSummary = NotificationCompat.Builder(context, KEY_NOTIFICATION_CHANNEL)
-                .apply {
-                    color = ContextCompat.getColor(context, R.color.colorAccent)
-                    setGroup(KEY_NOTIFICATION_GROUP)
-                    setGroupSummary(true)
-                    setSmallIcon(R.drawable.ic_mic)
-                    setAutoCancel(true)
-                    setContentIntent(createContentIntent(context))
-                }
-
-        notificationManager.notify(1, notifSummary.build())
         notificationManager.notify(id, notif.build())
     }
 
