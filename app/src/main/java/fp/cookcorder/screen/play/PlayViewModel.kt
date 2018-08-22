@@ -5,6 +5,8 @@ import fp.cookcorder.app.SchedulerFactory
 import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.manager.TaskManager
+import fp.cookcorder.screen.utils.getDateTimeFromEpoch
+import fp.cookcorder.screen.utils.getTimeFromEpoch
 import io.reactivex.Observable
 import org.threeten.bp.Instant
 import org.threeten.bp.ZoneId
@@ -57,15 +59,7 @@ class PlayCellController @Inject constructor(
             .subscribeOn(schedulerFactory.io())
             .observeOn(schedulerFactory.ui())
 
-    private fun getTimeFromEpoch(epoch: Long) =
-            Instant.ofEpochMilli(epoch)
-                    .atZone(ZoneId.systemDefault())
-                    .format(DateTimeFormatter.ofPattern("HH:mm"))
 
-    private fun getDateTimeFromEpoch(epoch: Long) =
-            Instant.ofEpochMilli(epoch)
-                    .atZone(ZoneId.systemDefault())
-                    .format(DateTimeFormatter.ofPattern("dd MMM HH:mm"))
 
 
     override fun buildModels(data: List<Task>) {
@@ -85,3 +79,4 @@ class PlayCellController @Inject constructor(
         }
     }
 }
+

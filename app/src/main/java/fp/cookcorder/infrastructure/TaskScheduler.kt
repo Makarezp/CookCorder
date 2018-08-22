@@ -15,6 +15,7 @@ import fp.cookcorder.app.SchedulerFactory
 import fp.cookcorder.model.Task
 import fp.cookcorder.repo.TaskRepo
 import fp.cookcorder.screen.MainActivity
+import fp.cookcorder.screen.utils.getTimeFromEpoch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -62,7 +63,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                 .subscribe(
                         {
                             Timber.d(it.toString())
-                            showNotif(context, it.id.toInt(), it.title)
+                            showNotif(context, it.id.toInt(), it.title, getTimeFromEpoch(it.scheduleTime))
                             player.play(it.name)
                             taskRepo.saveTask(it)
                         },
@@ -71,7 +72,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                         })
     }
 
-    private fun showNotif(context: Context, id: Int, title: String?) {
+    private fun showNotif(context: Context, id: Int, title: String?, time: String) {
         val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -88,7 +89,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                 .apply {
                     color = ContextCompat.getColor(context, R.color.colorAccent)
                     setSmallIcon(R.drawable.ic_tab_scheduled)
-                    setContentTitle("Your task")
+                    setContentTitle("Your task from $time")
                     title?.let {  setContentText(it) }
                     setAutoCancel(true)
                     setContentIntent(createContentIntent(context))
