@@ -14,6 +14,7 @@ abstract class CookCorderDb : RoomDatabase() {
     companion object {
         fun build(context: Context) = Room
                 .databaseBuilder(context, CookCorderDb::class.java, "appdb")
+                .fallbackToDestructiveMigration()
                 .build()
     }
 }
