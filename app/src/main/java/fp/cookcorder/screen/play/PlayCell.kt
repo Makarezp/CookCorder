@@ -1,7 +1,7 @@
 package fp.cookcorder.screen.play
 
 import android.view.View
-import android.widget.ImageView
+import android.widget.ImageButton
 import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyHolder
@@ -44,8 +44,8 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
     override fun bind(holder: Holder) {
         with(holder) {
             title.setTextHideIfNull(pcTitle)
-            upperContainer.setOnClickListener { pcOnPlayClicked() }
-            deleteIV.setOnClickListener { pcOnDeleteClicked() }
+            playButton.setOnClickListener { pcOnPlayClicked() }
+            deleteButton.setOnClickListener { pcOnDeleteClicked() }
             subTitle.text = upperContainer.context.getString(R.string.at_time, pcTimePlayed)
             timerDisposable = pcTimer?.subscribe(
                     {
@@ -88,14 +88,16 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
         lateinit var title: TextView
         lateinit var subTitle: TextView
         lateinit var details: TextView
-        lateinit var deleteIV: ImageView
+        lateinit var playButton: ImageButton
+        lateinit var deleteButton: ImageButton
 
         override fun bindView(itemView: View) {
             upperContainer = itemView.findViewById<View>(R.id.constraintLayout)
             title = itemView.findViewById(R.id.itemTaskTitle)
             subTitle = itemView.findViewById(R.id.itemTaskTVTime)
             details = itemView.findViewById(R.id.itemTaskTvTimePlayed)
-            deleteIV = itemView.findViewById(R.id.deleteIV)
+            playButton = itemView.findViewById(R.id.itemTaskPlayIB)
+            deleteButton = itemView.findViewById(R.id.itemTaskDeleteIB)
         }
     }
 }
