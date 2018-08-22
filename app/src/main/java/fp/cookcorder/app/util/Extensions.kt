@@ -4,6 +4,7 @@ import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
 import android.view.View
+import android.widget.TextView
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import timber.log.Timber
 
@@ -19,6 +20,15 @@ fun View.invisible() {
 
 fun View.visible() {
     this.visibility = View.VISIBLE
+}
+
+fun TextView.setTextHideIfNull(charSequence: CharSequence?) {
+    if (charSequence != null) {
+        this.visibility = View.VISIBLE
+        this.text = charSequence
+    } else {
+        this.visibility = View.GONE
+    }
 }
 
 fun <T> LifecycleOwner.observe(liveData: LiveData<T?>, lambda: (T) -> Unit) {

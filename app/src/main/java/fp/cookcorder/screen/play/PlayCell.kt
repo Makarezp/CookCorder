@@ -8,6 +8,7 @@ import com.airbnb.epoxy.EpoxyHolder
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
 import fp.cookcorder.R
+import fp.cookcorder.app.util.setTextHideIfNull
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.threeten.bp.Instant
@@ -20,7 +21,10 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
 
 
     @EpoxyAttribute
-    var pcTitle = ""
+    var pcTitle: String? = ""
+
+    @EpoxyAttribute
+    var pcTimePlayed = ""
 
     @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
     var pcOnPlayClicked: () -> Unit = {}
@@ -39,14 +43,15 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
 
     override fun bind(holder: Holder) {
         with(holder) {
-            title.text = pcTitle
+            title.setTextHideIfNull(pcTitle)
             upperContainer.setOnClickListener { pcOnPlayClicked() }
             deleteIV.setOnClickListener { pcOnDeleteClicked() }
+            subTitle.text = upperContainer.context.getString(R.string.at_time, pcTimePlayed)
             timerDisposable = pcTimer?.subscribe(
                     {
                         val minutesToSeconds = calculateTimeDifference(pcScheduleTime)
-                        subTitle.text = minutesToSeconds.first.toString()
-                        details.text = minutesToSeconds.second.toString()
+//                        subTitle.text = minutesToSeconds.first.toString()
+//                        details.text = minutesToSeconds.second.toString()
                     },
                     {
                         Timber.d(it)
@@ -80,9 +85,9 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
 
         override fun bindView(itemView: View) {
             upperContainer = itemView.findViewById<View>(R.id.constraintLayout)
-            title = itemView.findViewById(R.id.itemTaskTV)
-            subTitle = itemView.findViewById(R.id.itemTaskTVSubtitle)
-            details = itemView.findViewById(R.id.itemTaskTvDetails)
+            title = itemView.findViewById(R.id.itemTaskTitle)
+            subTitle = itemView.findViewById(R.id.itemTaskTVTime)
+            details = itemView.findViewById(R.id.itemTaskTvTimePlayed)
             deleteIV = itemView.findViewById(R.id.deleteIV)
         }
     }

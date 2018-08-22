@@ -6,6 +6,9 @@ import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.manager.TaskManager
 import io.reactivex.Observable
+import org.threeten.bp.Instant
+import org.threeten.bp.ZoneId
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -54,11 +57,18 @@ class PlayCellController @Inject constructor(
             .subscribeOn(schedulerFactory.io())
             .observeOn(schedulerFactory.ui())
 
+    private fun getTimeFromEpoch(epoch: Long)  =
+         Instant.ofEpochMilli(epoch)
+                 .atZone(ZoneId.systemDefault())
+                 .format(DateTimeFormatter.ofPattern("HH:mm"))
+
+
     override fun buildModels(data: List<Task>) {
         data.forEach {
             playCell {
                 id(it.id)
-                pcTitle(it.name)
+                pcTitle(it.title)
+                pcTimePlayed(getTimeFromEpoch(it.scheduleTime))
                 pcOnPlayClicked { viewModel.play(it) }
                 pcOnDeleteClicked { viewModel.delete(it) }
                 pcScheduleTime(it.scheduleTime)

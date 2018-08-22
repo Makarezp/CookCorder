@@ -79,6 +79,8 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun showSuccess() {
+        mainFragmentETTitle.text = null
+
         with(success) {
             visible()
             speed = 1.0F
@@ -121,7 +123,8 @@ class RecordFragment : DaggerFragment() {
         floatingActionButton.setOnTouchListener(
                 handleCancellableTouch(
                         { viewModel.requestNewRecord() },
-                        { viewModel.finishRecording(getMinutesToSchedule(), "Title") },
+                        { viewModel.finishRecording(
+                                getMinutesToSchedule(), mainFragmentETTitle.text.toString()) },
                         { viewModel.cancelRecording() }
                 ).invoke()
         )
