@@ -22,6 +22,9 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
     }
 
     override fun play(fileName: String) {
+        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
+        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+
         val focusRequest = if (SDK_INT >= 26) FocusRequestAPI26(audioManager) else
             FocusRequestBelowAPI26(audioManager)
 
@@ -70,10 +73,12 @@ private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusR
     @RequiresApi(26)
     private fun requestFocusApi26(): AudioFocusRequest {
         return AudioAttributes.Builder().run {
+            setLegacyStreamType(AudioManager.STREAM_MUSIC)
             build()
         }.let { audioAttributes ->
             AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE).run {
                 setAudioAttributes(audioAttributes)
+
                 build()
             }
         }
@@ -91,7 +96,7 @@ private class FocusRequestBelowAPI26(private val audioManager: AudioManager) : F
 
     override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
         audioManager.requestAudioFocus(audioFocusChangeListener,
-                AudioManager.STREAM_ALARM,
+                AudioManager.STREAM_MUSIC,
                 AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
         startPlaying { abandonAudioFocus() }
     }
