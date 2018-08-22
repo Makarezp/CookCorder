@@ -10,6 +10,29 @@
     android:focusableInTouchMode="true"
     tools:context=".screen.MainActivity">
 
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/textInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="@dimen/xl"
+        android:layout_marginStart="@dimen/xl"
+        android:layout_marginTop="@dimen/xl"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.design.widget.TextInputEditText
+            android:id="@+id/mainFragmentETTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/title"
+            android:inputType="text"
+            android:maxLines="1"/>
+
+
+    </android.support.design.widget.TextInputLayout>
+
     <TextView
         android:id="@+id/mainFragmentTVAxillaryUpper"
         style="@style/Picker.Axillary"
@@ -19,14 +42,8 @@
         android:layout_marginTop="@dimen/xl"
         android:text="@string/alarm_will_be_fired"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toBottomOf="@id/textInputLayout"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/white"
-        app:layout_constraintBottom_toTopOf="@id/mainFragmentMinutePicker"
-        />
 
     <fp.cookcorder.screen.custom.ScrollHmsPicker
         android:id="@+id/mainFragmentMinutePicker"
@@ -41,14 +58,6 @@
         app:shp_normal_color="@color/white_70"
         app:shp_selected_color="@color/colorAccent"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:background="@color/white"
-        android:elevation="1dp"
-        app:layout_constraintTop_toBottomOf="@id/mainFragmentMinutePicker"
-        />
-
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -58,31 +67,6 @@
         style="@style/Picker.Axillary"
         app:layout_constraintEnd_toEndOf="@+id/mainFragmentMinutePicker"
         app:layout_constraintTop_toBottomOf="@+id/mainFragmentMinutePicker"/>
-
-
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/textInputLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp"
-        android:layout_marginEnd="@dimen/xl"
-        android:layout_marginStart="@dimen/xl"
-        app:layout_constraintBottom_toTopOf="@+id/mainFragmentTVTime"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView">
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/mainFragmentETTitle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/title"
-            android:inputType="text"
-            android:maxLines="1"/>
-
-
-    </android.support.design.widget.TextInputLayout>
 
 
     <TextView
@@ -96,7 +80,7 @@
         android:text="00:00:00"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/mainFragmentMinutePicker"
         app:layout_constraintBottom_toTopOf="@id/floatingActionButton"/>
 
     <android.support.design.widget.FloatingActionButton
