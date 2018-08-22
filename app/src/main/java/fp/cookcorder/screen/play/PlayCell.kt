@@ -49,9 +49,7 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
             subTitle.text = upperContainer.context.getString(R.string.at_time, pcTimePlayed)
             timerDisposable = pcTimer?.subscribe(
                     {
-                        val minutesToSeconds = calculateTimeDifference(pcScheduleTime)
-//                        subTitle.text = minutesToSeconds.first.toString()
-//                        details.text = minutesToSeconds.second.toString()
+                        details.text = makeHourString(pcScheduleTime)
                     },
                     {
                         Timber.d(it)
@@ -61,13 +59,22 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
         }
     }
 
-    private fun calculateTimeDifference(timeToCompare: Long): Pair<Long, Long> {
+    private fun makeHourString(timeToCompare: Long): String {
+        with(calculateTimeDifference(timeToCompare)) {
+            val hours = if(first != 0L) first.toString() + ":" else ""
+            val minutes = String.format("%02d", second) + ":"
+            val seconds = String.format("%02d", third)
+            return "in $hours$minutes$seconds"
+        }
+    }
+
+    private fun calculateTimeDifference(timeToCompare: Long): Triple<Long, Long, Long> {
         val time1 = Instant.ofEpochMilli(timeToCompare)
         val time2 = Instant.now()
-
-        val minutes = ChronoUnit.MINUTES.between(time2, time1)
+        val hours = ChronoUnit.HOURS.between(time2, time1)
+        val minutes = ChronoUnit.MINUTES.between(time2, time1) % 60
         val seconds = ChronoUnit.SECONDS.between(time2, time1) % 60
-        return minutes to seconds
+        return Triple(hours, minutes, seconds)
     }
 
     override fun unbind(holder: Holder) {
