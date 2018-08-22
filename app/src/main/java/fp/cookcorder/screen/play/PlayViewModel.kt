@@ -25,7 +25,7 @@ class PlayViewModel @Inject constructor(
     @Inject
     fun init() {
         playCellController.viewModel = this
-        val taskObs = if(isCurrent) taskManager.getCurrentTasks() else taskManager.getPastTasks()
+        val taskObs = if (isCurrent) taskManager.getCurrentTasks() else taskManager.getPastTasks()
         exe(taskObs) {
             playCellController.setData(it)
         }
@@ -57,22 +57,30 @@ class PlayCellController @Inject constructor(
             .subscribeOn(schedulerFactory.io())
             .observeOn(schedulerFactory.ui())
 
-    private fun getTimeFromEpoch(epoch: Long)  =
-         Instant.ofEpochMilli(epoch)
-                 .atZone(ZoneId.systemDefault())
-                 .format(DateTimeFormatter.ofPattern("HH:mm"))
+    private fun getTimeFromEpoch(epoch: Long) =
+            Instant.ofEpochMilli(epoch)
+                    .atZone(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("HH:mm"))
+
+    private fun getDateTimeFromEpoch(epoch: Long) =
+            Instant.ofEpochMilli(epoch)
+                    .atZone(ZoneId.systemDefault())
+                    .format(DateTimeFormatter.ofPattern("dd MMM HH:mm"))
 
 
     override fun buildModels(data: List<Task>) {
-        data.forEach {
+        data.sortedBy { it.scheduleTime }.forEach {
             playCell {
                 id(it.id)
                 pcTitle(it.title)
-                pcTimePlayed(getTimeFromEpoch(it.scheduleTime))
+                pcTimePlayed(
+                        if (isCurrent) getTimeFromEpoch(it.scheduleTime)
+                        else getDateTimeFromEpoch(it.scheduleTime)
+                )
                 pcOnPlayClicked { viewModel.play(it) }
                 pcOnDeleteClicked { viewModel.delete(it) }
                 pcScheduleTime(it.scheduleTime)
-                if(isCurrent) pcTimer(timer)
+                if (isCurrent) pcTimer(timer)
             }
         }
     }
