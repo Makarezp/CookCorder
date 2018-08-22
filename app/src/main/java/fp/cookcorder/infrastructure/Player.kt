@@ -15,6 +15,9 @@ interface Player {
     fun play(fileName: String)
 }
 
+private const val STREAM_TYPE = AudioManager.STREAM_VOICE_CALL
+private const val AUDIO_FOCUS_TYPE = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
+
 class PlayerImpl @Inject constructor(private val context: Context) : Player {
 
     private val audioManager: AudioManager by lazy {
@@ -22,14 +25,18 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
     }
 
     override fun play(fileName: String) {
-        val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, maxVolume, 0)
+        val currentVolume = audioManager.getStreamVolume(STREAM_TYPE)
+        val maxVolume = audioManager.getStreamMaxVolume(STREAM_TYPE)
+        audioManager.setStreamVolume(STREAM_TYPE, maxVolume, 0)
 
         val focusRequest = if (SDK_INT >= 26) FocusRequestAPI26(audioManager) else
             FocusRequestBelowAPI26(audioManager)
 
         focusRequest.requestAudioFocus { onComplete: () -> Unit ->
-            startPlaying(fileName, onComplete)
+            startPlaying(fileName) {
+                onComplete()
+                audioManager.setStreamVolume(STREAM_TYPE, currentVolume, 0)
+            }
         }
     }
 
@@ -60,9 +67,9 @@ private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusR
     @RequiresApi(26)
     override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
         requestFocusApi26().let { audioFocusRequest ->
-            startPlaying {
-                audioManager.requestAudioFocus(audioFocusRequest).let {
-                    if (it == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            audioManager.requestAudioFocus(audioFocusRequest).let {
+                if (it == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                    startPlaying {
                         abandonFocusApi26(audioFocusRequest)
                     }
                 }
@@ -73,10 +80,10 @@ private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusR
     @RequiresApi(26)
     private fun requestFocusApi26(): AudioFocusRequest {
         return AudioAttributes.Builder().run {
-            setLegacyStreamType(AudioManager.STREAM_MUSIC)
+            setLegacyStreamType(STREAM_TYPE)
             build()
         }.let { audioAttributes ->
-            AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE).run {
+            AudioFocusRequest.Builder(AUDIO_FOCUS_TYPE).run {
                 setAudioAttributes(audioAttributes)
 
                 build()
@@ -96,8 +103,8 @@ private class FocusRequestBelowAPI26(private val audioManager: AudioManager) : F
 
     override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
         audioManager.requestAudioFocus(audioFocusChangeListener,
-                AudioManager.STREAM_MUSIC,
-                AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE)
+                STREAM_TYPE,
+                AUDIO_FOCUS_TYPE)
         startPlaying { abandonAudioFocus() }
     }
 
