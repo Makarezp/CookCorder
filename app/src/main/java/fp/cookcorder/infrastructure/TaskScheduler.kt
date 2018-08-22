@@ -62,7 +62,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                 .subscribe(
                         {
                             Timber.d(it.toString())
-                            showNotif(context, it.id.toInt())
+                            showNotif(context, it.id.toInt(), it.title)
                             player.play(it.name)
                             taskRepo.saveTask(it)
                         },
@@ -71,7 +71,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                         })
     }
 
-    private fun showNotif(context: Context, id: Int) {
+    private fun showNotif(context: Context, id: Int, title: String?) {
         val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -88,7 +88,8 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
                 .apply {
                     color = ContextCompat.getColor(context, R.color.colorAccent)
                     setSmallIcon(R.drawable.ic_tab_scheduled)
-                    setContentTitle("palyer")
+                    setContentTitle("Your task")
+                    title?.let {  setContentText(it) }
                     setAutoCancel(true)
                     setContentIntent(createContentIntent(context))
                 }
