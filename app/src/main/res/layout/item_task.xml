@@ -52,15 +52,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/itemTaskTvTimePlayed"/>
 
-
-    <ImageView
+    <ImageButton
         android:id="@+id/deleteIV"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:padding="@dimen/padding_standard"
-        app:layout_constraintTop_toBottomOf="@id/divider"
-        app:srcCompat="@drawable/ic_baseline_delete_outline_24px"/>
+        android:src="@drawable/ic_task_remove"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+
 
 </android.support.constraint.ConstraintLayout>
 
