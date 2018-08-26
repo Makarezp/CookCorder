@@ -1,5 +1,6 @@
 package fp.cookcorder.screen.play
 
+import android.arch.lifecycle.MutableLiveData
 import com.airbnb.epoxy.TypedEpoxyController
 import fp.cookcorder.app.SchedulerFactory
 import fp.cookcorder.model.Task
@@ -23,12 +24,14 @@ class PlayViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val adapter = playCellController.adapter
+    val showNoTasks = MutableLiveData<Boolean>()
 
     @Inject
     fun init() {
         playCellController.viewModel = this
         val taskObs = if (isCurrent) taskManager.getCurrentTasks() else taskManager.getPastTasks()
         exe(taskObs) {
+            showNoTasks.value = it.isEmpty()
             playCellController.setData(it)
         }
 

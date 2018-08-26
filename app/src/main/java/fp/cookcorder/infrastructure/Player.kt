@@ -18,7 +18,7 @@ interface Player {
     fun play(fileName: String, doAfterComplete: (() -> Unit)? = null): Observable<Pair<Int, Int>>
 }
 
-private const val STREAM_TYPE = AudioManager.STREAM_VOICE_CALL
+private const val STREAM_TYPE = AudioManager.STREAM_MUSIC
 private const val AUDIO_FOCUS_TYPE = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
 
 class PlayerImpl @Inject constructor(private val context: Context) : Player {

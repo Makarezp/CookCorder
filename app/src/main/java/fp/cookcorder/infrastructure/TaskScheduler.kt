@@ -109,7 +109,9 @@ class PlayService : DaggerService() {
                                         1)
                             }
                 }
-                .subscribe()
+                .subscribe({}, {
+                    Timber.d(it)
+                })
     }
 
 
@@ -126,7 +128,7 @@ class PlayService : DaggerService() {
             val notifChannel = NotificationChannel(
                     KEY_NOTIFICATION_CHANNEL,
                     context.getString(R.string.notif_channel_name),
-                    NotificationManager.IMPORTANCE_HIGH
+                    NotificationManager.IMPORTANCE_LOW
             )
             notificationManager.createNotificationChannel(notifChannel)
         }
