@@ -5,6 +5,7 @@ import dagger.android.ContributesAndroidInjector
 import fp.cookcorder.infrastructure.PlayService
 import fp.cookcorder.infrastructure.TaskBroadcastReceiver
 import fp.cookcorder.screen.MainActivity
+import fp.cookcorder.screen.editdialog.EditDialogModule
 import fp.cookcorder.screen.record.RecordFragmentModule
 import fp.cookcorder.screen.play.PlayModule
 
@@ -13,7 +14,8 @@ abstract class ActivityBindingModule {
 
     @ContributesAndroidInjector(modules = [
         RecordFragmentModule::class,
-        PlayModule::class])
+        PlayModule::class,
+        EditDialogModule::class])
     abstract fun mainActivity(): MainActivity
 
 

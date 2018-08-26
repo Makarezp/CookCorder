@@ -26,6 +26,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import fp.cookcorder.app.util.visible
+import kotlinx.android.synthetic.main.action_button.*
 import timber.log.Timber
 
 

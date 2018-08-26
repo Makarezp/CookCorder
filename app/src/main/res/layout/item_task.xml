@@ -63,6 +63,17 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/itemTaskIBEdit"
+        app:layout_constraintTop_toTopOf="parent"/>
+    
+    <ImageButton
+        android:id="@+id/itemTaskIBEdit"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="16dp"
+        android:src="@drawable/ic_edit"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/itemTaskDeleteIB"
         app:layout_constraintTop_toTopOf="parent"/>
 

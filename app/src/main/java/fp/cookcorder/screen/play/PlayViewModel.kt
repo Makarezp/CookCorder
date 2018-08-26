@@ -6,6 +6,7 @@ import fp.cookcorder.app.SchedulerFactory
 import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.manager.TaskManager
+import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.screen.utils.getDateTimeFromEpoch
 import fp.cookcorder.screen.utils.getTimeFromEpoch
 import io.reactivex.Observable
@@ -25,6 +26,7 @@ class PlayViewModel @Inject constructor(
 
     val adapter = playCellController.adapter
     val showNoTasks = MutableLiveData<Boolean>()
+    val editTaskCmd = SingleLiveEvent<Long>()
 
     @Inject
     fun init() {
@@ -39,6 +41,10 @@ class PlayViewModel @Inject constructor(
 
     fun play(task: Task) {
         taskManager.playTask(task)
+    }
+
+    fun editTask(taskId: Long) {
+        editTaskCmd.value = taskId
     }
 
     fun delete(task: Task) {
@@ -75,6 +81,7 @@ class PlayCellController @Inject constructor(
                         else getDateTimeFromEpoch(it.scheduleTime)
                 )
                 pcOnPlayClicked { viewModel.play(it) }
+                pcOnEditClicked { viewModel.editTask(it.id) }
                 pcOnDeleteClicked { viewModel.delete(it) }
                 pcScheduleTime(it.scheduleTime)
                 if (isCurrent) pcTimer(timer)
