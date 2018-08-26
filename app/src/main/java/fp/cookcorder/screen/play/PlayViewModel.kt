@@ -39,8 +39,8 @@ class PlayViewModel @Inject constructor(
 
     }
 
-    fun play(task: Task) {
-        taskManager.playTask(task)
+    fun play(task: Task): Observable<Pair<Int, Int>> {
+        return taskManager.playTask(task)
     }
 
     fun editTask(taskId: Long) {
@@ -55,7 +55,7 @@ class PlayViewModel @Inject constructor(
 }
 
 class PlayCellController @Inject constructor(
-        schedulerFactory: SchedulerFactory,
+        private val schedulerFactory: SchedulerFactory,
         @Named(PlayFragmentModule.NAMED_IS_CURRENT) private val isCurrent: Boolean)
     : TypedEpoxyController<List<Task>>() {
 
@@ -69,8 +69,6 @@ class PlayCellController @Inject constructor(
             .observeOn(schedulerFactory.ui())
 
 
-
-
     override fun buildModels(data: List<Task>) {
         data.sortedBy { it.scheduleTime }.forEach {
             playCell {
@@ -80,7 +78,9 @@ class PlayCellController @Inject constructor(
                         if (isCurrent) getTimeFromEpoch(it.scheduleTime)
                         else getDateTimeFromEpoch(it.scheduleTime)
                 )
-                pcOnPlayClicked { viewModel.play(it) }
+                pcOnPlayClicked { viewModel.play(it)
+                        .subscribeOn(schedulerFactory.io())
+                        .observeOn(schedulerFactory.ui()) }
                 pcOnEditClicked { viewModel.editTask(it.id) }
                 pcOnDeleteClicked { viewModel.delete(it) }
                 pcScheduleTime(it.scheduleTime)

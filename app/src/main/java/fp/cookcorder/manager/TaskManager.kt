@@ -21,7 +21,7 @@ interface TaskManager {
 
     fun cancelRecordingNewTask(): Maybe<Any>
 
-    fun playTask(task: Task)
+    fun playTask(task: Task): Observable<Pair<Int, Int>>
 
     fun getTask(id: Long): Single<Task>
 
@@ -62,8 +62,8 @@ class TaskManagerImpl @Inject constructor(
 
     override fun cancelRecordingNewTask() = recorder.cancelRecording()
 
-    override fun playTask(task: Task) {
-        player.play(task.name).subscribe()
+    override fun playTask(task: Task): Observable<Pair<Int, Int>> {
+       return player.play(task.name)
     }
 
     override fun getTask(id: Long): Single<Task> {
@@ -71,14 +71,14 @@ class TaskManagerImpl @Inject constructor(
     }
 
     override fun editTask(id: Long, msToSchedule: Long?, title: String?): Single<Task> {
-        return taskRepo.getTask(id).flatMap {
+        return taskRepo.getTask(id).flatMap { task ->
             Single.fromCallable {
 
                 val timeToSchedule = if (msToSchedule != null) System.currentTimeMillis() + msToSchedule
-                else it.scheduleTime
+                else task.scheduleTime
 
-                taskRepo.saveTask(it.copy(scheduleTime = timeToSchedule, title = title))
-            }
+                taskRepo.saveTask(task.copy(scheduleTime = timeToSchedule, title = title))
+            }.doAfterSuccess { if(msToSchedule != null) taskScheduler.scheduleTask(it) }
         }
     }
 

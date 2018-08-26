@@ -2,10 +2,12 @@ package fp.cookcorder.screen.play
 
 import android.view.View
 import android.widget.ImageButton
+import android.widget.SeekBar
 import android.widget.TextView
 import com.airbnb.epoxy.*
 import fp.cookcorder.R
 import fp.cookcorder.app.util.setTextHideIfNull
+import fp.cookcorder.app.util.visible
 import fp.cookcorder.screen.utils.calculateTimeDifference
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
@@ -26,7 +28,7 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
     var pcTimePlayed = ""
 
     @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
-    var pcOnPlayClicked: () -> Unit = {}
+    var pcOnPlayClicked: (() -> Observable<Pair<Int, Int>>)? = null
 
     @EpoxyAttribute(EpoxyAttribute.Option.DoNotHash)
     var pcOnEditClicked: () -> Unit = {}
@@ -44,7 +46,25 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
     override fun bind(holder: Holder) {
         with(holder) {
             title.setTextHideIfNull(pcTitle)
-            playButton.setOnClickListener { pcOnPlayClicked() }
+            playButton.setOnClickListener { _ ->
+                pcOnPlayClicked?.let { progressToMax ->
+                    recordCompositeDisposable.clear()
+                    seekBar.visible()
+                    recordCompositeDisposable.addAll(progressToMax()
+                            .subscribe(
+                                    {
+                                        seekBar.max = it.second
+                                        seekBar.progress = it.first
+
+                                    },
+                                    { Timber.d(it) },
+                                    {
+                                        seekBar.visibility = View.INVISIBLE
+                                        seekBar.progress = 0
+                                    })
+                    )
+                }
+            }
             editButton.setOnClickListener { pcOnEditClicked() }
             deleteButton.setOnClickListener { pcOnDeleteClicked() }
             subTitle.text = upperContainer.context.getString(R.string.at_time, pcTimePlayed)
@@ -91,7 +111,9 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
         lateinit var playButton: ImageButton
         lateinit var editButton: ImageButton
         lateinit var deleteButton: ImageButton
+        lateinit var seekBar: SeekBar
         val compositeDisposable = CompositeDisposable()
+        val recordCompositeDisposable = CompositeDisposable()
 
         override fun bindView(itemView: View) {
             upperContainer = itemView.findViewById<View>(R.id.constraintLayout)
@@ -101,6 +123,7 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
             playButton = itemView.findViewById(R.id.itemTaskPlayIB)
             editButton = itemView.findViewById(R.id.itemTaskIBEdit)
             deleteButton = itemView.findViewById(R.id.itemTaskDeleteIB)
+            seekBar = itemView.findViewById(R.id.itemTaskSeekBar)
         }
     }
 }

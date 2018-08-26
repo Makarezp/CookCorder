@@ -22,7 +22,6 @@ import javax.inject.Inject
 interface TaskScheduler {
 
     fun scheduleTask(task: Task)
-
 }
 
 private const val KEY_INTENT_TASK_ID = "KEY_INTENT_TASK_ID"
@@ -30,16 +29,24 @@ private const val KEY_INTENT_TASK_ID = "KEY_INTENT_TASK_ID"
 class TaskSchedulerImpl @Inject constructor(private val context: Context) : TaskScheduler {
 
     override fun scheduleTask(task: Task) {
-        val intent = Intent(context, TaskBroadcastReceiver::class.java)
-                .apply { putExtra(KEY_INTENT_TASK_ID, task.id) }
+        val intent = createIntentForTaskScheduler(task)
 
         val pendingIntent =
-                PendingIntent
-                        .getBroadcast(context, task.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
+                createPenndingIntentForAlarmManager(task, intent)
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        alarmManager.cancel(pendingIntent)
         alarmManager.setExact(
                 AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
+    }
+
+    private fun createIntentForTaskScheduler(task: Task) =
+            Intent(context, TaskBroadcastReceiver::class.java)
+                    .apply { putExtra(KEY_INTENT_TASK_ID, task.id) }
+
+    private fun createPenndingIntentForAlarmManager(task: Task, intent: Intent): PendingIntent? {
+        return PendingIntent
+                .getBroadcast(context, task.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }
 
