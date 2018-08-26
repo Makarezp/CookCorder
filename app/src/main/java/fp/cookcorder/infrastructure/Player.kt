@@ -12,7 +12,7 @@ import java.io.File
 import javax.inject.Inject
 
 interface Player {
-    fun play(fileName: String)
+    fun play(fileName: String, doAfterComplete: (() -> Unit)? = null)
 }
 
 private const val STREAM_TYPE = AudioManager.STREAM_VOICE_CALL
@@ -24,10 +24,10 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
-    override fun play(fileName: String) {
-        val currentVolume = audioManager.getStreamVolume(STREAM_TYPE)
-        val maxVolume = audioManager.getStreamMaxVolume(STREAM_TYPE)
-        audioManager.setStreamVolume(STREAM_TYPE, maxVolume, 0)
+    override fun play(fileName: String, doAfterComplete: (() -> Unit)?) {
+//        val currentVolume = audioManager.getStreamVolume(STREAM_TYPE)
+//        val maxVolume = audioManager.getStreamMaxVolume(STREAM_TYPE)
+//        audioManager.setStreamVolume(STREAM_TYPE, maxVolume, 0)
 
         val focusRequest = if (SDK_INT >= 26) FocusRequestAPI26(audioManager) else
             FocusRequestBelowAPI26(audioManager)
@@ -35,7 +35,8 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         focusRequest.requestAudioFocus { onComplete: () -> Unit ->
             startPlaying(fileName) {
                 onComplete()
-                audioManager.setStreamVolume(STREAM_TYPE, currentVolume, 0)
+                doAfterComplete?.invoke()
+//                audioManager.setStreamVolume(STREAM_TYPE, currentVolume, 0)
             }
         }
     }

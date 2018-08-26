@@ -26,9 +26,12 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".infrastructure.PlayService"
+            android:exported="false"/>
 
         <receiver android:name=".infrastructure.TaskBroadcastReceiver"
-            android:enabled="true"/>
+                  android:enabled="true"/>
+
     </application>
 
 </manifest>

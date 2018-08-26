@@ -2,6 +2,7 @@ package fp.cookcorder.app.di
 
 import dagger.Module
 import dagger.android.ContributesAndroidInjector
+import fp.cookcorder.infrastructure.PlayService
 import fp.cookcorder.infrastructure.TaskBroadcastReceiver
 import fp.cookcorder.screen.MainActivity
 import fp.cookcorder.screen.record.RecordFragmentModule
@@ -15,7 +16,11 @@ abstract class ActivityBindingModule {
         PlayModule::class])
     abstract fun mainActivity(): MainActivity
 
+
     @ContributesAndroidInjector
     abstract fun taskBroadcastReceiver(): TaskBroadcastReceiver
+
+    @ContributesAndroidInjector
+    abstract fun playIntentService(): PlayService
 }
 
