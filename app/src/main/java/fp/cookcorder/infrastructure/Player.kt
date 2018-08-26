@@ -45,9 +45,6 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
                 setDataSource(File(context.filesDir, fileName).path)
                 prepareAsync()
                 setOnPreparedListener { start() }
-                setOnCompletionListener {
-                    it.release()
-                }
             } catch (e: Exception) {
                 Timber.e(e)
             }
@@ -56,13 +53,14 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         return Observable.just(mediaPlayer)
                 .flatMap { ticks(it) }
                 .takeUntil(complete(mediaPlayer))
+                .doOnComplete { mediaPlayer.release() }
     }
 
     private fun ticks(mediaPlayer: MediaPlayer): Observable<Pair<Int, Int>> {
         return Observable.interval(16, TimeUnit.MILLISECONDS)
                 .map {
-                    val currentPositionInSeconds = mediaPlayer.currentPosition / 1000
-                    val durationInSeconds = mediaPlayer.duration / 1000
+                    val currentPositionInSeconds = mediaPlayer.currentPosition
+                    val durationInSeconds = mediaPlayer.duration
                     Pair(currentPositionInSeconds, durationInSeconds)
                 }
     }

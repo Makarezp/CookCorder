@@ -51,8 +51,8 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
         Intent(context, PlayService::class.java)
                 .apply { putExtra(KEY_INTENT_TASK_ID, intent.getLongExtra(KEY_INTENT_TASK_ID, -1)) }
                 .let {
-                    if(SDK_INT >= 26)
-                    context.startForegroundService(it)
+                    if (SDK_INT >= 26)
+                        context.startForegroundService(it)
                     else context.startService(it)
                 }
     }
@@ -76,7 +76,7 @@ class PlayService : DaggerService() {
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val notif = buildNotif()
 
-        startForeground(intent.getLongExtra(KEY_INTENT_TASK_ID, -1).toInt() ,notif )
+        startForeground(intent.getLongExtra(KEY_INTENT_TASK_ID, -1).toInt(), notif.build())
         performWork(intent, startId)
         return Service.START_NOT_STICKY
     }
@@ -85,24 +85,40 @@ class PlayService : DaggerService() {
     private fun performWork(intent: Intent, startId: Int) {
         taskRepo.getTask(intent.getLongExtra(KEY_INTENT_TASK_ID, -1))
                 .subscribeOn(schedulerProvider.io())
-                .doAfterSuccess {  taskRepo.saveTask(it) }
+                .doAfterSuccess { taskRepo.saveTask(it) }
                 .observeOn(schedulerProvider.ui())
-                .subscribe(
-                        {
-                            Timber.d(it.toString())
-                            player.play(it.name).doOnComplete {
+                .flatMapObservable { task ->
+                    player.play(task.name)
+                            .doAfterNext {
+                                showNotif(
+                                        applicationContext,
+                                        task.id.toInt(),
+                                        task.title,
+                                        getTimeFromEpoch(task.scheduleTime),
+                                        it.first,
+                                        it.second)
+                            }
+                            .doOnComplete {
                                 stopForeground(false)
-                                showNotif(applicationContext, it.id.toInt(), it.title, getTimeFromEpoch(it.scheduleTime))
-                                Timber.d("Finished playing")
-                            }.subscribe()
-                        },
-                        {
-                            Timber.d(it)
-                        })
+                                showNotif(
+                                        applicationContext,
+                                        task.id.toInt(),
+                                        task.title,
+                                        getTimeFromEpoch(task.scheduleTime),
+                                        1,
+                                        1)
+                            }
+                }
+                .subscribe()
     }
 
 
-    private fun showNotif(context: Context, id: Int, title: String?, time: String) {
+    private fun showNotif(context: Context,
+                          id: Int,
+                          title: String?,
+                          time: String,
+                          progres: Int = 0,
+                          maxProgress: Int = 0) {
         val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
@@ -115,7 +131,8 @@ class PlayService : DaggerService() {
             notificationManager.createNotificationChannel(notifChannel)
         }
 
-        notificationManager.notify(id, buildNotif(time, title))
+        val notif = buildNotif(time, title).setProgress(maxProgress, progres, false)
+        notificationManager.notify(id, notif.build())
     }
 
     private fun createContentIntent(context: Context): PendingIntent {
@@ -125,18 +142,17 @@ class PlayService : DaggerService() {
         )
     }
 
-    private fun buildNotif(time: String? = null, title: String? = null): Notification? {
-        return NotificationCompat.Builder(applicationContext, KEY_NOTIFICATION_CHANNEL)
-                .apply {
-                    color = ContextCompat.getColor(applicationContext, R.color.colorAccent)
-                    setSmallIcon(R.drawable.ic_tab_scheduled)
-                    setContentTitle(if(time == null)"Your task from" else "Your task from $time")
-                    title?.let { setContentText(it) }
-                    setContentIntent(createContentIntent(applicationContext))
-                    setAutoCancel(true)
-                    setOnlyAlertOnce(true)
-                }.build()
-    }
+    private fun buildNotif(time: String? = null, title: String? = null) =
+            NotificationCompat.Builder(applicationContext, KEY_NOTIFICATION_CHANNEL)
+                    .apply {
+                        color = ContextCompat.getColor(applicationContext, R.color.colorAccent)
+                        setSmallIcon(R.drawable.ic_tab_scheduled)
+                        setContentTitle(if (time == null) "Your task from" else "Your task from $time")
+                        title?.let { setContentText(it) }
+                        setContentIntent(createContentIntent(applicationContext))
+                        setAutoCancel(true)
+                        setOnlyAlertOnce(true)
+                    }
 
 
     override fun onBind(intent: Intent?): IBinder? {
