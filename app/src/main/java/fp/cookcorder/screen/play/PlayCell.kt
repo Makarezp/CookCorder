@@ -3,13 +3,12 @@ package fp.cookcorder.screen.play
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import com.airbnb.epoxy.EpoxyAttribute
-import com.airbnb.epoxy.EpoxyHolder
-import com.airbnb.epoxy.EpoxyModelClass
-import com.airbnb.epoxy.EpoxyModelWithHolder
+import com.airbnb.epoxy.*
 import fp.cookcorder.R
 import fp.cookcorder.app.util.setTextHideIfNull
+import fp.cookcorder.screen.utils.calculateTimeDifference
 import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import org.threeten.bp.Instant
 import org.threeten.bp.temporal.ChronoUnit
@@ -41,8 +40,6 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
     @EpoxyAttribute
     var pcScheduleTime: Long = 0
 
-    private var timerDisposable: Disposable? = null
-
 
     override fun bind(holder: Holder) {
         with(holder) {
@@ -51,39 +48,38 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
             editButton.setOnClickListener { pcOnEditClicked() }
             deleteButton.setOnClickListener { pcOnDeleteClicked() }
             subTitle.text = upperContainer.context.getString(R.string.at_time, pcTimePlayed)
-            timerDisposable = pcTimer?.subscribe(
-                    {
-                        details.text = makeHourString(pcScheduleTime)
-                    },
-                    {
-                        Timber.d(it)
-                    }
-            )
-
+            pcTimer?.let {
+                compositeDisposable.addAll(it.subscribe(
+                        {
+                            details.text = makeHourString(pcScheduleTime)
+                        },
+                        {
+                            Timber.d(it)
+                        }
+                ))
+            }
         }
+    }
+
+
+    override fun bind(holder: Holder, previouslyBoundModel: EpoxyModel<*>) {
+        super.bind(holder, previouslyBoundModel)
+        holder.compositeDisposable.clear()
+        bind(holder)
     }
 
     private fun makeHourString(timeToCompare: Long): String {
         with(calculateTimeDifference(timeToCompare)) {
-            val hours = if(first != 0L) first.toString() + ":" else ""
+            val hours = if (first != 0L) first.toString() + ":" else ""
             val minutes = String.format("%02d", second) + ":"
             val seconds = String.format("%02d", third)
             return "in $hours$minutes$seconds"
         }
     }
 
-    private fun calculateTimeDifference(timeToCompare: Long): Triple<Long, Long, Long> {
-        val time1 = Instant.ofEpochMilli(timeToCompare)
-        val time2 = Instant.now()
-        val hours = ChronoUnit.HOURS.between(time2, time1)
-        val minutes = ChronoUnit.MINUTES.between(time2, time1) % 60
-        val seconds = ChronoUnit.SECONDS.between(time2, time1) % 60
-        return Triple(hours, minutes, seconds)
-    }
-
     override fun unbind(holder: Holder) {
         super.unbind(holder)
-        timerDisposable?.dispose()
+        holder.compositeDisposable.clear()
     }
 
     class Holder : EpoxyHolder() {
@@ -95,6 +91,7 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
         lateinit var playButton: ImageButton
         lateinit var editButton: ImageButton
         lateinit var deleteButton: ImageButton
+        val compositeDisposable = CompositeDisposable()
 
         override fun bindView(itemView: View) {
             upperContainer = itemView.findViewById<View>(R.id.constraintLayout)

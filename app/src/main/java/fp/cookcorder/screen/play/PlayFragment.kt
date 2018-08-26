@@ -65,11 +65,11 @@ class PlayFragment : DaggerFragment() {
 
     private fun observeShowEditTask() {
         observe(viewModel.editTaskCmd) {
-            showEditDialog()
+            showEditDialog(it)
         }
     }
 
-    private fun showEditDialog() {
-        EditDialog().show(fragmentManager, "EditDialog")
+    private fun showEditDialog(taskId: Long) {
+        EditDialog.newInstance(taskId).show(fragmentManager, "EditDialog")
     }
 }

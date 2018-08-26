@@ -64,7 +64,7 @@ class PlayCellController @Inject constructor(
     /**
      * This is timer that is shared between all bound cells
      */
-    private val timer = Observable.interval(1, TimeUnit.SECONDS)
+    private val timer = Observable.interval(100, TimeUnit.MILLISECONDS)
             .subscribeOn(schedulerFactory.io())
             .observeOn(schedulerFactory.ui())
 

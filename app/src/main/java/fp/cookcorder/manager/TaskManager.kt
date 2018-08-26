@@ -8,6 +8,8 @@ import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Maybe
+import io.reactivex.Observable
+import io.reactivex.Single
 import java.util.*
 import javax.inject.Inject
 
@@ -20,6 +22,10 @@ interface TaskManager {
     fun cancelRecordingNewTask(): Maybe<Any>
 
     fun playTask(task: Task)
+
+    fun getTask(id: Long): Single<Task>
+
+    fun editTask(id: Long, msToSchedule: Long?, title: String?): Single<Task>
 
     fun getCurrentTasks(): Flowable<List<Task>>
 
@@ -58,6 +64,22 @@ class TaskManagerImpl @Inject constructor(
 
     override fun playTask(task: Task) {
         player.play(task.name).subscribe()
+    }
+
+    override fun getTask(id: Long): Single<Task> {
+        return taskRepo.getTask(id)
+    }
+
+    override fun editTask(id: Long, msToSchedule: Long?, title: String?): Single<Task> {
+        return taskRepo.getTask(id).flatMap {
+            Single.fromCallable {
+
+                val timeToSchedule = if (msToSchedule != null) System.currentTimeMillis() + msToSchedule
+                else it.scheduleTime
+
+                taskRepo.saveTask(it.copy(scheduleTime = timeToSchedule, title = title))
+            }
+        }
     }
 
     override fun getCurrentTasks(): Flowable<List<Task>> {
