@@ -90,11 +90,11 @@ class PlayService : DaggerService() {
                 .subscribe(
                         {
                             Timber.d(it.toString())
-                            player.play(it.name) {
+                            player.play(it.name).doOnComplete {
                                 stopForeground(false)
                                 showNotif(applicationContext, it.id.toInt(), it.title, getTimeFromEpoch(it.scheduleTime))
                                 Timber.d("Finished playing")
-                            }
+                            }.subscribe()
                         },
                         {
                             Timber.d(it)
@@ -134,6 +134,7 @@ class PlayService : DaggerService() {
                     title?.let { setContentText(it) }
                     setContentIntent(createContentIntent(applicationContext))
                     setAutoCancel(true)
+                    setOnlyAlertOnce(true)
                 }.build()
     }
 

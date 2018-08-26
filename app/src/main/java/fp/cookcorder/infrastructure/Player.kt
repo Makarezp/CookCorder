@@ -7,12 +7,15 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.os.Build.VERSION.SDK_INT
 import android.support.annotation.RequiresApi
+import io.reactivex.Observable
 import timber.log.Timber
 import java.io.File
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+
 interface Player {
-    fun play(fileName: String, doAfterComplete: (() -> Unit)? = null)
+    fun play(fileName: String, doAfterComplete: (() -> Unit)? = null): Observable<Pair<Int, Int>>
 }
 
 private const val STREAM_TYPE = AudioManager.STREAM_VOICE_CALL
@@ -24,7 +27,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
-    override fun play(fileName: String, doAfterComplete: (() -> Unit)?) {
+    override fun play(fileName: String, doAfterComplete: (() -> Unit)?): Observable<Pair<Int, Int>> {
 //        val currentVolume = audioManager.getStreamVolume(STREAM_TYPE)
 //        val maxVolume = audioManager.getStreamMaxVolume(STREAM_TYPE)
 //        audioManager.setStreamVolume(STREAM_TYPE, maxVolume, 0)
@@ -32,28 +35,43 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         val focusRequest = if (SDK_INT >= 26) FocusRequestAPI26(audioManager) else
             FocusRequestBelowAPI26(audioManager)
 
-        focusRequest.requestAudioFocus { onComplete: () -> Unit ->
-            startPlaying(fileName) {
-                onComplete()
-                doAfterComplete?.invoke()
-//                audioManager.setStreamVolume(STREAM_TYPE, currentVolume, 0)
-            }
-        }
+        return focusRequest.requestAudioFocus(startPlaying(fileName))
     }
 
 
-    private fun startPlaying(fileName: String, onComplete: () -> Unit) {
-        MediaPlayer().apply {
+    private fun startPlaying(fileName: String): Observable<Pair<Int, Int>> {
+        val mediaPlayer = MediaPlayer().apply {
             try {
                 setDataSource(File(context.filesDir, fileName).path)
                 prepareAsync()
                 setOnPreparedListener { start() }
                 setOnCompletionListener {
                     it.release()
-                    onComplete()
                 }
             } catch (e: Exception) {
                 Timber.e(e)
+            }
+        }
+
+        return Observable.just(mediaPlayer)
+                .flatMap { ticks(it) }
+                .takeUntil(complete(mediaPlayer))
+    }
+
+    private fun ticks(mediaPlayer: MediaPlayer): Observable<Pair<Int, Int>> {
+        return Observable.interval(16, TimeUnit.MILLISECONDS)
+                .map {
+                    val currentPositionInSeconds = mediaPlayer.currentPosition / 1000
+                    val durationInSeconds = mediaPlayer.duration / 1000
+                    Pair(currentPositionInSeconds, durationInSeconds)
+                }
+    }
+
+    private fun complete(mediaPlayer: MediaPlayer): Observable<MediaPlayer> {
+        return Observable.create {
+            mediaPlayer.setOnCompletionListener { player ->
+                it.onNext(player)
+                it.onComplete()
             }
         }
     }
@@ -61,19 +79,19 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
 
 private interface FocusRequest {
 
-    fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit)
+    fun requestAudioFocus(startPlaying: Observable<Pair<Int, Int>>): Observable<Pair<Int, Int>>
 }
 
 private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusRequest {
     @RequiresApi(26)
-    override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
+    override fun requestAudioFocus(startPlaying: Observable<Pair<Int, Int>>): Observable<Pair<Int, Int>> {
         requestFocusApi26().let { audioFocusRequest ->
             audioManager.requestAudioFocus(audioFocusRequest).let {
-                if (it == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                    startPlaying {
-                        abandonFocusApi26(audioFocusRequest)
-                    }
+                return startPlaying.doOnComplete {
+                    abandonFocusApi26(audioFocusRequest)
                 }
+
+
             }
         }
     }
@@ -86,7 +104,6 @@ private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusR
         }.let { audioAttributes ->
             AudioFocusRequest.Builder(AUDIO_FOCUS_TYPE).run {
                 setAudioAttributes(audioAttributes)
-
                 build()
             }
         }
@@ -102,11 +119,11 @@ private class FocusRequestBelowAPI26(private val audioManager: AudioManager) : F
 
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { }
 
-    override fun requestAudioFocus(startPlaying: (() -> Unit) -> Unit) {
+    override fun requestAudioFocus(startPlaying: Observable<Pair<Int, Int>>): Observable<Pair<Int, Int>> {
         audioManager.requestAudioFocus(audioFocusChangeListener,
                 STREAM_TYPE,
                 AUDIO_FOCUS_TYPE)
-        startPlaying { abandonAudioFocus() }
+        return startPlaying.doOnComplete { abandonAudioFocus() }
     }
 
     private fun abandonAudioFocus() {

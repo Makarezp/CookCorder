@@ -57,7 +57,7 @@ class TaskManagerImpl @Inject constructor(
     override fun cancelRecordingNewTask() = recorder.cancelRecording()
 
     override fun playTask(task: Task) {
-        player.play(task.name)
+        player.play(task.name).subscribe()
     }
 
     override fun getCurrentTasks(): Flowable<List<Task>> {
