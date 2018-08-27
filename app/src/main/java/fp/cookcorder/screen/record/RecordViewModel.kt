@@ -36,7 +36,7 @@ class RecordViewModel @Inject constructor(
             exe(taskManager.startRecordingNewTask()) { _ ->
                 isRecording.value = true
                 timerDisposable = recordTimeCounter()
-                        .subscribeOn(schedulerFactory.single())
+                        .subscribeOn(schedulerFactory.io())
                         .observeOn(schedulerFactory.ui())
                         .subscribe { currentRecordTime.value = it }
             }
@@ -56,6 +56,7 @@ class RecordViewModel @Inject constructor(
                 onError = {
                     Timber.d(it)
                     isRecording.value = false
+                    timerDisposable?.dispose()
                 }) {
             recordSuccess.call()
             isRecording.postValue(false)
@@ -64,12 +65,20 @@ class RecordViewModel @Inject constructor(
     }
 
     private fun recordTimeCounter(): Observable<String> {
-        return Observable.interval(100, TimeUnit.MILLISECONDS).map {
-            val milliseconds = it % 100
-            val seconds = (it / 1000) % 60
-            val minutes = (it / 1000) / 60
-            "${String.format("%02d", minutes)}:${String.format("%02d", seconds)}:${String.format("%02d", milliseconds)}"
-        }
+        //this code is so weird because of memory optimizations
+        return Observable.concat(
+                Observable.just(0L),
+                Observable.interval(100, TimeUnit.MILLISECONDS))
+                .map {
+                    val miliseconds =(it * 10) % 100
+                    val seconds = (it / 10) % 60
+                    val minutes = it / 600
+                    "${if(minutes == 0L) {
+                        "00"
+                    } else String.format("%02d", minutes)
+                    }:${String.format("%02d", seconds)}:${
+                    if(miliseconds == 0L) String.format("%02d", miliseconds) else miliseconds.toString()}"
+                }
     }
 
 }

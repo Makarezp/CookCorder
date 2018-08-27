@@ -6,6 +6,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import com.airbnb.epoxy.*
 import fp.cookcorder.R
+import fp.cookcorder.app.util.invisible
 import fp.cookcorder.app.util.setTextHideIfNull
 import fp.cookcorder.app.util.visible
 import fp.cookcorder.screen.utils.calculateTimeDifference
@@ -100,6 +101,8 @@ abstract class PlayCell : EpoxyModelWithHolder<PlayCell.Holder>() {
     override fun unbind(holder: Holder) {
         super.unbind(holder)
         holder.compositeDisposable.clear()
+        holder.recordCompositeDisposable.clear()
+        holder.seekBar.invisible()
     }
 
     class Holder : EpoxyHolder() {
