@@ -3,6 +3,7 @@ package fp.cookcorder.app.util
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import android.content.res.Resources
 import android.view.View
 import android.widget.TextView
 import fp.cookcorder.screen.utils.SingleLiveEvent
@@ -45,3 +46,9 @@ fun LifecycleOwner.observe(liveData: SingleLiveEvent<Void>, lambda: () -> Unit) 
 fun Int.minutestToMilliseconds(): Long {
     return this.toLong() * 60000
 }
+
+val Int.dp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+val Int.px: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()

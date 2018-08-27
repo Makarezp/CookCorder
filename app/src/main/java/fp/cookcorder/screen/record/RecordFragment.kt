@@ -28,6 +28,10 @@ import android.widget.EditText
 import fp.cookcorder.app.util.visible
 import kotlinx.android.synthetic.main.action_button.*
 import timber.log.Timber
+import android.graphics.Typeface
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
+import fp.cookcorder.app.util.dp
 
 
 class RecordFragment : DaggerFragment() {
@@ -66,7 +70,7 @@ class RecordFragment : DaggerFragment() {
         setupRecordingButton()
         setupEditTextFocusRemoval()
         setupSuccessAnimationListener()
-
+        showIntro()
     }
 
     private fun observeLiveData() {
@@ -124,8 +128,10 @@ class RecordFragment : DaggerFragment() {
         floatingActionButton.setOnTouchListener(
                 handleCancellableTouch(
                         { viewModel.requestNewRecord() },
-                        { viewModel.finishRecording(
-                                getMinutesToSchedule(), mainFragmentETTitle.text.toString()) },
+                        {
+                            viewModel.finishRecording(
+                                    getMinutesToSchedule(), mainFragmentETTitle.text.toString())
+                        },
                         { viewModel.cancelRecording() }
                 ).invoke()
         )
@@ -225,6 +231,46 @@ class RecordFragment : DaggerFragment() {
             } else false
         }
     }
+
+
+    private fun showIntro() {
+        val pirckerView = view!!.findViewById<View>(R.id.mainFragmentMinutePicker)
+        val tapTargetPicker = TapTarget.forView(pirckerView, getString(R.string.time_picker_description_title), getString(R.string.time_picker_description))
+                // All options below are optional
+                .titleTextSize(20)                  // Specify the size (in sp) of the title text
+                .titleTextColor(R.color.white)      // Specify the color of the title text
+                .descriptionTextSize(10)            // Specify the size (in sp) of the description text
+                .descriptionTextColor(R.color.white_70)  // Specify the color of the description text
+                .textColor(R.color.white)            // Specify a color for both the title and description text
+                .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                .drawShadow(true)                   // Whether to draw a drop shadow or not
+                .cancelable(false)
+                .tintTarget(true)
+                .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
+                .targetRadius(pirckerView.width.dp)// Specify the target radius (in dp)
+        val fab = view!!.findViewById<View>(R.id.floatingActionButton)
+        val tapTargetFab = TapTarget.forView(fab, getString(R.string.record_button_description_title), getString(R.string.record_button_description))
+                // All options below are optional
+                .titleTextSize(20)                  // Specify the size (in sp) of the title text
+                .titleTextColor(R.color.white)      // Specify the color of the title text
+                .descriptionTextSize(10)            // Specify the size (in sp) of the description text
+                .descriptionTextColor(R.color.white_70)  // Specify the color of the description text
+                .textColor(R.color.white)            // Specify a color for both the title and description text
+                .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
+                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                .drawShadow(true)                   // Whether to draw a drop shadow or not
+                .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
+                .tintTarget(true)
+                .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
+                .targetRadius(50)// Specify the target radius (in dp)
+
+        TapTargetSequence(activity!!).targets(tapTargetPicker, tapTargetFab)
+                .considerOuterCircleCanceled(true)
+                .continueOnCancel(true)
+                .start()
+    }
+
 }
 
 

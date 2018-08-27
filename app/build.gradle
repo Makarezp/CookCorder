@@ -89,7 +89,8 @@ dependencies {
         transitive = true;
     }
     implementation 'com.airbnb.android:lottie:2.5.5'
-    implementation 'com.github.duanhong169:text-button:1.0.4'
+    implementation 'com.getkeepsafe.taptargetview:taptargetview:1.12.0'
+
 
 
 }
