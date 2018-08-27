@@ -5,6 +5,7 @@ import android.Manifest.permission.RECORD_AUDIO
 import android.animation.Animator
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
+import android.content.SharedPreferences
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
@@ -48,6 +49,8 @@ class RecordFragment : DaggerFragment() {
 
     private lateinit var viewModel: RecordViewModel
 
+    @Inject
+    lateinit var prefs: SharedPreferences
 
     /**
      * State variable used to manipulate with success animations
@@ -70,7 +73,7 @@ class RecordFragment : DaggerFragment() {
         setupRecordingButton()
         setupEditTextFocusRemoval()
         setupSuccessAnimationListener()
-        showIntro()
+        handleFirstRun()
     }
 
     private fun observeLiveData() {
@@ -232,6 +235,16 @@ class RecordFragment : DaggerFragment() {
         }
     }
 
+
+    private fun handleFirstRun() {
+        val isFirstRunKey = "RecordFragmentFirstRun"
+        val isFirstRun = prefs.getBoolean(isFirstRunKey, true)
+        if (isFirstRun) {
+            showIntro()
+            prefs.edit().putBoolean(isFirstRunKey, false).apply()
+        }
+
+    }
 
     private fun showIntro() {
         val pirckerView = view!!.findViewById<View>(R.id.mainFragmentMinutePicker)
