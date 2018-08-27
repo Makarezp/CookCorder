@@ -14,11 +14,7 @@ import javax.inject.Inject
 import android.os.Build
 import android.content.res.ColorStateList
 import android.support.v4.graphics.drawable.DrawableCompat
-import android.content.Context.INPUT_METHOD_SERVICE
-import android.graphics.Rect
-import android.widget.EditText
-import android.view.MotionEvent
-import android.view.inputmethod.InputMethodManager
+import android.content.Intent
 
 
 class MainActivity : DaggerAppCompatActivity() {
@@ -38,6 +34,26 @@ class MainActivity : DaggerAppCompatActivity() {
         setupViewPager()
         setupTabLayout()
         observeIsRecording()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setCurrentPage(intent)
+    }
+
+    private fun setCurrentPage(intent: Intent?) {
+        intent?.let {
+            val navigateToPage = it.getIntExtra(KEY_LAUNCH_PAGE, -1)
+            if (navigateToPage > -1 && navigateToPage < mainActivityVP.childCount) {
+                mainActivityTL.getTabAt(navigateToPage)?.select()
+                intent.removeExtra(KEY_LAUNCH_PAGE)
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setCurrentPage(intent)
     }
 
     private fun setupViewPager() {
@@ -81,5 +97,9 @@ class MainActivity : DaggerAppCompatActivity() {
         observe(recordViewModel.isRecording) {
             mainActivityVP?.swipingEnabled = !it
         }
+    }
+
+    companion object {
+        const val KEY_LAUNCH_PAGE = "KEY_LAUNCH_PAGE"
     }
 }

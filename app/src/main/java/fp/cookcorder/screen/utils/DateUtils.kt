@@ -19,8 +19,7 @@ fun getDateTimeFromEpoch(epoch: Long) =
 fun calculateTimeDifference(timeToCompare: Long): Triple<Long, Long, Long> {
     val time1 = Instant.ofEpochMilli(timeToCompare)
     val time2 = Instant.now()
-    val hours = ChronoUnit.HOURS.between(time2, time1)
-    val minutes = ChronoUnit.MINUTES.between(time2, time1) % 60
-    val seconds = ChronoUnit.SECONDS.between(time2, time1) % 60
-    return Triple(hours, minutes, seconds)
+    return Triple(ChronoUnit.HOURS.between(time2, time1),
+            ChronoUnit.MINUTES.between(time2, time1) % 60,
+            ChronoUnit.SECONDS.between(time2, time1) % 60)
 }

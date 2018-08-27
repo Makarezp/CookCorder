@@ -36,7 +36,9 @@ class RecordViewModel @Inject constructor(
             exe(taskManager.startRecordingNewTask()) { _ ->
                 isRecording.value = true
                 timerDisposable = recordTimeCounter()
-                        .subscribe { currentRecordTime.postValue(it) }
+                        .subscribeOn(schedulerFactory.single())
+                        .observeOn(schedulerFactory.ui())
+                        .subscribe { currentRecordTime.value = it }
             }
         } else requestRecordingPermission.call()
     }
@@ -62,7 +64,7 @@ class RecordViewModel @Inject constructor(
     }
 
     private fun recordTimeCounter(): Observable<String> {
-        return Observable.interval(1, TimeUnit.MILLISECONDS).map {
+        return Observable.interval(100, TimeUnit.MILLISECONDS).map {
             val milliseconds = it % 100
             val seconds = (it / 1000) % 60
             val minutes = (it / 1000) / 60

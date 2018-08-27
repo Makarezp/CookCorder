@@ -10,4 +10,6 @@ class SchedulerFactory @Inject() constructor() {
     fun io() = Schedulers.io()
 
     fun ui(): Scheduler = AndroidSchedulers.mainThread()
+
+    fun single() = Schedulers.single()
 }

@@ -146,6 +146,9 @@ class PlayService : DaggerService() {
 
     private fun createContentIntent(context: Context): PendingIntent {
         val startAppIntent = Intent(context, MainActivity::class.java)
+                .apply {
+                    putExtra(MainActivity.KEY_LAUNCH_PAGE, 2)
+                }
         return PendingIntent.getActivity(context, 200,
                 startAppIntent, PendingIntent.FLAG_UPDATE_CURRENT
         )
