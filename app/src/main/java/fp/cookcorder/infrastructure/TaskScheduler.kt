@@ -66,7 +66,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
 }
 
 
-private const val KEY_NOTIFICATION_CHANNEL = "KEY_NOTIFICATION_CHANNEL"
+const val KEY_NOTIFICATION_CHANNEL = "KEY_NOTIFICATION_CHANNEL"
 
 
 class PlayService : DaggerService() {
@@ -130,15 +130,6 @@ class PlayService : DaggerService() {
                           maxProgress: Int = 0) {
         val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notifChannel = NotificationChannel(
-                    KEY_NOTIFICATION_CHANNEL,
-                    context.getString(R.string.notif_channel_name),
-                    NotificationManager.IMPORTANCE_LOW
-            )
-            notificationManager.createNotificationChannel(notifChannel)
-        }
 
         val notif = buildNotif(time, title).setProgress(maxProgress, progres, false)
         notificationManager.notify(id, notif.build())

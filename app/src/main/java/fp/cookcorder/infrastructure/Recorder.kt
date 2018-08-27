@@ -69,10 +69,8 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
                 }
                 File(context.filesDir, it.fileName).delete()
                 emitter.onSuccess(Any())
-                Timber.d("kurwa1")
                 return@create
             }
-            Timber.d("kurwa2")
             emitter.onComplete()
         }
     }
@@ -88,7 +86,7 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
                     emitter.onSuccess(Recorder.FilenameToDuration(it.fileName, duration))
                     return@create
                 } catch (e: Exception) {
-                    Timber.d(e)
+                    Timber.e(e)
                     File(context.filesDir, it.fileName).delete()
                     emitter.onError(IllegalStateException("recording hasn't been saved"))
                     return@create

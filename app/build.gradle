@@ -21,9 +21,22 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
+        debug {
+            debuggable true
+            buildConfigField 'boolean', 'ENABLE_CRASHYLITCS', 'false'
+            minifyEnabled false
+
+        }
         release {
             minifyEnabled false
+            buildConfigField 'boolean', 'ENABLE_CRASHYLITCS', 'true'
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        staging {
+            initWith debug
+            buildConfigField 'boolean', 'ENABLE_CRASHYLITCS', 'true'
+            applicationIdSuffix ".debugStaging"
         }
     }
 }
