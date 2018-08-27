@@ -57,7 +57,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
     }
 
     private fun ticks(mediaPlayer: MediaPlayer): Observable<Pair<Int, Int>> {
-        return Observable.interval(1000, TimeUnit.MILLISECONDS)
+        return Observable.interval(200, TimeUnit.MILLISECONDS)
                 .map {
                     val currentPositionInSeconds = mediaPlayer.currentPosition
                     val durationInSeconds = mediaPlayer.duration

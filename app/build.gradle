@@ -36,7 +36,7 @@ android {
         staging {
             initWith debug
             buildConfigField 'boolean', 'ENABLE_CRASHYLITCS', 'true'
-            applicationIdSuffix ".debugStaging"
+//            applicationIdSuffix ".debugStaging"
         }
     }
 }
