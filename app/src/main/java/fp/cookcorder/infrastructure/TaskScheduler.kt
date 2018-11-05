@@ -1,9 +1,12 @@
 package fp.cookcorder.infrastructure
 
-import android.app.*
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Build.VERSION.SDK_INT
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
@@ -29,13 +32,13 @@ private const val KEY_INTENT_TASK_ID = "KEY_INTENT_TASK_ID"
 class TaskSchedulerImpl @Inject constructor(private val context: Context) : TaskScheduler {
 
     override fun scheduleTask(task: Task) {
-        val intent = createIntentForTaskScheduler(task)
+        val intent = Intent(context, TaskBroadcastReceiver::class.java)
+                .apply { putExtra(KEY_INTENT_TASK_ID, task.id) }
 
-        val pendingIntent =
-                createPenndingIntentForAlarmManager(task, intent)
+        val pendingIntent = PendingIntent
+                .getBroadcast(context, task.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(pendingIntent)
         if(SDK_INT >= 23) {
             alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
@@ -45,27 +48,13 @@ class TaskSchedulerImpl @Inject constructor(private val context: Context) : Task
         }
     }
 
-    private fun createIntentForTaskScheduler(task: Task) =
-            Intent(context, TaskBroadcastReceiver::class.java)
-                    .apply { putExtra(KEY_INTENT_TASK_ID, task.id) }
-
-    private fun createPenndingIntentForAlarmManager(task: Task, intent: Intent): PendingIntent? {
-        return PendingIntent
-                .getBroadcast(context, task.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
-    }
 }
 
 class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        Intent(context, PlayService::class.java)
-                .apply { putExtra(KEY_INTENT_TASK_ID, intent.getLongExtra(KEY_INTENT_TASK_ID, -1)) }
-                .let {
-                    if (SDK_INT >= 26)
-                        context.startForegroundService(it)
-                    else context.startService(it)
-                }
+        PlayService.startService(context, intent.getLongExtra(KEY_INTENT_TASK_ID, -1))
     }
 }
 
@@ -84,6 +73,18 @@ class PlayService : DaggerService() {
     @Inject
     lateinit var taskRepo: TaskRepo
 
+    companion object {
+        fun startService(context: Context, taskId: Long) {
+            Intent(context, PlayService::class.java)
+                    .apply { putExtra(KEY_INTENT_TASK_ID, taskId) }
+                    .let {
+                        if (SDK_INT >= 26)
+                            context.startForegroundService(it)
+                        else context.startService(it)
+                    }
+        }
+    }
+
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
         val notif = buildNotif()
 
@@ -93,6 +94,7 @@ class PlayService : DaggerService() {
     }
 
 
+    @SuppressLint("CheckResult")
     private fun performWork(intent: Intent, startId: Int) {
         taskRepo.getTask(intent.getLongExtra(KEY_INTENT_TASK_ID, -1))
                 .subscribeOn(schedulerProvider.io())
@@ -110,7 +112,6 @@ class PlayService : DaggerService() {
                                         it.second)
                             }
                             .doOnComplete {
-                                stopForeground(false)
                                 showNotif(
                                         applicationContext,
                                         task.id.toInt(),
@@ -119,12 +120,11 @@ class PlayService : DaggerService() {
                                         1,
                                         1)
                             }
-                }
+                }.doFinally { stopForeground(false) }
                 .subscribe({}, {
                     Timber.d(it)
                 })
     }
-
 
     private fun showNotif(context: Context,
                           id: Int,
@@ -160,9 +160,7 @@ class PlayService : DaggerService() {
                         setAutoCancel(true)
                         setOnlyAlertOnce(true)
                     }
-
-
-    override fun onBind(intent: Intent?): IBinder? {
+        override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 }
