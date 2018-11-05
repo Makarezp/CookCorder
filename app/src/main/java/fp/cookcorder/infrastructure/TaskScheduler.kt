@@ -36,8 +36,13 @@ class TaskSchedulerImpl @Inject constructor(private val context: Context) : Task
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         alarmManager.cancel(pendingIntent)
-        alarmManager.setExact(
-                AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
+        if(SDK_INT >= 23) {
+            alarmManager.setExactAndAllowWhileIdle(
+                    AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
+        } else {
+            alarmManager.setExact(
+                    AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
+        }
     }
 
     private fun createIntentForTaskScheduler(task: Task) =
@@ -49,7 +54,6 @@ class TaskSchedulerImpl @Inject constructor(private val context: Context) : Task
                 .getBroadcast(context, task.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
     }
 }
-
 
 class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
 
