@@ -2,9 +2,9 @@ package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
 import fp.cookcorder.app.util.minutestToMilliseconds
+import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
-import fp.cookcorder.manager.TaskManager
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import timber.log.Timber
@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RecordViewModel @Inject constructor(
-        private val taskManager: TaskManager
+        private val recordUseCase: RecordUseCase
 ) : BaseViewModel() {
 
     val isRecording = MutableLiveData<Boolean>()
@@ -33,7 +33,7 @@ class RecordViewModel @Inject constructor(
 
     fun requestNewRecord() {
         if (permissionGranted) {
-            exe(taskManager.startRecordingNewTask()) { _ ->
+            exe(recordUseCase.startRecordingNewTask()) { _ ->
                 isRecording.value = true
                 timerDisposable = recordTimeCounter()
                         .subscribeOn(schedulerFactory.io())
@@ -44,7 +44,7 @@ class RecordViewModel @Inject constructor(
     }
 
     fun cancelRecording() {
-        exe(taskManager.cancelRecordingNewTask()) {
+        exe(recordUseCase.cancelRecordingNewTask()) {
             isRecording.value = false
             recordCancelled.call()
             timerDisposable?.dispose()
@@ -52,7 +52,7 @@ class RecordViewModel @Inject constructor(
     }
 
     fun finishRecording(minutesToSchedule: Int, title: String?) {
-        exe(taskManager.finishRecordingNewTask(minutesToSchedule.minutestToMilliseconds(), title),
+        exe(recordUseCase.finishRecordingNewTask(minutesToSchedule.minutestToMilliseconds(), title),
                 onError = {
                     Timber.d(it)
                     isRecording.value = false

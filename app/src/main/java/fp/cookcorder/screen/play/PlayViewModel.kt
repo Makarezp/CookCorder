@@ -3,23 +3,22 @@ package fp.cookcorder.screen.play
 import android.arch.lifecycle.MutableLiveData
 import com.airbnb.epoxy.TypedEpoxyController
 import fp.cookcorder.app.SchedulerFactory
+import fp.cookcorder.domain.managetaskusecase.ManageTaskUseCase
+import fp.cookcorder.domain.play.PlayUseCase
 import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel
-import fp.cookcorder.manager.TaskManager
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.screen.utils.getDateTimeFromEpoch
 import fp.cookcorder.screen.utils.getTimeFromEpoch
 import io.reactivex.Observable
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
-import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
 
 class PlayViewModel @Inject constructor(
-        private val taskManager: TaskManager,
+        private val playUseCase: PlayUseCase,
+        private val manageTaskUseCase: ManageTaskUseCase,
         private val playCellController: PlayCellController,
         @Named(PlayFragmentModule.NAMED_IS_CURRENT) private val isCurrent: Boolean
 ) : BaseViewModel() {
@@ -31,7 +30,7 @@ class PlayViewModel @Inject constructor(
     @Inject
     fun init() {
         playCellController.viewModel = this
-        val taskObs = if (isCurrent) taskManager.getCurrentTasks() else taskManager.getPastTasks()
+        val taskObs = if (isCurrent) manageTaskUseCase.getCurrentTasks() else manageTaskUseCase.getPastTasks()
         exe(taskObs) {
             showNoTasks.value = it.isEmpty()
             playCellController.setData(it)
@@ -40,7 +39,7 @@ class PlayViewModel @Inject constructor(
     }
 
     fun play(task: Task): Observable<Pair<Int, Int>> {
-        return taskManager.playTask(task)
+        return playUseCase.playTask(task)
     }
 
     fun editTask(taskId: Long) {
@@ -48,7 +47,7 @@ class PlayViewModel @Inject constructor(
     }
 
     fun delete(task: Task) {
-        exe(taskManager.deleteTask(task)) {
+        exe(manageTaskUseCase.deleteTask(task)) {
             Timber.d("Task with id ${task.name} has been deleted")
         }
     }
