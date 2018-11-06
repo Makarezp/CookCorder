@@ -50,6 +50,19 @@ class PlayFragment : DaggerFragment() {
         observeShowEditTask()
     }
 
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        if(::viewModel.isInitialized) {
+            viewModel.isVisible = isVisibleToUser
+        }
+    }
+
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.isVisible = false
+    }
+
     private fun setNoTaskText() {
         if (arguments!!.getBoolean(KEY_IS_CURRENT)) {
             playFragmentTVNoTasks.setText(R.string.you_don_t_have_any_scheduled_tasks)
