@@ -28,9 +28,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.util.*
 import fp.cookcorder.screen.MainPagerAdapter
-import fp.cookcorder.screen.utils.handleCancellableTouch
+import fp.cookcorder.screen.utils.*
 import kotlinx.android.synthetic.main.action_button.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar

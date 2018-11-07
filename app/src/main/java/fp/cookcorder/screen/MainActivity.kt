@@ -7,9 +7,9 @@ import android.os.Bundle
 import dagger.android.support.DaggerAppCompatActivity
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.util.observe
 import fp.cookcorder.screen.record.RecordFragment
 import fp.cookcorder.screen.record.RecordViewModel
+import fp.cookcorder.screen.utils.observe
 import javax.inject.Inject
 
 

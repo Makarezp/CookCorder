@@ -1,4 +1,4 @@
-package fp.cookcorder.app.util
+package fp.cookcorder.screen.utils
 
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
@@ -6,7 +6,6 @@ import android.arch.lifecycle.Observer
 import android.content.res.Resources
 import android.view.View
 import android.widget.TextView
-import fp.cookcorder.screen.utils.SingleLiveEvent
 import timber.log.Timber
 
 fun View.onClick(onClickListener: (View) -> Unit) = this.setOnClickListener(onClickListener)

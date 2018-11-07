@@ -1,11 +1,11 @@
 package fp.cookcorder.screen.editdialog
 
 import android.arch.lifecycle.MutableLiveData
-import fp.cookcorder.app.util.minutestToMilliseconds
 import fp.cookcorder.domain.managetaskusecase.ManageTaskUseCase
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.screen.utils.calculateTimeDifference
+import fp.cookcorder.screen.utils.minutestToMilliseconds
 import javax.inject.Inject
 import javax.inject.Named
 

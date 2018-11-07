@@ -1,10 +1,10 @@
 package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
-import fp.cookcorder.app.util.minutestToMilliseconds
 import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
+import fp.cookcorder.screen.utils.minutestToMilliseconds
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import timber.log.Timber

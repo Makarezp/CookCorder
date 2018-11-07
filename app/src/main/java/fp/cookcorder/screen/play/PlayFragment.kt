@@ -10,10 +10,10 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.util.observe
-import fp.cookcorder.app.util.px
 import fp.cookcorder.screen.editdialog.EditDialog
 import fp.cookcorder.screen.record.RecordFragment
+import fp.cookcorder.screen.utils.observe
+import fp.cookcorder.screen.utils.px
 import kotlinx.android.synthetic.main.play_fragment.*
 import javax.inject.Inject
 
