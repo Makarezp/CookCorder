@@ -6,34 +6,40 @@ import android.animation.Animator
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.res.ColorStateList
+import android.graphics.Rect
+import android.graphics.Typeface
+import android.os.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
-import android.view.*
-import dagger.android.support.DaggerFragment
-import fp.cookcorder.R
-import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.util.invisible
-import fp.cookcorder.app.util.observe
-import fp.cookcorder.screen.utils.handleCancellableTouch
-import kotlinx.android.synthetic.main.main_fragment.*
-import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.design.snackbar
-import javax.inject.Inject
-import android.graphics.Rect
-import android.os.*
+import android.support.v4.graphics.drawable.DrawableCompat
+import android.view.LayoutInflater
+import android.view.MotionEvent
+import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import fp.cookcorder.app.util.visible
-import kotlinx.android.synthetic.main.action_button.*
-import timber.log.Timber
-import android.graphics.Typeface
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
+import dagger.android.support.DaggerFragment
+import fp.cookcorder.R
+import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.app.util.dp
-import fp.cookcorder.screen.play.PlayFragment
+import fp.cookcorder.app.util.invisible
+import fp.cookcorder.app.util.observe
+import fp.cookcorder.app.util.visible
+import fp.cookcorder.screen.MainPagerAdapter
+import fp.cookcorder.screen.utils.handleCancellableTouch
+import kotlinx.android.synthetic.main.action_button.*
+import kotlinx.android.synthetic.main.main_fragment.*
+import org.jetbrains.anko.design.longSnackbar
+import org.jetbrains.anko.design.snackbar
+import timber.log.Timber
+import javax.inject.Inject
 
 
 class RecordFragment : DaggerFragment() {
@@ -58,6 +64,8 @@ class RecordFragment : DaggerFragment() {
      */
     private var animationSuccess = false
 
+    @Inject
+    lateinit var pageAdapter: MainPagerAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -75,9 +83,36 @@ class RecordFragment : DaggerFragment() {
         setupEditTextFocusRemoval()
         setupSuccessAnimationListener()
         handleFirstRun()
-        childFragmentManager.beginTransaction().run {
-            replace(R.id.list, PlayFragment.newInstance(true))
-            commit()
+
+        setupViewPager()
+        setupTabLayout()
+    }
+
+    private fun setupViewPager() {
+        with(mainActivityVP) {
+            adapter = pageAdapter
+        }
+    }
+
+    private fun setupTabLayout() {
+        with(mainActivityTL) {
+            setupWithViewPager(mainActivityVP)
+            for (i in 0 until tabCount) {
+                getTabAt(i)?.icon =
+                        DrawableCompat.wrap(
+                                MainPagerAdapter.Page.get(i).getPageIcon(context)
+                        ).apply {
+                            DrawableCompat.setTintList(this, getTabTintList())
+                        }
+            }
+        }
+    }
+
+    private fun getTabTintList(): ColorStateList? {
+        return if (Build.VERSION.SDK_INT >= 23) {
+            resources.getColorStateList(R.color.tab_icon_selector, context!!.theme)
+        } else {
+            resources.getColorStateList(R.color.tab_icon_selector)
         }
     }
 
@@ -89,6 +124,18 @@ class RecordFragment : DaggerFragment() {
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { mainFragmentTVTime.text = it }
         }
+
+
+        sliding_layout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
+            override fun onPanelSlide(panel: View?, slideOffset: Float) {
+
+            }
+
+            override fun onPanelStateChanged(panel: View?,
+                                             previousState: SlidingUpPanelLayout.PanelState?,
+                                             newState: SlidingUpPanelLayout.PanelState?) {
+            }
+        })
     }
 
     private fun showSuccess() {

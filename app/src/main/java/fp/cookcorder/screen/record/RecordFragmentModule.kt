@@ -5,12 +5,11 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.screen.MainActivity
 
 @Module
 abstract class RecordFragmentModule {
 
-    @ContributesAndroidInjector
+    @ContributesAndroidInjector(modules = [InnerModule::class])
     abstract fun provideMainFragment(): RecordFragment
 
     @Module
@@ -20,11 +19,14 @@ abstract class RecordFragmentModule {
         @JvmStatic
         fun provideMainFragmentVm(vm: RecordViewModel) = ViewModelProviderFactory(vm)
 
+    }
+}
 
-        @Provides
-        @JvmStatic
-        fun provideFragmentManager(activity: MainActivity): FragmentManager {
-            return activity.supportFragmentManager
-        }
+@Module
+class InnerModule {
+
+    @Provides
+    fun provideFragmentManager(fragment: RecordFragment): FragmentManager {
+        return fragment.childFragmentManager
     }
 }

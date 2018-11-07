@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
 import fp.cookcorder.R
-import fp.cookcorder.screen.record.RecordFragment
 import fp.cookcorder.screen.play.PlayFragment
 import javax.inject.Inject
 
@@ -23,13 +22,10 @@ class MainPagerAdapter @Inject constructor(
     enum class Page(val position: Int,
                     val createFragment: () -> Fragment,
                     @DrawableRes val iconRes: Int) {
-        RECORD(0,
-                { RecordFragment.newInstance() },
-                R.drawable.ic_tab_record),
-        PLAY(1,
+        PLAY(0,
                 { PlayFragment.newInstance(isCurrent = true) },
                 R.drawable.ic_tab_scheduled),
-        HISTORY(2,
+        HISTORY(1,
                 { PlayFragment.newInstance(isCurrent = false) },
                 R.drawable.ic_tab_history);
 
