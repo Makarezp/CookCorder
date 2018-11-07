@@ -43,7 +43,7 @@ class PlayViewModel @Inject constructor(
     val showNoTasks = MutableLiveData<Boolean>()
     val editTaskCmd = SingleLiveEvent<Long>()
 
-    var isVisible: Boolean by Delegates.observable(false) {
+    var isVisible: Boolean by Delegates.observable(true) {
         property, oldValue, newValue ->
         tasks = tasks
     }

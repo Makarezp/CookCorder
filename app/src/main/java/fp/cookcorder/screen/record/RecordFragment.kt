@@ -33,6 +33,7 @@ import android.graphics.Typeface
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import fp.cookcorder.app.util.dp
+import fp.cookcorder.screen.play.PlayFragment
 
 
 class RecordFragment : DaggerFragment() {
@@ -74,6 +75,10 @@ class RecordFragment : DaggerFragment() {
         setupEditTextFocusRemoval()
         setupSuccessAnimationListener()
         handleFirstRun()
+        childFragmentManager.beginTransaction().run {
+            replace(R.id.list, PlayFragment.newInstance(true))
+            commit()
+        }
     }
 
     private fun observeLiveData() {
