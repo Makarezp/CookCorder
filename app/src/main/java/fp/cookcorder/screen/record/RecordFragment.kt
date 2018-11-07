@@ -28,10 +28,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.app.util.dp
-import fp.cookcorder.app.util.invisible
-import fp.cookcorder.app.util.observe
-import fp.cookcorder.app.util.visible
+import fp.cookcorder.app.util.*
 import fp.cookcorder.screen.MainPagerAdapter
 import fp.cookcorder.screen.utils.handleCancellableTouch
 import kotlinx.android.synthetic.main.action_button.*
@@ -83,38 +80,13 @@ class RecordFragment : DaggerFragment() {
         setupEditTextFocusRemoval()
         setupSuccessAnimationListener()
         handleFirstRun()
-
-        setupViewPager()
-        setupTabLayout()
+        setupSlidingUpLayout()
     }
 
-    private fun setupViewPager() {
-        with(mainActivityVP) {
-            adapter = pageAdapter
-        }
+    fun addSlidingPanelListener(listener: SlidingUpPanelLayout.PanelSlideListener) {
+        slidingLayout.addPanelSlideListener(listener)
     }
 
-    private fun setupTabLayout() {
-        with(mainActivityTL) {
-            setupWithViewPager(mainActivityVP)
-            for (i in 0 until tabCount) {
-                getTabAt(i)?.icon =
-                        DrawableCompat.wrap(
-                                MainPagerAdapter.Page.get(i).getPageIcon(context)
-                        ).apply {
-                            DrawableCompat.setTintList(this, getTabTintList())
-                        }
-            }
-        }
-    }
-
-    private fun getTabTintList(): ColorStateList? {
-        return if (Build.VERSION.SDK_INT >= 23) {
-            resources.getColorStateList(R.color.tab_icon_selector, context!!.theme)
-        } else {
-            resources.getColorStateList(R.color.tab_icon_selector)
-        }
-    }
 
     private fun observeLiveData() {
         with(viewModel) {
@@ -124,11 +96,37 @@ class RecordFragment : DaggerFragment() {
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { mainFragmentTVTime.text = it }
         }
+    }
 
+    private fun setupSlidingUpLayout() {
 
-        sliding_layout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
+        fun getTabTintList(): ColorStateList? {
+            return if (Build.VERSION.SDK_INT >= 23) {
+                resources.getColorStateList(R.color.tab_icon_selector, context!!.theme)
+            } else {
+                resources.getColorStateList(R.color.tab_icon_selector)
+            }
+        }
+
+        with(mainActivityTL) {
+
+            mainActivityVP.adapter = pageAdapter
+            setupWithViewPager(mainActivityVP)
+
+            for (i in 0 until tabCount) {
+                getTabAt(i)?.icon =
+                        DrawableCompat.wrap(
+                                MainPagerAdapter.Page.get(i).getPageIcon(context)
+                        ).apply {
+                            DrawableCompat.setTintList(this, getTabTintList())
+                        }
+            }
+        }
+
+        slidingLayout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
             override fun onPanelSlide(panel: View?, slideOffset: Float) {
-
+                mainActivityTL.alpha = slideOffset
+                mainActivityVP.translationY = -((1 - slideOffset) * 90).px
             }
 
             override fun onPanelStateChanged(panel: View?,
@@ -177,7 +175,6 @@ class RecordFragment : DaggerFragment() {
             }
         })
     }
-
 
     private fun setupRecordingButton() {
         floatingActionButton.setOnTouchListener(
@@ -295,7 +292,6 @@ class RecordFragment : DaggerFragment() {
             showIntro()
             prefs.edit().putBoolean(isFirstRunKey, false).apply()
         }
-
     }
 
     private fun showIntro() {

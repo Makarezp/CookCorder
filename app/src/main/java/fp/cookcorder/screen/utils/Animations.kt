@@ -1,9 +1,9 @@
 package fp.cookcorder.screen.utils
 
-import android.view.View
-import android.view.ViewAnimationUtils
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
+import android.view.View
+import android.view.ViewAnimationUtils
 
 
 fun circularReval(myView: View) {
@@ -44,3 +44,6 @@ fun circularHide(myView: View, onAnimationEnd: () -> Unit = {}) {
         anim.start()
     }
 }
+
+
+

@@ -6,11 +6,14 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.app.util.observe
+import fp.cookcorder.app.util.px
 import fp.cookcorder.screen.editdialog.EditDialog
+import fp.cookcorder.screen.record.RecordFragment
 import kotlinx.android.synthetic.main.play_fragment.*
 import javax.inject.Inject
 
@@ -48,6 +51,21 @@ class PlayFragment : DaggerFragment() {
         }
         setupRecycler()
         observeShowEditTask()
+        addRecyclerLayoutPositionListener()
+    }
+
+    private fun addRecyclerLayoutPositionListener() {
+        parentFragment?.let {
+            (it as RecordFragment)
+                    .addSlidingPanelListener(object : SlidingUpPanelLayout.PanelSlideListener {
+                        override fun onPanelSlide(panel: View?, slideOffset: Float) {
+                            playFragmentTVNoTasks.translationY = ((1 - slideOffset) * -230).px
+                        }
+
+                        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
+                        }
+                    })
+        }
     }
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
@@ -56,9 +74,7 @@ class PlayFragment : DaggerFragment() {
             viewModel.isVisible = isVisibleToUser
         }
     }
-
-
-    override fun onPause() {
+        override fun onPause() {
         super.onPause()
         viewModel.isVisible = false
     }
