@@ -21,8 +21,6 @@ class RecordViewModel @Inject constructor(
 
     val requestRecordingPermission = SingleLiveEvent<Void>()
 
-    var blockStartingNewRecording = false
-
     val recordSuccess = SingleLiveEvent<Void>()
 
     val recordCancelled = SingleLiveEvent<Void>()

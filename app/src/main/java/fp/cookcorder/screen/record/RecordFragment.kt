@@ -63,6 +63,9 @@ class RecordFragment : DaggerFragment() {
     @Inject
     lateinit var pageAdapter: MainPagerAdapter
 
+    @Inject
+    lateinit var recordAdapter: RecordViewPagerAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
@@ -73,6 +76,7 @@ class RecordFragment : DaggerFragment() {
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestAudioRecordingPermission()
+        viewPager.adapter = recordAdapter
 
         observeLiveData()
         setupRecordingButton()
@@ -81,6 +85,7 @@ class RecordFragment : DaggerFragment() {
         handleFirstRun()
         setupSlidingUpLayout()
     }
+
 
     fun addSlidingPanelListener(listener: SlidingUpPanelLayout.PanelSlideListener) {
         slidingLayout.addPanelSlideListener(listener)
@@ -93,7 +98,7 @@ class RecordFragment : DaggerFragment() {
             observe(recordSuccess) { showSuccess() }
             observe(recordCancelled) { snackbar(view!!, "Cancelled") }
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
-            observe(currentRecordTime) { mainFragmentTVTime.text = it }
+            observe(currentRecordTime) { timeTV.text = it }
         }
     }
 
@@ -211,9 +216,9 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun getMinutesToSchedule(): Int {
-        val hours = mainFragmentMinutePicker.hours * 60
-        val minutes = mainFragmentMinutePicker.minutes
-        return hours + minutes
+//        val hours = mainFragmentMinutePicker.hours * 60
+//        val minutes = mainFragmentMinutePicker.minutes
+        return 50
     }
 
 
@@ -294,7 +299,7 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun showIntro() {
-        val pirckerView = view!!.findViewById<View>(R.id.mainFragmentMinutePicker)
+        val pirckerView = view!!.findViewById<View>(R.id.minutePicker)
         val tapTargetPicker = TapTarget.forView(pirckerView, getString(R.string.time_picker_description_title), getString(R.string.time_picker_description))
                 // All options below are optional
                 .titleTextSize(20)                  // Specify the size (in sp) of the title text
