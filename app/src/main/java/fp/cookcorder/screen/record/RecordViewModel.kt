@@ -21,11 +21,15 @@ class RecordViewModel @Inject constructor(
 
     val requestRecordingPermission = SingleLiveEvent<Void>()
 
-    val recordSuccess = SingleLiveEvent<Void>()
+    val recordSuccess = MutableLiveData<Any>()
 
     val recordCancelled = SingleLiveEvent<Void>()
 
     val currentRecordTime = MutableLiveData<String>()
+
+    var currentMinutesToSchedule = 0
+
+    var title: String? = null
 
     private var timerDisposable: Disposable? = null
 
@@ -49,14 +53,15 @@ class RecordViewModel @Inject constructor(
         }
     }
 
-    fun finishRecording(minutesToSchedule: Int, title: String?) {
-        exe(recordUseCase.finishRecordingNewTask(minutesToSchedule.minutestToMilliseconds(), title),
+    fun finishRecording() {
+        exe(recordUseCase.finishRecordingNewTask(currentMinutesToSchedule.minutestToMilliseconds(), title),
                 onError = {
                     Timber.d(it)
                     isRecording.value = false
                     timerDisposable?.dispose()
                 }) {
-            recordSuccess.call()
+            recordSuccess.value = Any()
+            recordSuccess.value = null
             isRecording.postValue(false)
             timerDisposable?.dispose()
         }

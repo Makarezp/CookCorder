@@ -1,4 +1,4 @@
-package fp.cookcorder.screen.record.time
+package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
@@ -8,10 +8,10 @@ import android.view.ViewGroup
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.screen.record.RecordViewModel
+import kotlinx.android.synthetic.main.time_fragment.*
 import javax.inject.Inject
 
-class TimeFragment: DaggerFragment() {
+class TimeFragment : DaggerFragment() {
 
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
@@ -25,6 +25,9 @@ class TimeFragment: DaggerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
+        minutePicker.onValueChangedListener = { hours, minutes, _ ->
+            viewModel.currentMinutesToSchedule = hours * 60 + minutes
+        }
     }
 
 }

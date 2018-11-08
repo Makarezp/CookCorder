@@ -7,7 +7,6 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
-import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.*
 import android.support.v4.app.ActivityCompat
@@ -16,12 +15,8 @@ import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.EditorInfo
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -80,7 +75,6 @@ class RecordFragment : DaggerFragment() {
 
         observeLiveData()
         setupRecordingButton()
-        setupEditTextFocusRemoval()
         setupSuccessAnimationListener()
         handleFirstRun()
         setupSlidingUpLayout()
@@ -141,7 +135,7 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun showSuccess() {
-        mainFragmentETTitle.text = null
+//        mainFragmentETTitle.text = null
 
         with(success) {
             visible()
@@ -185,8 +179,7 @@ class RecordFragment : DaggerFragment() {
                 handleCancellableTouch(
                         { viewModel.requestNewRecord() },
                         {
-                            viewModel.finishRecording(
-                                    getMinutesToSchedule(), mainFragmentETTitle.text.toString())
+                            viewModel.finishRecording()
                         },
                         { viewModel.cancelRecording() }
                 ).invoke()
@@ -214,13 +207,6 @@ class RecordFragment : DaggerFragment() {
             v.vibrate(100)
         }
     }
-
-    private fun getMinutesToSchedule(): Int {
-//        val hours = mainFragmentMinutePicker.hours * 60
-//        val minutes = mainFragmentMinutePicker.minutes
-        return 50
-    }
-
 
     private fun requestAudioRecordingPermission() {
 
@@ -252,41 +238,6 @@ class RecordFragment : DaggerFragment() {
         }
     }
 
-    private fun setupEditTextFocusRemoval() {
-        removeEditTextFocusOnClickOutside()
-        removeEditTextFocusOnDone()
-    }
-
-    private fun removeEditTextFocusOnClickOutside() {
-        main.setOnTouchListener { _, event ->
-            if (event.action == MotionEvent.ACTION_DOWN) {
-                val v = activity!!.currentFocus
-                if (v is EditText) {
-                    val outRect = Rect()
-                    v.getGlobalVisibleRect(outRect)
-                    if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
-                        clearFocusAndHideKeyboard(v)
-                    }
-                }
-            }
-            false
-        }
-    }
-
-    private fun clearFocusAndHideKeyboard(v: View) {
-        v.clearFocus()
-        val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(v.windowToken, 0)
-    }
-
-    private fun removeEditTextFocusOnDone() {
-        mainFragmentETTitle.setOnEditorActionListener { v, actionId, event ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                clearFocusAndHideKeyboard(v)
-                true
-            } else false
-        }
-    }
 
 
     private fun handleFirstRun() {

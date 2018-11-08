@@ -894,7 +894,7 @@ public class NumberPickerView extends View {
     }
 
     //compatible for NumberPicker
-    private void onScrollStateChange(int scrollState) {
+    private void  onScrollStateChange(int scrollState) {
         if (mScrollState == scrollState) {
             return;
         }

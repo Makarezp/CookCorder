@@ -5,7 +5,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.screen.record.time.TimeFragment
 
 @Module
 abstract class RecordFragmentModule {
@@ -29,6 +28,9 @@ abstract class InnerModule {
 
     @ContributesAndroidInjector
     abstract fun provideTimeFragment(): TimeFragment
+
+    @ContributesAndroidInjector
+    abstract fun provideOptionsFragment(): OptionsFragment
 
     @Module
     companion object {

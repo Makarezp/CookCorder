@@ -36,6 +36,8 @@ class ScrollHmsPicker @JvmOverloads constructor(
 
     private var autoStep: Boolean = false
 
+    var onValueChangedListener: ((Int, Int, Int) -> Unit)? = null
+
     var hours: Int
         get() = pickerHours.value
         set(value) = setSafeHours(value)
@@ -109,6 +111,7 @@ class ScrollHmsPicker @JvmOverloads constructor(
         }
 
         extendPickerTouchRange()
+        setPickersValueChangedListeners()
     }
 
     fun setColorNormal(@ColorRes res: Int) {
@@ -168,6 +171,18 @@ class ScrollHmsPicker @JvmOverloads constructor(
 //        } else {
         picker.value = value
 //        }
+    }
+
+    private fun setPickersValueChangedListeners() {
+        fun onValueChanged() {
+            onValueChangedListener?.invoke(
+                    pickerHours.value,
+                    pickerMinutes.value,
+                    pickerSeconds.value)
+        }
+        pickerHours.setOnValueChangedListener { _, _, _ -> onValueChanged() }
+        pickerMinutes.setOnValueChangedListener { _, _, _ -> onValueChanged() }
+        pickerSeconds.setOnValueChangedListener { _, _, _ -> onValueChanged() }
     }
 
     override fun onSaveInstanceState(): Parcelable = SavedState(super.onSaveInstanceState())
