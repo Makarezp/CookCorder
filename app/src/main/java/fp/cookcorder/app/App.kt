@@ -31,7 +31,6 @@ class App : DaggerApplication() {
         } else {
             Timber.plant(Timber.DebugTree())
         }
-
     }
 
     override fun applicationInjector(): AndroidInjector<out DaggerApplication> {
