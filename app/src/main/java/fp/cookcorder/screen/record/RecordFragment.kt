@@ -122,7 +122,6 @@ class RecordFragment : DaggerFragment() {
             }
         }
 
-        slidingLayout.coveredFadeColor = ContextCompat.getColor(context!!, R.color.colorPrimary)
         slidingLayout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
             override fun onPanelSlide(panel: View?, slideOffset: Float) {
                 mainActivityTL.alpha = slideOffset
