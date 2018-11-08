@@ -37,8 +37,7 @@ class PlayViewModel @Inject constructor(
     val showNoTasks = MutableLiveData<Boolean>()
     val editTaskCmd = SingleLiveEvent<Long>()
 
-    var isVisible: Boolean by Delegates.observable(true) {
-        property, oldValue, newValue ->
+    var isVisible: Boolean by Delegates.observable(true) { property, oldValue, newValue ->
         tasks = tasks
     }
     private var tasks: List<Task> by Delegates.observable(emptyList()) { property, oldValue, newValue ->
@@ -60,6 +59,10 @@ class PlayViewModel @Inject constructor(
 
     fun play(task: Task): Observable<Pair<Int, Int>> {
         return playUseCase.playTask(task)
+    }
+
+    fun stopPlaying(task: Task, onSuccess: () -> Unit) {
+        exe(playUseCase.stopPlayingTask(task)) { onSuccess() }
     }
 
     fun editTask(taskId: Long) {
@@ -121,28 +124,43 @@ class PlayAdapter @Inject constructor(
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         val task = differ.currentList[position]
+        var isPlaying = false
         with(holder) {
             title.setTextHideIfNull(task.title)
             playButton.setOnClickListener { _ ->
-                viewModel.play(task)
-                        .subscribeOn(schedulerFactory.io())
-                        .observeOn(schedulerFactory.ui()).let { progressToMax ->
-                            recordCompositeDisposable.clear()
-                            seekBar.visible()
-                            recordCompositeDisposable.addAll(progressToMax
-                                    .subscribe(
-                                            {
-                                                seekBar.max = it.second
-                                                seekBar.progress = it.first
+                if (!isPlaying) {
+                    viewModel.play(task)
+                            .subscribeOn(schedulerFactory.io())
+                            .observeOn(schedulerFactory.ui()).let { progressToMax ->
+                                recordCompositeDisposable.clear()
+                                seekBar.visible()
+                                isPlaying = true
+                                playButton.setImageResource(R.drawable.ic_stop)
+                                recordCompositeDisposable.addAll(progressToMax
+                                        .subscribe(
+                                                {
+                                                    seekBar.max = it.second
+                                                    seekBar.progress = it.first
 
-                                            },
-                                            { Timber.d(it) },
-                                            {
-                                                seekBar.visibility = View.INVISIBLE
-                                                seekBar.progress = 0
-                                            })
-                            )
-                        }
+                                                },
+                                                { Timber.d(it) },
+                                                {
+                                                    seekBar.visibility = View.INVISIBLE
+                                                    seekBar.progress = 0
+                                                    isPlaying = false
+                                                    playButton.setImageResource(R.drawable.ic_play)
+                                                })
+                                )
+                            }
+                } else {
+                    viewModel.stopPlaying(task) {
+                        seekBar.visibility = View.INVISIBLE
+                        seekBar.progress = 0
+                        isPlaying = false
+                        playButton.setImageResource(R.drawable.ic_play)
+                    }
+
+                }
             }
             editButton.setOnClickListener { viewModel.editTask(task.id) }
             deleteButton.setOnClickListener { viewModel.delete(task) }

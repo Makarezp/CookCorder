@@ -8,6 +8,7 @@ import android.media.MediaPlayer
 import android.os.Build.VERSION.SDK_INT
 import android.support.annotation.RequiresApi
 import io.reactivex.Observable
+import io.reactivex.Single
 import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
@@ -16,12 +17,15 @@ import javax.inject.Inject
 
 interface Player {
     fun play(fileName: String, doAfterComplete: (() -> Unit)? = null): Observable<Pair<Int, Int>>
+    fun stopPlaying(fileName: String): Single<Any>
 }
 
 private const val STREAM_TYPE = AudioManager.STREAM_MUSIC
 private const val AUDIO_FOCUS_TYPE = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE
 
 class PlayerImpl @Inject constructor(private val context: Context) : Player {
+
+    private var mediaPlayerCache = emptyMap<String, MediaPlayer>()
 
     private val audioManager: AudioManager by lazy {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
@@ -51,6 +55,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         }
 
         return Observable.just(mediaPlayer)
+                .doAfterNext { mediaPlayerCache = mediaPlayerCache.plus(fileName to it) }
                 .flatMap { ticks(it) }
                 .takeUntil(complete(mediaPlayer))
                 .doOnComplete { mediaPlayer.release() }
@@ -71,6 +76,18 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
                 it.onNext(player)
                 it.onComplete()
             }
+        }
+    }
+
+    override fun stopPlaying(fileName: String): Single<Any> {
+        return try {
+            val mediaPlayer = mediaPlayerCache[fileName] ?: throw NullPointerException()
+            mediaPlayer.stop()
+            mediaPlayer.release()
+            mediaPlayerCache = mediaPlayerCache.minus(fileName)
+            Single.just(true)
+        } catch (e: Exception) {
+            Single.just(e)
         }
     }
 }
