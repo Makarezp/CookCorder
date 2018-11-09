@@ -72,6 +72,7 @@ class RecordFragment : DaggerFragment() {
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestAudioRecordingPermission()
         viewPager.adapter = recordAdapter
+        indicator.setViewPager(viewPager)
 
         observeLiveData()
         setupRecordingButton()
@@ -241,12 +242,12 @@ class RecordFragment : DaggerFragment() {
 
 
     private fun handleFirstRun() {
-        val isFirstRunKey = "RecordFragmentFirstRun"
-        val isFirstRun = prefs.getBoolean(isFirstRunKey, true)
-        if (isFirstRun) {
-            showIntro()
-            prefs.edit().putBoolean(isFirstRunKey, false).apply()
-        }
+//        val isFirstRunKey = "RecordFragmentFirstRun"
+//        val isFirstRun = prefs.getBoolean(isFirstRunKey, true)
+//        if (isFirstRun) {
+//            showIntro()
+//            prefs.edit().putBoolean(isFirstRunKey, false).apply()
+//        }
     }
 
     private fun showIntro() {
