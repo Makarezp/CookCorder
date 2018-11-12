@@ -129,6 +129,7 @@ class PlayService : DaggerService() {
             }
             STOP_TASK -> {
                 stopPlayingTask(taskId)
+                stopForeground(false)
             }
         }
 
@@ -147,6 +148,11 @@ class PlayService : DaggerService() {
                             .doOnSubscribe {
                                 mediaSession.setCallback(createCallback())
                                 mediaSession.isActive = true
+                                showNotif(
+                                        applicationContext,
+                                        task.id,
+                                        task.title,
+                                        getTimeFromEpoch(task.scheduleTime))
                             }
                             .debounce(500, TimeUnit.MILLISECONDS)
                             .doAfterNext {
@@ -165,7 +171,8 @@ class PlayService : DaggerService() {
                                         task.title,
                                         getTimeFromEpoch(task.scheduleTime),
                                         1,
-                                        1)
+                                        1,
+                                        false)
                             }
                             .doFinally {
                                 mediaSession.isActive = false
