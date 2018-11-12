@@ -13,7 +13,10 @@ interface RecordUseCase: UseCase {
 
     fun startRecordingNewTask(): Maybe<Any>
 
-    fun finishRecordingNewTask(msToSchedule: Long, title: String?): Maybe<Task>
+    fun finishRecordingNewTask(
+            msToSchedule: Long,
+            title: String?,
+            repeats: Int): Maybe<Task>
 
     fun cancelRecordingNewTask(): Maybe<Any>
 
@@ -28,7 +31,9 @@ class RecordUseCaseImpl @Inject constructor(
         return recorder.startRecording("r${Random().nextInt()}")
     }
 
-    override fun finishRecordingNewTask(msToSchedule: Long, title: String?): Maybe<Task> {
+    override fun finishRecordingNewTask(msToSchedule: Long,
+                                        title: String?,
+                                        repeats: Int): Maybe<Task> {
         return recorder.finishRecording()
                 .map { record ->
                     val scheduleTime = System.currentTimeMillis() + msToSchedule
@@ -36,7 +41,8 @@ class RecordUseCaseImpl @Inject constructor(
                             title = title,
                             name = record.fileName,
                             duration = record.duration,
-                            scheduleTime = scheduleTime))
+                            scheduleTime = scheduleTime,
+                            repeats = repeats))
                 }
                 .doAfterSuccess {
                     taskScheduler.scheduleTask(it)

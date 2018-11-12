@@ -31,6 +31,8 @@ class RecordViewModel @Inject constructor(
 
     var title: String? = null
 
+    var repeats = MutableLiveData<Int>().apply { value = 1 }
+
     private var timerDisposable: Disposable? = null
 
     fun requestNewRecord() {
@@ -54,7 +56,11 @@ class RecordViewModel @Inject constructor(
     }
 
     fun finishRecording() {
-        exe(recordUseCase.finishRecordingNewTask(currentMinutesToSchedule.minutestToMilliseconds(), title),
+        exe(recordUseCase
+                .finishRecordingNewTask(
+                        currentMinutesToSchedule.minutestToMilliseconds(),
+                        title,
+                        repeats.value ?: 1),
                 onError = {
                     Timber.d(it)
                     isRecording.value = false

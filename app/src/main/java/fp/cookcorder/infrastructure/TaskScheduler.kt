@@ -101,7 +101,7 @@ class PlayService : DaggerService() {
                 .doAfterSuccess { taskRepo.saveTask(it) }
                 .observeOn(schedulerProvider.ui())
                 .flatMapObservable { task ->
-                    player.play(task.name)
+                    player.play(task.name, task.repeats)
                             .doAfterNext {
                                 showNotif(
                                         applicationContext,

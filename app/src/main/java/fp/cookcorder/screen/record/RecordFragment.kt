@@ -81,7 +81,6 @@ class RecordFragment : DaggerFragment() {
         setupSlidingUpLayout()
     }
 
-
     fun addSlidingPanelListener(listener: SlidingUpPanelLayout.PanelSlideListener) {
         slidingLayout.addPanelSlideListener(listener)
     }
@@ -136,7 +135,6 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun showSuccess() {
-//        mainFragmentETTitle.text = null
 
         with(success) {
             visible()

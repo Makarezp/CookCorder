@@ -11,5 +11,5 @@ data class Task(
         val name: String,
         var duration: Int,
         var scheduleTime: Long,
-        var numberOfRepeats: Int = 1
+        var repeats: Int = 1
 )

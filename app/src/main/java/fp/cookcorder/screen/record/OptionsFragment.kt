@@ -14,9 +14,11 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.SeekBar
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.screen.utils.observe
 import kotlinx.android.synthetic.main.options_fragment.*
 import javax.inject.Inject
 
@@ -45,13 +47,31 @@ class OptionsFragment: DaggerFragment() {
         })
 
         setupEditTextFocusRemoval()
+        setupSeekBar()
+        observeLiveData()
+    }
 
+    private fun observeLiveData() {
         viewModel.recordSuccess.observe(this, Observer {
             titleET.text = null
         })
 
+        observe(viewModel.repeats) {
+            repeatsTV.text = it.toString()
+        }
     }
 
+
+    private fun setupSeekBar() {
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
+            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                viewModel.repeats.value = progress
+            }
+
+            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+        })
+    }
 
     private fun setupEditTextFocusRemoval() {
         removeEditTextFocusOnClickOutside()
