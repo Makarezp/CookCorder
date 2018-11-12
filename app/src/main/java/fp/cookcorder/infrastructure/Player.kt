@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 
 interface Player {
-    fun play(fileName: String, doAfterComplete: (() -> Unit)? = null): Observable<Pair<Int, Int>>
+    fun play(fileName: String, repeats: Int): Observable<Pair<Int, Int>>
     fun stopPlaying(fileName: String): Single<Any>
 }
 
@@ -30,7 +30,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
-    override fun play(fileName: String, doAfterComplete: (() -> Unit)?): Observable<Pair<Int, Int>> {
+    override fun play(fileName: String, repeats: Int): Observable<Pair<Int, Int>> {
 //        val currentVolume = audioManager.getStreamVolume(STREAM_TYPE)
 //        val maxVolume = audioManager.getStreamMaxVolume(STREAM_TYPE)
 //        audioManager.setStreamVolume(STREAM_TYPE, maxVolume, 0)
@@ -38,11 +38,11 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         val focusRequest = if (SDK_INT >= 26) FocusRequestAPI26(audioManager) else
             FocusRequestBelowAPI26(audioManager)
 
-        return focusRequest.requestAudioFocus(startPlaying(fileName))
+        return focusRequest.requestAudioFocus(startPlaying(fileName, repeats))
     }
 
 
-    private fun startPlaying(fileName: String, repeat: Int = 1): Observable<Pair<Int, Int>> {
+    private fun startPlaying(fileName: String, repeats: Int): Observable<Pair<Int, Int>> {
         val mediaPlayer = MediaPlayer()
 
         return Observable.just(mediaPlayer)
@@ -53,7 +53,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
                     Observable.create<MediaPlayer> {
                         mediaPlayer.setOnCompletionListener { player ->
                             counter++
-                            if (counter < repeat) {
+                            if (counter < repeats) {
                                 it.onNext(player)
                             } else {
                                 proceed = false

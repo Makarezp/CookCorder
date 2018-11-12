@@ -11,14 +11,14 @@ typealias ProgressToMax = Pair<Int, Int>
 
 interface PlayUseCase : UseCase {
 
-    fun playTask(task: Task): Observable<ProgressToMax>
+    fun playTask(task: Task, repeats: Int = 1): Observable<ProgressToMax>
     fun stopPlayingTask(task: Task): Single<Any>
 }
 
 class PlayUseCaseImpl @Inject constructor(private val player: Player): PlayUseCase {
 
-    override fun playTask(task: Task): Observable<Pair<Int, Int>> {
-        return player.play(task.name)
+    override fun playTask(task: Task, repeats: Int): Observable<Pair<Int, Int>> {
+        return player.play(task.name, repeats)
     }
 
     override fun stopPlayingTask(task: Task): Single<Any> {
