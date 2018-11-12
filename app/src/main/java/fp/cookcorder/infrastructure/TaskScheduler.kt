@@ -90,11 +90,7 @@ class PlayService : DaggerService() {
         private const val STOP_TASK = 2
 
         fun play(context: Context, taskId: Long) {
-            Intent(context, PlayService::class.java)
-                    .apply {
-                        putExtra(KEY_INTENT_TASK_ID, taskId)
-                        putExtra(KEY_TASK_TYPE, PLAY_TASK)
-                    }
+            getPlayIntent(context, taskId)
                     .let {
                         if (SDK_INT >= 26)
                             context.startForegroundService(it)
@@ -102,7 +98,14 @@ class PlayService : DaggerService() {
                     }
         }
 
-        fun stopPlaying(context: Context, taskId: Long): Intent =
+        private fun getPlayIntent(context: Context, taskId: Long) =
+                Intent(context, PlayService::class.java)
+                        .apply {
+                            putExtra(KEY_INTENT_TASK_ID, taskId)
+                            putExtra(KEY_TASK_TYPE, PLAY_TASK)
+                        }
+
+        private fun getStopPlayingIntent(context: Context, taskId: Long): Intent =
                 Intent(context, PlayService::class.java)
                         .apply {
                             putExtra(KEY_INTENT_TASK_ID, taskId)
@@ -116,7 +119,10 @@ class PlayService : DaggerService() {
         when (intent.getIntExtra(KEY_TASK_TYPE, -1)) {
 
             PLAY_TASK -> {
-                val notif = buildNotif(taskId)
+                val notif = buildNotif(taskId,
+                        null,
+                        null,
+                        true)
 
                 startForeground(taskId.toInt(), notif.build())
                 play(taskId)
@@ -181,6 +187,17 @@ class PlayService : DaggerService() {
                 .subscribeOn(schedulerProvider.io())
                 .flatMap {
                     player.stopPlaying(it.name)
+                            .doAfterSuccess { _ ->
+                                showNotif(
+                                        applicationContext,
+                                        it.id,
+                                        it.title,
+                                        getTimeFromEpoch(it.scheduleTime),
+                                        1,
+                                        1,
+                                        false
+                                )
+                            }
                 }.subscribe({
                     Timber.d("Success")
                 }, {
@@ -194,11 +211,12 @@ class PlayService : DaggerService() {
                           title: String?,
                           time: String,
                           progress: Int = 0,
-                          maxProgress: Int = 0) {
+                          maxProgress: Int = 0,
+                          play: Boolean = true) {
         val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notif = buildNotif(id, time, title)
+        val notif = buildNotif(id, time, title, play)
         notificationManager.notify(id.toInt(), notif.build())
     }
 
@@ -213,10 +231,22 @@ class PlayService : DaggerService() {
     }
 
     private fun createStopIntent(context: Context, taskId: Long): PendingIntent {
-        val stopPlayingIntent = stopPlaying(context, taskId)
-        return PendingIntent.getService(context, taskId.toInt(), stopPlayingIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+        return PendingIntent.getService(context,
+                taskId.toInt(),
+                getStopPlayingIntent(context, taskId),
+                PendingIntent.FLAG_CANCEL_CURRENT)
     }
-    private fun buildNotif(taskId: Long, time: String? = null, title: String? = null): NotificationCompat.Builder {
+
+    private fun createPlayIntent(context: Context, taskId: Long): PendingIntent {
+        return PendingIntent.getService(context, taskId.toInt(),
+                getPlayIntent(context, taskId),
+                PendingIntent.FLAG_CANCEL_CURRENT)
+    }
+
+    private fun buildNotif(taskId: Long,
+                           time: String? = null,
+                           title: String? = null,
+                           play: Boolean): NotificationCompat.Builder {
         return NotificationCompat.Builder(applicationContext, KEY_NOTIFICATION_CHANNEL)
                 .apply {
                     priority = NotificationCompat.PRIORITY_MAX
@@ -232,7 +262,11 @@ class PlayService : DaggerService() {
                             .setMediaSession(mediaSession.sessionToken)
                             .setShowCancelButton(true)
                     )
-                    addAction(android.R.drawable.ic_media_pause, "Stop", createStopIntent(applicationContext, taskId))
+                    if (play) {
+                        addAction(android.R.drawable.ic_media_pause, "Stop", createStopIntent(applicationContext, taskId))
+                    } else {
+                        addAction(android.R.drawable.ic_media_play, "Play", createPlayIntent(applicationContext, taskId))
+                    }
                 }
     }
 
