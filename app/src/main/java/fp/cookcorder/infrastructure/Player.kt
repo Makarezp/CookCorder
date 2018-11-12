@@ -9,7 +9,6 @@ import android.os.Build.VERSION.SDK_INT
 import android.support.annotation.RequiresApi
 import io.reactivex.Observable
 import io.reactivex.Single
-import timber.log.Timber
 import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -43,40 +42,68 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
     }
 
 
-    private fun startPlaying(fileName: String): Observable<Pair<Int, Int>> {
-        val mediaPlayer = MediaPlayer().apply {
-            try {
-                setDataSource(File(context.filesDir, fileName).path)
-                prepareAsync()
-                setOnPreparedListener { start() }
-            } catch (e: Exception) {
-                Timber.e(e)
-            }
-        }
+    private fun startPlaying(fileName: String, repeat: Int = 1): Observable<Pair<Int, Int>> {
+        val mediaPlayer = MediaPlayer()
 
         return Observable.just(mediaPlayer)
                 .doAfterNext { mediaPlayerCache = mediaPlayerCache.plus(fileName to it) }
-                .flatMap { ticks(it) }
-                .takeUntil(complete(mediaPlayer))
-                .doOnComplete { mediaPlayer.release() }
+                .flatMap {
+                    var counter = 0
+                    var proceed = true
+                    Observable.create<MediaPlayer> {
+                        mediaPlayer.setOnCompletionListener { player ->
+                            counter++
+                            if (counter < repeat) {
+                                it.onNext(player)
+                            } else {
+                                proceed = false
+                                it.onComplete()
+                            }
+                        }
+                        it.onNext(mediaPlayer)
+                    }.flatMap { mediaPlayer ->
+                        startPlaying(mediaPlayer, fileName)
+                    }
+                            .flatMap { ticks(it) }
+                            .takeWhile { proceed }
+                }
+                .doFinally {
+                    mediaPlayerCache = mediaPlayerCache.minus(fileName)
+                    mediaPlayer.release()
+                }
+
+    }
+
+    private fun startPlaying(mediaPlayer: MediaPlayer, fileName: String): Observable<MediaPlayer>? {
+        return Observable.create<MediaPlayer> {
+            with(mediaPlayer) {
+                reset()
+                setDataSource(File(context.filesDir, fileName).path)
+                prepareAsync()
+                setOnPreparedListener { mediaPlayer ->
+                    start()
+                    it.onNext(mediaPlayer)
+                    it.onComplete()
+                }
+            }
+        }
     }
 
     private fun ticks(mediaPlayer: MediaPlayer): Observable<Pair<Int, Int>> {
-        return Observable.interval(200, TimeUnit.MILLISECONDS)
+        var previousPosition = 0 to 0
+        return Observable.interval(16, TimeUnit.MILLISECONDS)
                 .map {
-                    val currentPositionInSeconds = mediaPlayer.currentPosition
-                    val durationInSeconds = mediaPlayer.duration
-                    Pair(currentPositionInSeconds, durationInSeconds)
+                    try {
+                        if (mediaPlayer.isPlaying) {
+                            val currentPositionInSeconds = mediaPlayer.currentPosition
+                            val durationInSeconds = mediaPlayer.duration
+                            previousPosition = Pair(currentPositionInSeconds, durationInSeconds)
+                        }
+                        previousPosition
+                    } catch (e: Exception) {
+                        previousPosition
+                    }
                 }
-    }
-
-    private fun complete(mediaPlayer: MediaPlayer): Observable<MediaPlayer> {
-        return Observable.create {
-            mediaPlayer.setOnCompletionListener { player ->
-                it.onNext(player)
-                it.onComplete()
-            }
-        }
     }
 
     override fun stopPlaying(fileName: String): Single<Any> {
@@ -105,7 +132,6 @@ private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusR
                 return startPlaying.doOnComplete {
                     abandonFocusApi26(audioFocusRequest)
                 }
-
 
             }
         }

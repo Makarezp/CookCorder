@@ -145,6 +145,7 @@ class PlayAdapter @Inject constructor(
                                                 },
                                                 { Timber.d(it) },
                                                 {
+                                                    seekBar.progress = seekBar.max
                                                     seekBar.visibility = View.INVISIBLE
                                                     seekBar.progress = 0
                                                     isPlaying = false
