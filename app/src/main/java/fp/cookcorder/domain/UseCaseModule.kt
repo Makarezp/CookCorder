@@ -2,8 +2,8 @@ package fp.cookcorder.domain
 
 import dagger.Binds
 import dagger.Module
-import fp.cookcorder.domain.managetaskusecase.ManageTaskUseCase
-import fp.cookcorder.domain.managetaskusecase.ManageTaskUseCaseImpl
+import fp.cookcorder.domain.managetask.ManageTaskUseCase
+import fp.cookcorder.domain.managetask.ManageTaskUseCaseImpl
 import fp.cookcorder.domain.play.PlayUseCase
 import fp.cookcorder.domain.play.PlayUseCaseImpl
 import fp.cookcorder.domain.record.RecordUseCase

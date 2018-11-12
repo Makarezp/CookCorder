@@ -11,6 +11,7 @@ import android.os.Build.VERSION.SDK_INT
 import android.os.IBinder
 import android.support.v4.app.NotificationCompat
 import android.support.v4.content.ContextCompat
+import android.support.v4.media.session.MediaSessionCompat
 import dagger.android.DaggerBroadcastReceiver
 import dagger.android.DaggerService
 import fp.cookcorder.R
@@ -20,6 +21,7 @@ import fp.cookcorder.repo.TaskRepo
 import fp.cookcorder.screen.MainActivity
 import fp.cookcorder.screen.utils.getTimeFromEpoch
 import timber.log.Timber
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 interface TaskScheduler {
@@ -39,7 +41,7 @@ class TaskSchedulerImpl @Inject constructor(private val context: Context) : Task
                 .getBroadcast(context, task.id.toInt(), intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        if(SDK_INT >= 23) {
+        if (SDK_INT >= 23) {
             alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP, task.scheduleTime, pendingIntent)
         } else {
@@ -54,7 +56,7 @@ class TaskBroadcastReceiver : DaggerBroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        PlayService.startService(context, intent.getLongExtra(KEY_INTENT_TASK_ID, -1))
+        PlayService.play(context, intent.getLongExtra(KEY_INTENT_TASK_ID, -1))
     }
 }
 
@@ -73,39 +75,78 @@ class PlayService : DaggerService() {
     @Inject
     lateinit var taskRepo: TaskRepo
 
+
+    val mediaSession: MediaSessionCompat by lazy {
+        MediaSessionCompat(applicationContext, "TAG")
+                .apply {
+                    setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS
+                            or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS)
+                }
+    }
+
     companion object {
-        fun startService(context: Context, taskId: Long) {
+        private const val KEY_TASK_TYPE = "KEY_TASK_TYPE"
+        private const val PLAY_TASK = 1
+        private const val STOP_TASK = 2
+
+        fun play(context: Context, taskId: Long) {
             Intent(context, PlayService::class.java)
-                    .apply { putExtra(KEY_INTENT_TASK_ID, taskId) }
+                    .apply {
+                        putExtra(KEY_INTENT_TASK_ID, taskId)
+                        putExtra(KEY_TASK_TYPE, PLAY_TASK)
+                    }
                     .let {
                         if (SDK_INT >= 26)
                             context.startForegroundService(it)
                         else context.startService(it)
                     }
         }
+
+        fun stopPlaying(context: Context, taskId: Long): Intent =
+                Intent(context, PlayService::class.java)
+                        .apply {
+                            putExtra(KEY_INTENT_TASK_ID, taskId)
+                            putExtra(KEY_TASK_TYPE, STOP_TASK)
+                        }
+
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val notif = buildNotif()
+        val taskId = intent.getLongExtra(KEY_INTENT_TASK_ID, -1)
+        when (intent.getIntExtra(KEY_TASK_TYPE, -1)) {
 
-        startForeground(intent.getLongExtra(KEY_INTENT_TASK_ID, -1).toInt(), notif.build())
-        performWork(intent, startId)
+            PLAY_TASK -> {
+                val notif = buildNotif(taskId)
+
+                startForeground(taskId.toInt(), notif.build())
+                play(taskId)
+            }
+            STOP_TASK -> {
+                stopPlayingTask(taskId)
+            }
+        }
+
         return Service.START_NOT_STICKY
     }
 
 
     @SuppressLint("CheckResult")
-    private fun performWork(intent: Intent, startId: Int) {
-        taskRepo.getTask(intent.getLongExtra(KEY_INTENT_TASK_ID, -1))
+    private fun play(taskId: Long) {
+        taskRepo.getTask(taskId)
                 .subscribeOn(schedulerProvider.io())
                 .doAfterSuccess { taskRepo.saveTask(it) }
                 .observeOn(schedulerProvider.ui())
                 .flatMapObservable { task ->
                     player.play(task.name, task.repeats)
+                            .doOnSubscribe {
+                                mediaSession.setCallback(createCallback())
+                                mediaSession.isActive = true
+                            }
+                            .debounce(500, TimeUnit.MILLISECONDS)
                             .doAfterNext {
                                 showNotif(
                                         applicationContext,
-                                        task.id.toInt(),
+                                        task.id,
                                         task.title,
                                         getTimeFromEpoch(task.scheduleTime),
                                         it.first,
@@ -114,29 +155,51 @@ class PlayService : DaggerService() {
                             .doOnComplete {
                                 showNotif(
                                         applicationContext,
-                                        task.id.toInt(),
+                                        task.id,
                                         task.title,
                                         getTimeFromEpoch(task.scheduleTime),
                                         1,
                                         1)
                             }
-                }.doFinally { stopForeground(false) }
-                .subscribe({}, {
+                            .doFinally {
+                                mediaSession.isActive = false
+
+                            }
+                            .subscribeOn(schedulerProvider.ui())
+                }.doFinally {
+                    stopForeground(false)
+                }
+                .subscribe({
+                }, {
+                    Timber.d(it)
+                }, {})
+    }
+
+    @SuppressLint("CheckResult")
+    private fun stopPlayingTask(taskId: Long) {
+        taskRepo.getTask(taskId)
+                .subscribeOn(schedulerProvider.io())
+                .flatMap {
+                    player.stopPlaying(it.name)
+                }.subscribe({
+                    Timber.d("Success")
+                }, {
                     Timber.d(it)
                 })
+
     }
 
     private fun showNotif(context: Context,
-                          id: Int,
+                          id: Long,
                           title: String?,
                           time: String,
-                          progres: Int = 0,
+                          progress: Int = 0,
                           maxProgress: Int = 0) {
         val notificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
-        val notif = buildNotif(time, title).setProgress(maxProgress, progres, false)
-        notificationManager.notify(id, notif.build())
+        val notif = buildNotif(id, time, title)
+        notificationManager.notify(id.toInt(), notif.build())
     }
 
     private fun createContentIntent(context: Context): PendingIntent {
@@ -149,18 +212,44 @@ class PlayService : DaggerService() {
         )
     }
 
-    private fun buildNotif(time: String? = null, title: String? = null) =
-            NotificationCompat.Builder(applicationContext, KEY_NOTIFICATION_CHANNEL)
-                    .apply {
-                        color = ContextCompat.getColor(applicationContext, R.color.colorAccent)
-                        setSmallIcon(R.drawable.ic_tab_scheduled)
-                        setContentTitle(if (time == null) "Your task from" else "Your task from $time")
-                        title?.let { setContentText(it) }
-                        setContentIntent(createContentIntent(applicationContext))
-                        setAutoCancel(true)
-                        setOnlyAlertOnce(true)
-                    }
-        override fun onBind(intent: Intent?): IBinder? {
+    private fun createStopIntent(context: Context, taskId: Long): PendingIntent {
+        val stopPlayingIntent = stopPlaying(context, taskId)
+        return PendingIntent.getService(context, taskId.toInt(), stopPlayingIntent, PendingIntent.FLAG_CANCEL_CURRENT)
+    }
+    private fun buildNotif(taskId: Long, time: String? = null, title: String? = null): NotificationCompat.Builder {
+        return NotificationCompat.Builder(applicationContext, KEY_NOTIFICATION_CHANNEL)
+                .apply {
+                    priority = NotificationCompat.PRIORITY_MAX
+                    color = ContextCompat.getColor(applicationContext, R.color.colorAccent)
+                    setSmallIcon(R.drawable.ic_tab_scheduled)
+                    setContentTitle(if (time == null) "Your task from" else "Your task from $time")
+                    title?.let { setContentText(it) }
+                    setContentIntent(createContentIntent(applicationContext))
+                    setAutoCancel(true)
+                    setOnlyAlertOnce(true)
+
+                    setStyle(android.support.v4.media.app.NotificationCompat.MediaStyle()
+                            .setMediaSession(mediaSession.sessionToken)
+                            .setShowCancelButton(true)
+                    )
+                    addAction(android.R.drawable.ic_media_pause, "Stop", createStopIntent(applicationContext, taskId))
+                }
+    }
+
+
+    private fun createCallback(): MediaSessionCompat.Callback {
+        return object : MediaSessionCompat.Callback() {
+            override fun onPlay() {
+                Timber.d("playing")
+            }
+
+            override fun onPause() {
+                Timber.d("Stoping")
+            }
+        }
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
         return null
     }
 }

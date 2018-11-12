@@ -12,7 +12,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import fp.cookcorder.R
 import fp.cookcorder.app.SchedulerFactory
-import fp.cookcorder.domain.managetaskusecase.ManageTaskUseCase
+import fp.cookcorder.domain.managetask.ManageTaskUseCase
 import fp.cookcorder.domain.play.PlayUseCase
 import fp.cookcorder.model.Task
 import fp.cookcorder.screen.BaseViewModel

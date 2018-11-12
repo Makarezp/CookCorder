@@ -1,7 +1,7 @@
 package fp.cookcorder.screen.editdialog
 
 import android.arch.lifecycle.MutableLiveData
-import fp.cookcorder.domain.managetaskusecase.ManageTaskUseCase
+import fp.cookcorder.domain.managetask.ManageTaskUseCase
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.screen.utils.calculateTimeDifference

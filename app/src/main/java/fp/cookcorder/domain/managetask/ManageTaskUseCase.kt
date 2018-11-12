@@ -1,4 +1,4 @@
-package fp.cookcorder.domain.managetaskusecase
+package fp.cookcorder.domain.managetask
 
 import fp.cookcorder.domain.UseCase
 import fp.cookcorder.infrastructure.TaskScheduler

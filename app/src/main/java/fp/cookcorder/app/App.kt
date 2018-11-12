@@ -45,7 +45,7 @@ class App : DaggerApplication() {
             val notifChannel = NotificationChannel(
                     KEY_NOTIFICATION_CHANNEL,
                     context.getString(R.string.notif_channel_name),
-                    NotificationManager.IMPORTANCE_LOW
+                    NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(notifChannel)
         }
