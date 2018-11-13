@@ -9,7 +9,7 @@
     <string name="scroll_hms_picker_minutes_label">MINUTES</string>
     <string name="scroll_hms_picker_and_label">AND</string>
     <string name="scroll_hms_picker_seconds_label">S</string>
-    <string name="title">Title(optional)</string>
+    <string name="title">Title</string>
     <string name="at_time">at %s</string>
     <string name="you_don_t_have_any_scheduled_tasks">You don\'t have any scheduled tasks</string>
     <string name="you_don_t_haby_any_snoozed_tasks">You don\'t have any snoozed tasks</string>
