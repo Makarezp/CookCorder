@@ -17,7 +17,6 @@ var handleCancellableTouch = { onStart: () -> Unit,
     {
         var isCannceled = true
         { v: View, m: MotionEvent ->
-
             val isInside = (m.x <= v.width && m.x >= 0) && (m.y <= v.height && m.y >= 0)
             when (m.action) {
                 MotionEvent.ACTION_DOWN -> {
