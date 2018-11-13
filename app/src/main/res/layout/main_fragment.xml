@@ -11,7 +11,7 @@
     sothree:umanoFadeColor="@color/colorPrimaryAlpha"
     sothree:umanoDragView="@+id/dragView"
     sothree:umanoOverlay="true"
-    sothree:umanoPanelHeight="68dp"
+    sothree:umanoPanelHeight="78dp"
     sothree:umanoParallaxOffset="100dp"
     sothree:umanoShadowHeight="4dp">
 
@@ -132,7 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:translationY="-90dp"
+            android:translationY="-65dp"
             />
     </LinearLayout>
 

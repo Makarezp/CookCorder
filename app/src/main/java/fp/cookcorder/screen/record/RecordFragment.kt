@@ -128,7 +128,7 @@ class RecordFragment : DaggerFragment() {
         slidingLayout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
             override fun onPanelSlide(panel: View?, slideOffset: Float) {
                 mainActivityTL.alpha = slideOffset
-                mainActivityVP.translationY = -((1 - slideOffset) * 90).px
+                mainActivityVP.translationY = -((1 - slideOffset) * 65.px)
             }
 
             override fun onPanelStateChanged(panel: View?,

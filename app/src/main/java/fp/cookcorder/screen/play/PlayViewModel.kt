@@ -165,8 +165,8 @@ class PlayAdapter @Inject constructor(
             }
             editButton.setOnClickListener { viewModel.editTask(task.id) }
             deleteButton.setOnClickListener { viewModel.delete(task) }
-            subTitle.text = upperContainer.context.getString(R.string.at_time,
-                    if (isCurrent) getTimeFromEpoch(task.scheduleTime) else getDateTimeFromEpoch(task.scheduleTime))
+            subTitle.text = if (isCurrent) getTimeFromEpoch(task.scheduleTime)
+            else getDateTimeFromEpoch(task.scheduleTime)
             if (isCurrent) {
                 compositeDisposable.addAll(timer.subscribe(
                         {

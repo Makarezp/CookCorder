@@ -13,7 +13,7 @@ fun getTimeFromEpoch(epoch: Long) =
 fun getDateTimeFromEpoch(epoch: Long) =
         Instant.ofEpochMilli(epoch)
                 .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("dd MMM HH:mm"))
+                .format(DateTimeFormatter.ofPattern("dd-MM-YYYY HH:mm"))
 
 
 fun calculateTimeDifference(timeToCompare: Long): Triple<Long, Long, Long> {
