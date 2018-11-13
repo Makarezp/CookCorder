@@ -122,7 +122,7 @@ class PlayFragment : DaggerFragment() {
 
 class ScrollEnabledLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
 
-    var scrollingEnabled = true
+    var scrollingEnabled = false
 
     override fun canScrollVertically(): Boolean {
         return scrollingEnabled

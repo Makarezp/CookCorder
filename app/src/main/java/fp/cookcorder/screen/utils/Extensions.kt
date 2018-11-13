@@ -23,7 +23,7 @@ fun View.visible() {
 }
 
 fun TextView.setTextHideIfNull(charSequence: CharSequence?) {
-    if (charSequence != null) {
+    if (charSequence != null && charSequence.isNotEmpty()) {
         this.visibility = View.VISIBLE
         this.text = charSequence
     } else {
