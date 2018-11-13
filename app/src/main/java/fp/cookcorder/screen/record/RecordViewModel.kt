@@ -8,6 +8,7 @@ import fp.cookcorder.screen.utils.minutestToMilliseconds
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -29,8 +30,6 @@ class RecordViewModel @Inject constructor(
     val currentRecordTime = MutableLiveData<String>()
 
     var currentMinutesToSchedule = MutableLiveData<Int>()
-
-    val hour = MutableLiveData<String>()
 
     val minutes = MutableLiveData<String>()
 
@@ -57,9 +56,8 @@ class RecordViewModel @Inject constructor(
 
     private fun setMinuteAndHour() {
         currentMinutesToSchedule.value?.let {
-            val now = LocalDateTime.now().plusMinutes(it.toLong())
-            hour.value = now.hour.toString()
-            minutes.value = now.minute.toString()
+            val alarmTime = LocalDateTime.now().plusMinutes(it.toLong())
+            minutes.value = alarmTime.format(DateTimeFormatter.ofPattern("hh:mm"))
         }
 
     }

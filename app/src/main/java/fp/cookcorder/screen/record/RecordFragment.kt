@@ -84,6 +84,10 @@ class RecordFragment : DaggerFragment() {
         slidingLayout.addPanelSlideListener(listener)
     }
 
+    fun setSlidingPanelScrollViewListener(scrollableView: View) {
+        slidingLayout.setScrollableView(scrollableView)
+    }
+
 
     private fun observeLiveData() {
         with(viewModel) {
@@ -92,7 +96,6 @@ class RecordFragment : DaggerFragment() {
             observe(recordCancelled) { showCancel() }
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { timeTV.text = it }
-            observe(hour) { hourTV.text = it }
             observe(minutes) { minTV.text = it }
         }
     }
@@ -215,6 +218,10 @@ class RecordFragment : DaggerFragment() {
 
     private fun handleRecordingState(isRecording: Boolean) {
         if (isRecording) {
+            timeTV.animate()
+                    .alphaBy(1f)
+                    .setDuration(300)
+                    .start()
             vibrate()
             recordAnimation.visible()
             recordAnimation.playAnimation()

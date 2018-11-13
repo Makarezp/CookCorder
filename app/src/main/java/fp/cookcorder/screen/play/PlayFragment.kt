@@ -1,6 +1,7 @@
 package fp.cookcorder.screen.play
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Context
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
@@ -62,7 +63,15 @@ class PlayFragment : DaggerFragment() {
                             playFragmentTVNoTasks.translationY = ((1 - slideOffset) * -230).px
                         }
 
-                        override fun onPanelStateChanged(panel: View?, previousState: SlidingUpPanelLayout.PanelState?, newState: SlidingUpPanelLayout.PanelState?) {
+                        override fun onPanelStateChanged(panel: View, previousState: SlidingUpPanelLayout.PanelState, newState: SlidingUpPanelLayout.PanelState) {
+                            (playFragRV.layoutManager as ScrollEnabledLinearLayoutManager)
+                                    .apply {
+                                        scrollingEnabled = newState != SlidingUpPanelLayout.PanelState.COLLAPSED
+                                    }
+
+                            if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                                playFragRV.scrollToPosition(0)
+                            }
                         }
                     })
         }
@@ -70,11 +79,19 @@ class PlayFragment : DaggerFragment() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        if(::viewModel.isInitialized) {
+        if (::viewModel.isInitialized) {
             viewModel.isVisible = isVisibleToUser
         }
+        if(isVisibleToUser) {
+            parentFragment?.let {
+                if(it is RecordFragment) {
+                    it.setSlidingPanelScrollViewListener(playFragRV)
+                }
+            }
+        }
     }
-        override fun onPause() {
+
+    override fun onPause() {
         super.onPause()
         viewModel.isVisible = false
     }
@@ -88,7 +105,7 @@ class PlayFragment : DaggerFragment() {
     }
 
     private fun setupRecycler() {
-        playFragRV.layoutManager = LinearLayoutManager(context!!)
+        playFragRV.layoutManager = ScrollEnabledLinearLayoutManager(context!!)
         playFragRV.adapter = viewModel.adapter
     }
 
@@ -100,5 +117,14 @@ class PlayFragment : DaggerFragment() {
 
     private fun showEditDialog(taskId: Long) {
         EditDialog.newInstance(taskId).show(fragmentManager, "EditDialog")
+    }
+}
+
+class ScrollEnabledLinearLayoutManager(context: Context) : LinearLayoutManager(context) {
+
+    var scrollingEnabled = true
+
+    override fun canScrollVertically(): Boolean {
+        return scrollingEnabled
     }
 }
