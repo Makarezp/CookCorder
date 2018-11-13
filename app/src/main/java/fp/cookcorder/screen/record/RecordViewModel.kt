@@ -7,6 +7,7 @@ import fp.cookcorder.screen.utils.SingleLiveEvent
 import fp.cookcorder.screen.utils.minutestToMilliseconds
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
+import org.threeten.bp.LocalDateTime
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -27,19 +28,47 @@ class RecordViewModel @Inject constructor(
 
     val currentRecordTime = MutableLiveData<String>()
 
-    var currentMinutesToSchedule = 0
+    var currentMinutesToSchedule = MutableLiveData<Int>()
+
+    val hour = MutableLiveData<String>()
+
+    val minutes = MutableLiveData<String>()
 
     var title: String? = null
 
     var repeats = MutableLiveData<Int>().apply { value = 1 }
 
-    private var timerDisposable: Disposable? = null
+    private val timer = Observable.interval(1, TimeUnit.SECONDS)
+
+    private var recordTimerDisposable: Disposable? = null
+
+    @Inject
+    fun init() {
+       compDisposable.add(timer
+               .observeOn(schedulerFactory.ui())
+               .subscribe {
+           setMinuteAndHour()
+        })
+
+        currentMinutesToSchedule.observeForever {
+            setMinuteAndHour()
+        }
+    }
+
+    private fun setMinuteAndHour() {
+        currentMinutesToSchedule.value?.let {
+            val now = LocalDateTime.now().plusMinutes(it.toLong())
+            hour.value = now.hour.toString()
+            minutes.value = now.minute.toString()
+        }
+
+    }
 
     fun requestNewRecord() {
         if (permissionGranted) {
             exe(recordUseCase.startRecordingNewTask()) { _ ->
                 isRecording.value = true
-                timerDisposable = recordTimeCounter()
+                recordTimerDisposable = recordTimeCounter()
                         .subscribeOn(schedulerFactory.io())
                         .observeOn(schedulerFactory.ui())
                         .subscribe { currentRecordTime.value = it }
@@ -51,25 +80,26 @@ class RecordViewModel @Inject constructor(
         exe(recordUseCase.cancelRecordingNewTask()) {
             isRecording.value = false
             recordCancelled.call()
-            timerDisposable?.dispose()
+            recordTimerDisposable?.dispose()
+            resetRecordTime()
         }
     }
 
     fun finishRecording() {
         exe(recordUseCase
                 .finishRecordingNewTask(
-                        currentMinutesToSchedule.minutestToMilliseconds(),
+                        currentMinutesToSchedule.value!!.minutestToMilliseconds(),
                         title,
                         repeats.value ?: 1),
                 onError = {
                     Timber.d(it)
                     isRecording.value = false
-                    timerDisposable?.dispose()
+                    recordTimerDisposable?.dispose()
                 }) {
             recordSuccess.value = Any()
             recordSuccess.value = null
             isRecording.postValue(false)
-            timerDisposable?.dispose()
+            recordTimerDisposable?.dispose()
         }
     }
 
@@ -88,6 +118,10 @@ class RecordViewModel @Inject constructor(
                     }:${String.format("%02d", seconds)}:${
                     if(miliseconds == 0L) String.format("%02d", miliseconds) else miliseconds.toString()}"
                 }
+    }
+
+    private fun resetRecordTime() {
+        currentRecordTime.value = "00:00:00"
     }
 
 }

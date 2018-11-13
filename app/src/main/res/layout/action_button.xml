@@ -40,5 +40,16 @@
         android:visibility="gone"
         app:lottie_loop="false"/>
 
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/cancel"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            app:lottie_autoPlay="true"
+            app:lottie_fileName="error.json"
+            android:layout_gravity="center"
+            android:elevation="10dp"
+            android:visibility="gone"
+            app:lottie_loop="false"/>
+
     </FrameLayout>
 </merge>

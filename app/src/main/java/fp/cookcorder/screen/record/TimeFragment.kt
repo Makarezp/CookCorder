@@ -25,8 +25,9 @@ class TimeFragment : DaggerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
+        viewModel.currentMinutesToSchedule.value = minutePicker.hours * 60 + minutePicker.minutes
         minutePicker.onValueChangedListener = { hours, minutes, _ ->
-            viewModel.currentMinutesToSchedule = hours * 60 + minutes
+            viewModel.currentMinutesToSchedule.value = hours * 60 + minutes
         }
     }
 

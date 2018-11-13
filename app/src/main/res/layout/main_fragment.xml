@@ -57,6 +57,30 @@
             app:layout_constraintTop_toBottomOf="@+id/guideline"/>
 
 
+        <TextView
+            android:id="@+id/hourTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/TextStyleLarge"
+            app:layout_constraintBottom_toBottomOf="@+id/recordButtonContainer"
+            app:layout_constraintEnd_toStartOf="@id/recordButtonContainer"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/timeTV"
+            android:textAlignment="center"
+            tools:text="10 pm"/>
+
+        <TextView
+            android:id="@+id/minTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            style="@style/TextStyleLarge"
+            app:layout_constraintBottom_toBottomOf="@+id/recordButtonContainer"
+            app:layout_constraintStart_toEndOf="@id/recordButtonContainer"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/timeTV"
+            android:textAlignment="center"
+            tools:text="30"/>
+
         <FrameLayout
             android:id="@+id/recordButtonContainer"
             android:layout_width="wrap_content"

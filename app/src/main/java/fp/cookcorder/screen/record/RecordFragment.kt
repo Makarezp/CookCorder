@@ -28,7 +28,6 @@ import fp.cookcorder.screen.utils.*
 import kotlinx.android.synthetic.main.action_button.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import org.jetbrains.anko.design.longSnackbar
-import org.jetbrains.anko.design.snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -90,9 +89,11 @@ class RecordFragment : DaggerFragment() {
         with(viewModel) {
             observe(isRecording) { handleRecordingState(it) }
             observe(recordSuccess) { showSuccess() }
-            observe(recordCancelled) { snackbar(view!!, "Cancelled") }
+            observe(recordCancelled) { showCancel() }
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { timeTV.text = it }
+            observe(hour) { hourTV.text = it }
+            observe(minutes) { minTV.text = it }
         }
     }
 
@@ -141,6 +142,33 @@ class RecordFragment : DaggerFragment() {
             speed = 1.0F
             playAnimation()
             animationSuccess = true
+        }
+    }
+
+    private fun showCancel() {
+        with(cancel) {
+            visible()
+            speed = 1.5F
+            addAnimatorListener(object : Animator.AnimatorListener {
+                override fun onAnimationRepeat(animation: Animator?) {
+
+                }
+
+                override fun onAnimationEnd(animation: Animator?) {
+                    removeAnimatorListener(this)
+                    floatingActionButton.setImageDrawable(
+                            resources.getDrawable(R.drawable.ic_mic, activity!!.theme))
+                    invisible()
+                }
+
+                override fun onAnimationCancel(animation: Animator?) {
+                }
+
+                override fun onAnimationStart(animation: Animator?) {
+                    floatingActionButton.setImageDrawable(null)
+                }
+            })
+            playAnimation()
         }
     }
 
@@ -236,7 +264,6 @@ class RecordFragment : DaggerFragment() {
                     }
         }
     }
-
 
 
     private fun handleFirstRun() {
