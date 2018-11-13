@@ -37,6 +37,7 @@ class ScrollHmsPicker @JvmOverloads constructor(
     private var autoStep: Boolean = false
 
     var onValueChangedListener: ((Int, Int, Int) -> Unit)? = null
+    var onValueChangedScrollListener: ((Int, Int, Int) -> Unit)? = null
 
     var hours: Int
         get() = pickerHours.value
@@ -174,15 +175,32 @@ class ScrollHmsPicker @JvmOverloads constructor(
     }
 
     private fun setPickersValueChangedListeners() {
-        fun onValueChanged() {
-            onValueChangedListener?.invoke(
-                    pickerHours.value,
+        fun onValueChanged(hours: Int, mins: Int, sec: Int) {
+            onValueChangedListener?.invoke(hours, mins, sec)
+        }
+        pickerHours.setOnValueChangedListener { _, _, _ ->
+            onValueChanged(pickerHours.value,
                     pickerMinutes.value,
                     pickerSeconds.value)
         }
-        pickerHours.setOnValueChangedListener { _, _, _ -> onValueChanged() }
-        pickerMinutes.setOnValueChangedListener { _, _, _ -> onValueChanged() }
-        pickerSeconds.setOnValueChangedListener { _, _, _ -> onValueChanged() }
+        pickerMinutes.setOnValueChangedListener { _, _, _ ->
+            onValueChanged(pickerHours.value,
+                    pickerMinutes.value,
+                    pickerSeconds.value)
+        }
+        pickerSeconds.setOnValueChangedListener { _, _, _ ->
+            onValueChanged(pickerHours.value,
+                    pickerMinutes.value,
+                    pickerSeconds.value)
+        }
+
+
+        pickerHours.setOnValueChangeListenerInScrolling { _, _, newVal ->
+            onValueChanged(newVal, pickerMinutes.value, pickerSeconds.value)
+        }
+        pickerMinutes.setOnValueChangeListenerInScrolling { _, _, newVal ->
+            onValueChanged(pickerHours.value, newVal, pickerSeconds.value)
+        }
     }
 
     override fun onSaveInstanceState(): Parcelable = SavedState(super.onSaveInstanceState())
