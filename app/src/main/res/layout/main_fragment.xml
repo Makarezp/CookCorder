@@ -27,7 +27,9 @@
             android:id="@+id/indicator"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="parent"
+            app:ipi_pageIndicatorColor="@color/gray_light"
+            app:ipi_currentPageIndicatorColor="@color/black"/>
 
         <android.support.v4.view.ViewPager
             android:id="@+id/viewPager"
@@ -58,27 +60,26 @@
             style="@style/TextStyleLarge"
             android:layout_width="0dp"
             android:layout_height="30dp"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="16dp"
             android:layout_marginEnd="8dp"
+            android:gravity="start"
             android:text="00:00:00"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/recordButtonContainer"/>
-
-        <TextView
-            android:id="@+id/minTV"
-            style="@style/TextStyleLarge"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:textAlignment="center"
             app:layout_constraintBottom_toBottomOf="@+id/recordButtonContainer"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@id/recordButtonContainer"
-            app:layout_constraintTop_toTopOf="@+id/recordButtonContainer"
-            app:layout_constraintVertical_bias="0.469"
+            app:layout_constraintStart_toEndOf="@+id/recordButtonContainer"
+            app:layout_constraintTop_toTopOf="@+id/recordButtonContainer"/>
+
+        <TextView
+            android:id="@+id/minTV"
+            style="@style/TextStyleLargeAccent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="15:30"/>
 
         <FrameLayout
