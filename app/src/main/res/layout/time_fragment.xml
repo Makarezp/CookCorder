@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/axillaryUpperTV"
-        style="@style/Picker.Axillary"
+        style="@style/Text.Sub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -32,7 +32,7 @@
 
     <TextView
         android:id="@+id/textView"
-        style="@style/Picker.Axillary"
+        style="@style/Text.Sub"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"

@@ -12,14 +12,14 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Picker.Axillary"
+            style="@style/Text.Sub"
             android:layout_gravity="center_vertical"
             android:text="Cookorder"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/Picker.Axillary"
+            style="@style/Text.Sub"
             android:layout_gravity="center_vertical"
             android:text="options"/>
     </LinearLayout>
@@ -33,14 +33,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            style="@style/Picker.Axillary"
+            style="@style/Text.Sub"
             android:text="Current tasks"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            style="@style/Picker.Axillary"
+            style="@style/Text.Sub"
             android:text="History tak"/>
     </LinearLayout>
 

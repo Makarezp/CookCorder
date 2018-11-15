@@ -17,39 +17,25 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
-    <style name="Card">
-        <item name="cardBackgroundColor">@color/colorPrimaryDark</item>
-        <item name="android:foreground">?attr/selectableItemBackground</item>
-        <item name="cardCornerRadius">@dimen/card_recycler_corner_radius</item>
-        <item name="cardElevation">@dimen/card_recycler_elevation</item>
-    </style>
-
     <style name="Picker"/>
 
-    <style name="Picker.Axillary">
+    <style name="Text.Sub">
         <item name="android:textSize">13sp</item>
-        <item name="android:fontFamily">sans-serif-medium</item>
-        <item name="android:textStyle">normal</item>
         <item name="android:lineSpacingExtra">15sp</item>
+    </style>
+
+    <!--text-->
+    <style name="Text" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">sans-serif</item>
         <item name="android:textColor">@color/white</item>
     </style>
 
-
-    <style name="TextStyleLarge">
-        <item name="android:gravity">center_horizontal</item>
+    <style name="Text.H1">
         <item name="android:textSize">24sp</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">normal</item>
         <item name="android:letterSpacing">-0.05</item>
-        <item name="android:textColor">@color/white</item>
     </style>
 
-    <style name="TextStyleLargeAccent">
-        <item name="android:gravity">center_horizontal</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:letterSpacing">-0.05</item>
+    <style name="Text.H1.Accent">
         <item name="android:textColor">@color/colorAccent</item>
     </style>
 
@@ -92,6 +78,7 @@
         <item name="android:textColor">@color/white</item>
     </style>
 
+    //Text
 
 
 </resources>

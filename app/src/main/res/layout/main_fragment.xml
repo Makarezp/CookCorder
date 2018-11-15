@@ -58,7 +58,7 @@
 
         <TextView
             android:id="@+id/timeTV"
-            style="@style/TextStyleLarge"
+            style="@style/Text.H1"
             android:layout_width="0dp"
             android:layout_height="30dp"
             android:layout_marginStart="16dp"
@@ -73,7 +73,7 @@
 
         <TextView
             android:id="@+id/minTV"
-            style="@style/TextStyleLargeAccent"
+            style="@style/Text.H1.Accent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"

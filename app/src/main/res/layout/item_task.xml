@@ -12,36 +12,31 @@
         style="@style/TaskSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_title_margin"
         android:layout_marginStart="@dimen/card_title_margin"
-        android:layout_marginTop="@dimen/card_title_margin"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="bydle"/>
+        app:layout_constraintTop_toBottomOf="@+id/itemTaskTVTime"
+        tools:text="Task"/>
 
     <TextView
         android:id="@+id/itemTaskTVTime"
         style="@style/TaskTitle"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/card_subtitle_margin"
-        android:layout_marginStart="@dimen/card_subtitle_margin"
-        android:layout_marginTop="@dimen/card_button_margin"
+        android:layout_height="26dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemTaskTitle"
-        tools:text="bylde"/>
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="14/11/2018 15:34"/>
 
     <TextView
         android:id="@+id/itemTaskTvTimePlayed"
         style="@style/TaskSubTitle"
         android:layout_width="70dp"
         android:layout_height="17dp"
-        android:layout_marginEnd="@dimen/card_subtitle_margin"
-        android:layout_marginStart="@dimen/card_subtitle_margin"
-        android:layout_marginTop="@dimen/card_button_margin"
+        android:layout_marginStart="16dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemTaskTVTime"
-        tools:text="bydle"/>
+        app:layout_constraintTop_toBottomOf="@+id/itemTaskTitle"
+        tools:text="in 53:33"/>
 
     <View
         android:id="@+id/divider"
