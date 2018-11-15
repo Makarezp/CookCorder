@@ -1,15 +1,17 @@
 package fp.cookcorder.screen
 
 import android.arch.lifecycle.ViewModelProviders
-import android.content.res.ColorStateList
-import android.os.Build
 import android.os.Bundle
+import android.support.v4.view.ViewPager
+import android.util.DisplayMetrics
+import android.view.View
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerAppCompatActivity
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.screen.record.RecordFragment
 import fp.cookcorder.screen.record.RecordViewModel
-import fp.cookcorder.screen.utils.observe
+import kotlinx.android.synthetic.main.main_activity.*
 import javax.inject.Inject
 
 
@@ -20,83 +22,75 @@ class MainActivity : DaggerAppCompatActivity() {
 
     lateinit var recordViewModel: RecordViewModel
 
+    lateinit var upper: View
+
+    lateinit var lower: View
+
+    private val toolbarContent: View by lazy {
+       val layout = layoutInflater
+                .inflate(R.layout.toolbar_content, toolbar_main, false)
+        val displayMetrics = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(displayMetrics)
+        val width = displayMetrics.widthPixels
+        upper = layout.findViewById<View>(R.id.upper).apply {
+            layoutParams.width = width
+        }
+        lower = layout.findViewById<View>(R.id.lower)
+                .apply {
+                    layoutParams.width = width }
+        layout.requestLayout()
+        layout
+    }
+
+
+    val slideListener = object : SlidingUpPanelLayout.PanelSlideListener {
+        override fun onPanelSlide(panel: View?, slideOffset: Float) {
+            toolbarContent.translationY = (-slideOffset * (toolbarContent.height / 2))
+        }
+
+        override fun onPanelStateChanged(panel: View?,
+                                         previousState: SlidingUpPanelLayout.PanelState?,
+                                         newState: SlidingUpPanelLayout.PanelState?) {
+
+        }
+    }
+
+    val onMainScreenSlide = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {
+        }
+
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+            upper.translationX = -positionOffset * upper.width
+        }
+
+        override fun onPageSelected(position: Int) {
+        }
+    }
+
+    val onAuxilaryScreenSlide = object : ViewPager.OnPageChangeListener {
+        override fun onPageScrollStateChanged(state: Int) {
+        }
+
+        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+        }
+
+        override fun onPageSelected(position: Int) {
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         recordViewModel = ViewModelProviders.of(this, recordVmFactory).get(RecordViewModel::class.java)
         setContentView(R.layout.main_activity)
-        if(savedInstanceState == null) {
+        if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().run {
                 replace(R.id.container, RecordFragment.newInstance())
                 commit()
             }
         }
-//        setupViewPager()
-//        setupTabLayout()
-        observeIsRecording()
+        toolbar_main.addView(toolbarContent)
     }
 
-//    override fun onNewIntent(intent: Intent?) {
-//        super.onNewIntent(intent)
-//        setCurrentPage(intent)
-//    }
-
-//    private fun setCurrentPage(intent: Intent?) {
-//        intent?.let {
-//            val navigateToPage = it.getIntExtra(KEY_LAUNCH_PAGE, -1)
-//            if (navigateToPage > -1 && navigateToPage < mainActivityVP.childCount) {
-//                mainActivityTL.getTabAt(navigateToPage)?.select()
-//                intent.removeExtra(KEY_LAUNCH_PAGE)
-//            }
-//        }
-//    }
-
-    override fun onStart() {
-        super.onStart()
-//        setCurrentPage(intent)
-    }
-
-//    private fun setupViewPager() {
-//        with(mainActivityVP) {
-//            adapter = pageAdapter
-//            offscreenPageLimit = 3
-//            addOnPageChangeListener(object : ViewPager.OnPageChangeListener {
-//                override fun onPageScrollStateChanged(state: Int) {
-//                    recordViewModel.blockStartingNewRecording = state == ViewPager.SCROLL_STATE_DRAGGING
-//                }
-//
-//                override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {}
-//                override fun onPageSelected(position: Int) {}
-//            })
-//        }
-//    }
-
-//    private fun setupTabLayout() {
-//        with(mainActivityTL) {
-//            setupWithViewPager(mainActivityVP)
-//            for (i in 0 until tabCount) {
-//                getTabAt(i)?.icon =
-//                        DrawableCompat.wrap(
-//                                MainPagerAdapter.Page.get(i).getPageIcon(context)
-//                        ).apply {
-//                            DrawableCompat.setTintList(this, getTabTintList())
-//                        }
-//            }
-//        }
-//    }
-
-    private fun getTabTintList(): ColorStateList? {
-        return if (Build.VERSION.SDK_INT >= 23) {
-            resources.getColorStateList(R.color.tab_icon_selector, theme)
-        } else {
-            resources.getColorStateList(R.color.tab_icon_selector)
-        }
-    }
-
-    private fun observeIsRecording() {
-        observe(recordViewModel.isRecording) {
-//            mainActivityVP?.swipingEnabled = !it
-        }
-    }
 
     companion object {
         const val KEY_LAUNCH_PAGE = "KEY_LAUNCH_PAGE"

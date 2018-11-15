@@ -75,11 +75,6 @@
         <item name="android:textStyle">bold</item>
     </style>
 
-    <style name="Label.Small">
-
-    </style>
-
-
     <!--PlayCell-->
     <style name="TaskTitle">
         <item name="android:gravity">center_horizontal</item>
@@ -89,8 +84,6 @@
         <item name="android:letterSpacing">-0.05</item>
         <item name="android:textColor">@color/white</item>
     </style>
-
-
 
     <style name="TaskSubTitle">
         <item name="android:textSize">13sp</item>

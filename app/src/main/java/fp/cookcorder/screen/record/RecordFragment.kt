@@ -23,6 +23,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.screen.MainActivity
 import fp.cookcorder.screen.MainPagerAdapter
 import fp.cookcorder.screen.utils.*
 import kotlinx.android.synthetic.main.action_button.*
@@ -78,6 +79,10 @@ class RecordFragment : DaggerFragment() {
         setupSuccessAnimationListener()
         handleFirstRun()
         setupSlidingUpLayout()
+
+        addSlidingPanelListener((activity as MainActivity).slideListener)
+
+        viewPager.addOnPageChangeListener((activity as MainActivity).onMainScreenSlide)
     }
 
     fun addSlidingPanelListener(listener: SlidingUpPanelLayout.PanelSlideListener) {
