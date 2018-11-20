@@ -292,10 +292,10 @@ class RecordFragment : DaggerFragment() {
         val tapTargetPicker = TapTarget.forView(pirckerView, getString(R.string.time_picker_description_title), getString(R.string.time_picker_description))
                 // All options below are optional
                 .titleTextSize(20)                  // Specify the size (in sp) of the title text
-                .titleTextColor(R.color.white)      // Specify the color of the title text
+                .titleTextColor(R.color.text)      // Specify the color of the title text
                 .descriptionTextSize(10)            // Specify the size (in sp) of the description text
                 .descriptionTextColor(R.color.white_70)  // Specify the color of the description text
-                .textColor(R.color.white)            // Specify a color for both the title and description text
+                .textColor(R.color.text)            // Specify a color for both the title and description text
                 .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
                 .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
                 .drawShadow(true)                   // Whether to draw a drop shadow or not
@@ -307,10 +307,10 @@ class RecordFragment : DaggerFragment() {
         val tapTargetFab = TapTarget.forView(fab, getString(R.string.record_button_description_title), getString(R.string.record_button_description))
                 // All options below are optional
                 .titleTextSize(20)                  // Specify the size (in sp) of the title text
-                .titleTextColor(R.color.white)      // Specify the color of the title text
+                .titleTextColor(R.color.text)      // Specify the color of the title text
                 .descriptionTextSize(10)            // Specify the size (in sp) of the description text
                 .descriptionTextColor(R.color.white_70)  // Specify the color of the description text
-                .textColor(R.color.white)            // Specify a color for both the title and description text
+                .textColor(R.color.text)            // Specify a color for both the title and description text
                 .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
                 .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
                 .drawShadow(true)                   // Whether to draw a drop shadow or not

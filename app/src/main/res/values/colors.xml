@@ -7,12 +7,11 @@
 
     <color name="colorPrimaryLight">#5491f5</color>
 
+    <color name="white">#ffffff</color>
     <color name="black">#000000</color>
     <color name="gray_deep">#666666</color>
     <color name="gray_light">#CCCCCC</color>
     <color name="white_70">#616161</color>
-    <color name="white">#424242</color>
-
-    <color name="text_primary">@color/white</color>
+    <color name="text">#424242</color>
 
 </resources>
