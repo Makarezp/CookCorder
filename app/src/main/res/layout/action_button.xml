@@ -27,7 +27,8 @@
         app:lottie_autoPlay="true"
         app:lottie_fileName="record.json"
         android:visibility="invisible"
-        app:lottie_loop="true"/>
+        app:lottie_loop="true"
+        android:layout_gravity="center"/>
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/success"

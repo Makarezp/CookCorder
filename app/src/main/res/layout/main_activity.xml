@@ -14,12 +14,14 @@
             android:id="@+id/toolbar_main"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
+            android:background="@drawable/bg"
             />
 
     </android.support.design.widget.AppBarLayout>
 
     <FrameLayout
         android:id="@+id/container"
+        android:background="@drawable/bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

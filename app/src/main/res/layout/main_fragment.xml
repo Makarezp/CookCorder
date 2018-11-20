@@ -8,8 +8,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    sothree:umanoFadeColor="@color/colorPrimaryAlpha"
     sothree:umanoDragView="@+id/dragView"
+    sothree:umanoFadeColor="@color/colorPrimaryAlpha"
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="78dp"
     sothree:umanoParallaxOffset="100dp"
@@ -19,12 +19,12 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingTop="16dp"
         android:descendantFocusability="beforeDescendants"
         android:focusableInTouchMode="true"
         tools:context=".screen.MainActivity">
 
         <LinearLayout
+            android:id="@+id/cardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
@@ -32,101 +32,97 @@
             <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/card_bg"
-                android:layout_margin="@dimen/margin_xl"
-                android:padding="@dimen/standard">
+                android:layout_marginTop="@dimen/margin_xl"
+                android:layout_marginStart="@dimen/margin_xl"
+                android:layout_marginEnd="@dimen/margin_xl"
+                android:padding="@dimen/standard"
+                android:background="@drawable/card_bg">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
+                    android:padding="@dimen/standard"
                     android:src="@drawable/ic_clock"/>
-
 
                 <TextView
                     android:id="@+id/minTV"
                     style="@style/Text.H1.Accent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:textAlignment="center"
-                    tools:text="15:30"
-                    android:layout_gravity="center"/>
-
+                    tools:text="15:30"/>
 
             </FrameLayout>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_xl"
-            android:layout_marginEnd="@dimen/margin_xl"
-            android:background="@drawable/card_bg">
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/viewPager"
-                android:layout_width="match_parent"
-                android:layout_height="180dp"/>
-
-            <com.pixelcan.inkpageindicator.InkPageIndicator
-                android:id="@+id/indicator"
+            <FrameLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:ipi_pageIndicatorColor="@color/gray_light"
-                app:ipi_currentPageIndicatorColor="@color/black"
-                android:layout_marginTop="@dimen/standard"
-                android:layout_gravity="center_horizontal|top"/>
+                android:layout_marginTop="@dimen/margin_xl"
+                android:layout_marginStart="@dimen/margin_xl"
+                android:layout_marginEnd="@dimen/margin_xl"
+                android:background="@drawable/card_bg">
 
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/viewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="180dp"/>
 
-        </FrameLayout>
+                <com.pixelcan.inkpageindicator.InkPageIndicator
+                    android:id="@+id/indicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal|top"
+                    android:layout_marginTop="@dimen/standard"
+                    app:ipi_currentPageIndicatorColor="@color/black"
+                    app:ipi_pageIndicatorColor="@color/gray_light"/>
+            </FrameLayout>
 
         </LinearLayout>
 
-        <android.support.constraint.Guideline
-            android:id="@+id/guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_begin="225dp"/>
-
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0.5dp"
-            android:background="@color/text"
-            android:layout_marginTop="24dp"
-            android:layout_marginStart="32dp"
-            android:layout_marginEnd="32dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/guideline"/>
-
-        <TextView
-            android:id="@+id/timeTV"
-            style="@style/Text.H1"
-            android:layout_width="0dp"
-            android:layout_height="30dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="start"
-            android:text="00:00:00"
-            app:layout_constraintBottom_toBottomOf="@+id/recordButtonContainer"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/recordButtonContainer"
-            app:layout_constraintTop_toTopOf="@+id/recordButtonContainer"/>
-
-
-
         <FrameLayout
-            android:id="@+id/recordButtonContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/guideline">
+            android:layout_marginTop="@dimen/margin_xl"
+            android:layout_marginStart="@dimen/margin_xl"
+            android:layout_marginEnd="@dimen/margin_xl"
+            app:layout_constraintTop_toBottomOf="@id/cardContainer">
 
-            <include layout="@layout/action_button"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.5dp"
+                android:layout_marginStart="32dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="32dp"
+                android:background="@color/text"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/cardContainer"/>
+
+
+            <FrameLayout
+                android:id="@+id/recordButtonContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="100dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                >
+
+                <include layout="@layout/action_button"/>
+
+            </FrameLayout>
+
+            <TextView
+                android:id="@+id/timeTV"
+                style="@style/Text.H1"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:gravity="start"
+                android:text="00:00:00"/>
 
         </FrameLayout>
 
@@ -134,13 +130,12 @@
     </android.support.constraint.ConstraintLayout>
 
 
-        <!-- SLIDING LAYOUT -->
+    <!-- SLIDING LAYOUT -->
 
     <LinearLayout
         android:id="@+id/dragView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
         android:clickable="true"
         android:focusable="false"
         android:orientation="vertical">
@@ -154,18 +149,18 @@
                 android:id="@+id/mainActivityTL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:tabMode="fixed"
+                android:alpha="0"
                 app:tabGravity="fill"
-                android:alpha="0"/>
+                app:tabMode="fixed"/>
 
         </LinearLayout>
 
         <fp.cookcorder.screen.CustomViewPager
             android:id="@+id/mainActivityVP"
-            android:background="@android:color/transparent"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
+            android:background="@android:color/transparent"
             android:translationY="-65dp"
             />
     </LinearLayout>
