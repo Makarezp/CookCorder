@@ -24,12 +24,40 @@
         android:focusableInTouchMode="true"
         tools:context=".screen.MainActivity">
 
-        <FrameLayout
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_bg"
+                android:layout_margin="@dimen/margin_xl"
+                android:padding="@dimen/standard">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:src="@drawable/ic_clock"/>
+
+
+                <TextView
+                    android:id="@+id/minTV"
+                    style="@style/Text.H1.Accent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAlignment="center"
+                    tools:text="15:30"
+                    android:layout_gravity="center"/>
+
+
+            </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_xl"
             android:layout_marginEnd="@dimen/margin_xl"
             android:background="@drawable/card_bg">
@@ -48,18 +76,10 @@
                 android:layout_marginTop="@dimen/standard"
                 android:layout_gravity="center_horizontal|top"/>
 
-            <TextView
-                android:id="@+id/minTV"
-                style="@style/Text.H1.Accent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="16dp"
-                android:textAlignment="center"
-                tools:text="15:30"
-                android:layout_gravity="top|end"/>
 
         </FrameLayout>
+
+        </LinearLayout>
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline"
