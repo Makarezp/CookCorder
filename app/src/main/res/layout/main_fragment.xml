@@ -24,19 +24,41 @@
         android:focusableInTouchMode="true"
         tools:context=".screen.MainActivity">
 
-        <com.pixelcan.inkpageindicator.InkPageIndicator
-            android:id="@+id/indicator"
-            android:layout_width="match_parent"
+        <FrameLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
-            app:ipi_pageIndicatorColor="@color/gray_light"
-            app:ipi_currentPageIndicatorColor="@color/black"/>
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="@dimen/margin_xl"
+            android:layout_marginEnd="@dimen/margin_xl">
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/viewPager"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
+            <com.pixelcan.inkpageindicator.InkPageIndicator
+                android:id="@+id/indicator"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:ipi_pageIndicatorColor="@color/gray_light"
+                app:ipi_currentPageIndicatorColor="@color/black"
+                android:layout_marginTop="@dimen/standard"
+                android:layout_gravity="center_horizontal|top"/>
+
+            <TextView
+                android:id="@+id/minTV"
+                style="@style/Text.H1.Accent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                android:textAlignment="center"
+                tools:text="15:30"
+                android:layout_gravity="top|end"/>
+
+        </FrameLayout>
 
         <android.support.constraint.Guideline
             android:id="@+id/guideline"
@@ -71,17 +93,7 @@
             app:layout_constraintStart_toEndOf="@+id/recordButtonContainer"
             app:layout_constraintTop_toTopOf="@+id/recordButtonContainer"/>
 
-        <TextView
-            android:id="@+id/minTV"
-            style="@style/Text.H1.Accent"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:textAlignment="center"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="15:30"/>
+
 
         <FrameLayout
             android:id="@+id/recordButtonContainer"

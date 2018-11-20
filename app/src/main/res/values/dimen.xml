@@ -19,7 +19,7 @@
 
     <dimen name="padding_standard">16dp</dimen>
     <dimen name="standard">8dp</dimen>
-    <dimen name="xl">16dp</dimen>
+    <dimen name="margin_xl">16dp</dimen>
 
     <!--HMS picker-->
     <dimen name="text_size_normal_item">18dp</dimen>
