@@ -8,7 +8,6 @@
 
     <android.support.constraint.ConstraintLayout
         android:id="@+id/container"
-        style="@style/Card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:animateLayoutChanges="true">

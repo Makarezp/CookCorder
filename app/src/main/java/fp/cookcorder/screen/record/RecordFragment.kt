@@ -71,8 +71,14 @@ class RecordFragment : DaggerFragment() {
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestAudioRecordingPermission()
+
         viewPager.adapter = recordAdapter
         indicator.setViewPager(viewPager)
+        //pass swiping from the whole content
+        main.setOnTouchListener {_, event ->
+            viewPager.onTouchEvent(event)
+        }
+
 
         observeLiveData()
         setupRecordingButton()
