@@ -7,13 +7,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_voice_record"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"/>
+
     <TextView
         android:id="@+id/itemTaskTitle"
         style="@style/TaskSubTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/card_title_margin"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toBottomOf="@+id/itemTaskTVTime"
         tools:text="Task"/>
 
@@ -24,7 +35,7 @@
         android:layout_height="26dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="14/11/2018 15:34"/>
 
@@ -34,7 +45,7 @@
         android:layout_width="70dp"
         android:layout_height="17dp"
         android:layout_marginStart="16dp"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@id/icon"
         app:layout_constraintTop_toBottomOf="@+id/itemTaskTitle"
         tools:text="in 53:33"/>
 
