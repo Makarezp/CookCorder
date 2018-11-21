@@ -7,6 +7,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.res.ColorStateList
+import android.graphics.Rect
 import android.graphics.Typeface
 import android.os.*
 import android.support.v4.app.ActivityCompat
@@ -14,9 +15,15 @@ import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.support.v4.graphics.drawable.DrawableCompat
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -74,17 +81,14 @@ class RecordFragment : DaggerFragment() {
 
         viewPager.adapter = recordAdapter
         indicator.setViewPager(viewPager)
-        //pass swiping from the whole content
-        main.setOnTouchListener {_, event ->
-            viewPager.onTouchEvent(event)
-        }
-
+        main.setOnTouchListener { _, event -> viewPager.onTouchEvent(event) }
 
         observeLiveData()
         setupRecordingButton()
         setupSuccessAnimationListener()
         handleFirstRun()
         setupSlidingUpLayout()
+        setupEditText()
 
         addSlidingPanelListener((activity as MainActivity).slideListener)
 
@@ -103,7 +107,10 @@ class RecordFragment : DaggerFragment() {
     private fun observeLiveData() {
         with(viewModel) {
             observe(isRecording) { handleRecordingState(it) }
-            observe(recordSuccess) { showSuccess() }
+            observe(recordSuccess) {
+                titleET.text = null
+                showSuccess()
+            }
             observe(recordCancelled) { showCancel() }
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { timeTV.text = it }
@@ -282,6 +289,49 @@ class RecordFragment : DaggerFragment() {
                     }
         }
     }
+
+    private fun setupEditText() {
+        removeEditTextFocusOnDone()
+
+        titleET.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                viewModel.title = s.toString()
+            }
+        })
+    }
+
+
+    fun clearFocusOnTouchOutside(event: MotionEvent) {
+        if (event.action == MotionEvent.ACTION_DOWN) {
+            val v = activity!!.currentFocus
+            if (v is EditText) {
+                val outRect = Rect()
+                v.getGlobalVisibleRect(outRect)
+                if (!outRect.contains(event.rawX.toInt(), event.rawY.toInt())) {
+                    clearFocusAndHideKeyboard(v)
+                }
+            }
+        }
+    }
+
+    private fun clearFocusAndHideKeyboard(v: View) {
+        v.clearFocus()
+        val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(v.windowToken, 0)
+    }
+
+    private fun removeEditTextFocusOnDone() {
+        titleET.setOnEditorActionListener { v, actionId, event ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                clearFocusAndHideKeyboard(v)
+                true
+            } else false
+        }
+    }
+
 
 
     private fun handleFirstRun() {

@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.support.v4.view.ViewPager
 import android.util.DisplayMetrics
+import android.view.MotionEvent
 import android.view.View
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerAppCompatActivity
@@ -84,13 +85,18 @@ class MainActivity : DaggerAppCompatActivity() {
         setContentView(R.layout.main_activity)
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().run {
-                replace(R.id.container, RecordFragment.newInstance())
+                replace(R.id.container, RecordFragment.newInstance(), "record")
                 commit()
             }
         }
         toolbar_main.addView(toolbarContent)
     }
 
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        val frag = supportFragmentManager.findFragmentByTag("record") as? RecordFragment
+        frag?.clearFocusOnTouchOutside(ev)
+        return super.dispatchTouchEvent(ev)
+    }
 
     companion object {
         const val KEY_LAUNCH_PAGE = "KEY_LAUNCH_PAGE"
