@@ -54,6 +54,7 @@
                     android:backgroundTint="@color/gray_deep"
                     android:drawableLeft="@drawable/notes_vector"
                     android:hint="@string/title"
+                    android:textColorHint="@color/gray_light"
                     android:inputType="text"
                     android:maxLines="1"
                     android:textColor="@color/gray_deep"/>
