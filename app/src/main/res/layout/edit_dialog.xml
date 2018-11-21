@@ -41,7 +41,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:shp_normal_color="@color/white_70"
-        app:shp_selected_color="@color/colorAccent"/>
+        app:shp_selected_color="@color/white"/>
 
     <Button
         style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"

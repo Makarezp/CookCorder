@@ -13,7 +13,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="16dp"
             app:shp_normal_color="@color/white_70"
-            app:shp_selected_color="@color/colorAccent"/>
+            app:shp_selected_color="@color/white"/>
 
 
 </FrameLayout>
