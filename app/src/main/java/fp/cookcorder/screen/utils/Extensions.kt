@@ -31,6 +31,15 @@ fun TextView.setTextHideIfNull(charSequence: CharSequence?) {
     }
 }
 
+fun TextView.setTextInvisibleIfEmptyOrNull(charSequence: CharSequence?) {
+    if (charSequence != null && charSequence.isNotEmpty()) {
+        this.visibility = View.VISIBLE
+        this.text = charSequence
+    } else {
+        this.visibility = View.INVISIBLE
+    }
+}
+
 fun <T> LifecycleOwner.observe(liveData: LiveData<T?>, lambda: (T) -> Unit) {
     liveData.observe(this,
             Observer {

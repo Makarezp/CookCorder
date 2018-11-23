@@ -126,7 +126,7 @@ class PlayAdapter @Inject constructor(
         val task = differ.currentList[position]
         var isPlaying = false
         with(holder) {
-            title.setTextHideIfNull(task.title)
+            title.setTextInvisibleIfEmptyOrNull(task.title)
             playButton.setOnClickListener { _ ->
                 if (!isPlaying) {
                     viewModel.play(task)

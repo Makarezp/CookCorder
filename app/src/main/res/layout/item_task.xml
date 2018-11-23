@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="80dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -18,82 +18,72 @@
         app:layout_constraintTop_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
-    <TextView
-        android:id="@+id/itemTaskTitle"
-        style="@style/TaskSubTitle"
+
+    <LinearLayout
+        android:id="@+id/description_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/card_title_margin"
+        android:orientation="vertical"
+        android:layout_marginStart="8dp"
         app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toBottomOf="@+id/itemTaskTVTime"
-        tools:text="Task"/>
+        >
 
-    <TextView
-        android:id="@+id/itemTaskTVTime"
-        style="@style/TaskTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="26dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="14/11/2018 15:34"/>
+        <TextView
+            android:id="@+id/itemTaskTitle"
+            style="@style/TaskSubTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Task"/>
 
-    <TextView
-        android:id="@+id/itemTaskTvTimePlayed"
-        style="@style/TaskSubTitle"
-        android:layout_width="70dp"
-        android:layout_height="17dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toBottomOf="@+id/itemTaskTitle"
-        tools:text="in 53:33"/>
+        <TextView
+            android:id="@+id/itemTaskTVTime"
+            style="@style/TaskTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="14/11/2018 15:34"/>
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/card_title_margin"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="@color/gray_light"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemTaskTvTimePlayed"/>
+        <TextView
+            android:id="@+id/itemTaskTvTimePlayed"
+            style="@style/TaskSubTitle"
+            android:layout_width="70dp"
+            android:layout_height="17dp"
+            tools:text="in 53:33"/>
 
+    </LinearLayout>
 
     <ImageButton
         android:id="@+id/itemTaskPlayIB"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="16dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_play"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/itemTaskIBEdit"
         app:layout_constraintTop_toTopOf="parent"/>
-    
+
     <ImageButton
         android:id="@+id/itemTaskIBEdit"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginEnd="16dp"
-        android:src="@drawable/ic_edit"
         android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_edit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/itemTaskDeleteIB"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <ImageButton
         android:id="@+id/itemTaskDeleteIB"
-        android:src="@drawable/ic_task_remove"
-        android:background="?attr/selectableItemBackgroundBorderless"
         android:layout_width="48dp"
         android:layout_height="48dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginBottom="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_task_remove"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
@@ -102,13 +92,24 @@
         android:id="@+id/itemTaskSeekBar"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/itemTaskTvTimePlayed"/>
+        app:layout_constraintTop_toBottomOf="@+id/description_container"/>
+
+    <View
+        android:id="@+id/divider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="@dimen/card_title_margin"
+        android:layout_marginEnd="16dp"
+        android:paddingTop="@dimen/standard"
+        android:background="@color/gray_light"
+        app:layout_constraintBottom_toBottomOf="parent"/>
 
 
 </android.support.constraint.ConstraintLayout>
