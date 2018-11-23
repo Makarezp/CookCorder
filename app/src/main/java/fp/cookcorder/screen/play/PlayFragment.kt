@@ -79,9 +79,6 @@ class PlayFragment : DaggerFragment() {
 
     override fun setUserVisibleHint(isVisibleToUser: Boolean) {
         super.setUserVisibleHint(isVisibleToUser)
-        if (::viewModel.isInitialized) {
-            viewModel.isVisible = isVisibleToUser
-        }
         if(isVisibleToUser) {
             parentFragment?.let {
                 if(it is RecordFragment) {
@@ -89,11 +86,6 @@ class PlayFragment : DaggerFragment() {
                 }
             }
         }
-    }
-
-    override fun onPause() {
-        super.onPause()
-        viewModel.isVisible = false
     }
 
     private fun setNoTaskText() {

@@ -23,7 +23,6 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
-import kotlin.properties.Delegates
 
 
 class PlayViewModel @Inject constructor(
@@ -37,15 +36,6 @@ class PlayViewModel @Inject constructor(
     val showNoTasks = MutableLiveData<Boolean>()
     val editTaskCmd = SingleLiveEvent<Long>()
 
-    var isVisible: Boolean by Delegates.observable(true) { property, oldValue, newValue ->
-        tasks = tasks
-    }
-    private var tasks: List<Task> by Delegates.observable(emptyList()) { property, oldValue, newValue ->
-        if (isVisible) {
-            playAdapter.tasks = newValue
-        }
-    }
-
 
     @Inject
     fun init() {
@@ -53,7 +43,7 @@ class PlayViewModel @Inject constructor(
         val taskObs = if (isCurrent) manageTaskUseCase.getCurrentTasks() else manageTaskUseCase.getPastTasks()
         exe(taskObs) {
             showNoTasks.value = it.isEmpty()
-            tasks = it.sortedBy { it.scheduleTime }
+            playAdapter.tasks = it.sortedBy { it.scheduleTime }
         }
     }
 

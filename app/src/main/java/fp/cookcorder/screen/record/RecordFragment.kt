@@ -17,7 +17,6 @@ import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.SeekBar
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -30,6 +29,7 @@ import fp.cookcorder.screen.utils.*
 import kotlinx.android.synthetic.main.action_button.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.options_fragment.*
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.design.longSnackbar
 import timber.log.Timber
 import javax.inject.Inject
@@ -155,13 +155,23 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun setupSeekBar() {
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                viewModel.repeats.value = progress
+        seekBar.setOnProgressChangeListener(object : DiscreteSeekBar.OnProgressChangeListener {
+            override fun onProgressChanged(seekBar: DiscreteSeekBar?, value: Int, fromUser: Boolean) {
+                viewModel.repeats.value = value
             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStartTrackingTouch(seekBar: DiscreteSeekBar?) {
+                repeatsTV.animate()
+                        .setDuration(100L)
+                        .alpha(0F)
+                        .start()
+            }
+            override fun onStopTrackingTouch(seekBar: DiscreteSeekBar?) {
+                repeatsTV.animate()
+                        .setDuration(100L)
+                        .alpha(1F)
+                        .start()
+            }
         })
     }
 
