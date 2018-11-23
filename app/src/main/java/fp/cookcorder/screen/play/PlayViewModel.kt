@@ -170,7 +170,11 @@ class PlayAdapter @Inject constructor(
             if (isCurrent) {
                 compositeDisposable.addAll(timer.subscribe(
                         {
-                            details.text = makeHourString(task.scheduleTime)
+                            val dayLiteral =   itemView.context.getString(
+                                    if(task.scheduleTime.getTimeInstant().isToday())
+                                        R.string.today else R.string.tomorrow
+                            )
+                            details.text = "$dayLiteral ${makeHourString(task.scheduleTime)}"
                         },
                         {
                             Timber.d(it)

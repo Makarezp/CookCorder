@@ -1,19 +1,17 @@
 package fp.cookcorder.screen.utils
 
-import org.threeten.bp.Instant
-import org.threeten.bp.ZoneId
+import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.ChronoUnit
 
 fun getTimeFromEpoch(epoch: Long) =
-        Instant.ofEpochMilli(epoch)
-                .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("HH:mm"))
+        epoch.getTimeInstant().format(DateTimeFormatter.ofPattern("hh:mm a"))
 
 fun getDateTimeFromEpoch(epoch: Long) =
-        Instant.ofEpochMilli(epoch)
-                .atZone(ZoneId.systemDefault())
-                .format(DateTimeFormatter.ofPattern("dd-MM-YYYY HH:mm"))
+        epoch.getTimeInstant().format(DateTimeFormatter.ofPattern("dd MMM hh:mm a"))
+
+fun Long.getTimeInstant() = Instant.ofEpochMilli(this)
+        .atZone(ZoneId.systemDefault())
 
 
 fun calculateTimeDifference(timeToCompare: Long): Triple<Long, Long, Long> {
@@ -23,3 +21,7 @@ fun calculateTimeDifference(timeToCompare: Long): Triple<Long, Long, Long> {
             ChronoUnit.MINUTES.between(time2, time1) % 60,
             ChronoUnit.SECONDS.between(time2, time1) % 60)
 }
+
+fun LocalDate.isToday() = LocalDateTime.now().dayOfYear == this.dayOfYear
+fun LocalDateTime.isToday() = LocalDateTime.now().dayOfYear == this.dayOfYear
+fun ZonedDateTime.isToday() = LocalDateTime.now().dayOfYear == this.dayOfYear

@@ -46,7 +46,7 @@
         <TextView
             android:id="@+id/itemTaskTvTimePlayed"
             style="@style/TaskSubTitle"
-            android:layout_width="70dp"
+            android:layout_width="wrap_content"
             android:layout_height="17dp"
             tools:text="in 53:33"/>
 
@@ -108,8 +108,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="16dp"
-        android:paddingTop="@dimen/standard"
         android:background="@color/gray_light"
+        android:paddingTop="@dimen/standard"
         app:layout_constraintBottom_toBottomOf="parent"/>
 
 

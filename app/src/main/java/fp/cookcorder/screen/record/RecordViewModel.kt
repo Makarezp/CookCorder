@@ -4,6 +4,7 @@ import android.arch.lifecycle.MutableLiveData
 import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.screen.BaseViewModel
 import fp.cookcorder.screen.utils.SingleLiveEvent
+import fp.cookcorder.screen.utils.isToday
 import fp.cookcorder.screen.utils.minutestToMilliseconds
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -60,7 +61,7 @@ class RecordViewModel @Inject constructor(
         currentMinutesToSchedule.value?.let {
             val now = LocalDateTime.now()
             val alarmTime = now.plusMinutes(it.toLong())
-            isToday.value = now.dayOfYear == alarmTime.dayOfYear
+            isToday.value = alarmTime.isToday()
             minutes.value = alarmTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
         }
 
