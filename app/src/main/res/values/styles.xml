@@ -26,6 +26,7 @@
     <style name="Text.Sub">
         <item name="android:textSize">13sp</item>
         <item name="android:lineSpacingExtra">15sp</item>
+        <item name="android:textColor">@color/textRed</item>
     </style>
 
     <!--text-->
@@ -37,6 +38,7 @@
     <style name="Text.H1">
         <item name="android:textSize">24sp</item>
         <item name="android:letterSpacing">-0.05</item>
+        <item name="android:textColor">@color/textRed</item>
     </style>
 
     <style name="Text.H1.Accent">
@@ -60,9 +62,9 @@
 
     <style name="Label">
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
-        <item name="android:textColor">@android:color/holo_red_light</item>
         <item name="android:textSize">@dimen/text_size_label</item>
         <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/textRed</item>
     </style>
 
     <!--PlayCell-->
