@@ -27,6 +27,8 @@ class MainActivity : DaggerAppCompatActivity() {
 
     lateinit var lower: View
 
+    var onTouchListener: ((MotionEvent) -> Unit)? = null
+
     private val toolbarContent: View by lazy {
        val layout = layoutInflater
                 .inflate(R.layout.toolbar_content, toolbar_main, false)
@@ -93,8 +95,7 @@ class MainActivity : DaggerAppCompatActivity() {
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
-        val frag = supportFragmentManager.findFragmentByTag("record") as? RecordFragment
-        frag?.clearFocusOnTouchOutside(ev)
+        onTouchListener?.invoke(ev)
         return super.dispatchTouchEvent(ev)
     }
 
