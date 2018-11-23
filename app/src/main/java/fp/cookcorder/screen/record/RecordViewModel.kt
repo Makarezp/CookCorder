@@ -21,6 +21,8 @@ class RecordViewModel @Inject constructor(
 
     var permissionGranted = false
 
+    val isToday = MutableLiveData<Boolean>()
+
     val requestRecordingPermission = SingleLiveEvent<Void>()
 
     val recordSuccess = MutableLiveData<Any>()
@@ -56,8 +58,10 @@ class RecordViewModel @Inject constructor(
 
     private fun setMinuteAndHour() {
         currentMinutesToSchedule.value?.let {
-            val alarmTime = LocalDateTime.now().plusMinutes(it.toLong())
-            minutes.value = alarmTime.format(DateTimeFormatter.ofPattern("hh:mm"))
+            val now = LocalDateTime.now()
+            val alarmTime = now.plusMinutes(it.toLong())
+            isToday.value = now.dayOfYear == alarmTime.dayOfYear
+            minutes.value = alarmTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
         }
 
     }

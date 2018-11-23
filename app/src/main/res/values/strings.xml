@@ -15,4 +15,6 @@
     <string name="time_picker_description">Swipe up and down and select when you want your task to be played</string>
     <string name="record_button_description_title">This is record button</string>
     <string name="record_button_description">Press it and hold to record your task. When you want to cancel recording just swipe away.</string>
+    <string name="today">TODAY</string>
+    <string name="tomorrow">tomorrow</string>
 </resources>

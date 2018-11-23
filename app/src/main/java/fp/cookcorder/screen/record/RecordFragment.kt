@@ -115,6 +115,9 @@ class RecordFragment : DaggerFragment() {
             observe(requestRecordingPermission) { requestAudioRecordingPermission() }
             observe(currentRecordTime) { timeTV.text = it }
             observe(minutes) { minTV.text = it }
+            observe(isToday) {
+                dateText.text = getString(if(it) R.string.today else R.string.tomorrow)
+            }
         }
     }
 
