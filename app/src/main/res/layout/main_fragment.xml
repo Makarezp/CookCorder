@@ -12,7 +12,7 @@
     sothree:umanoDragView="@+id/dragView"
     sothree:umanoFadeColor="@color/colorPrimaryAlpha"
     sothree:umanoOverlay="true"
-    sothree:umanoPanelHeight="78dp"
+    sothree:umanoPanelHeight="86dp"
     sothree:umanoParallaxOffset="100dp"
     >
 
@@ -129,37 +129,36 @@
 
         </LinearLayout>
 
+
         <FrameLayout
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_xl"
-            android:layout_marginTop="@dimen/margin_xl"
-            android:layout_marginEnd="@dimen/margin_xl"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cardContainer">
+            android:id="@+id/recordButtonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="100dp"
+            android:layout_marginEnd="68dp"
+            app:layout_constraintBottom_toBottomOf="@+id/timeTV"
+            app:layout_constraintEnd_toEndOf="@+id/timeTV"
+            app:layout_constraintTop_toTopOf="@+id/timeTV"
+            >
 
-            <FrameLayout
-                android:id="@+id/recordButtonContainer"
-                android:layout_width="wrap_content"
-                android:layout_height="100dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp">
-
-                <include layout="@layout/action_button"/>
-
-            </FrameLayout>
-
-            <TextView
-                android:id="@+id/timeTV"
-                style="@style/Text.H1"
-                android:layout_width="wrap_content"
-                android:layout_height="30dp"
-                android:layout_gravity="center"
-                android:gravity="start"
-                android:text="00:00:00"/>
+            <include layout="@layout/action_button"/>
 
         </FrameLayout>
+
+        <TextView
+            android:id="@+id/timeTV"
+            style="@style/Text.H1"
+            android:layout_width="wrap_content"
+            android:layout_height="30dp"
+            android:layout_gravity="center"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="64dp"
+            android:layout_marginEnd="8dp"
+            android:gravity="start"
+            android:text="00:00:00"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardContainer"/>
+
 
 
     </android.support.constraint.ConstraintLayout>

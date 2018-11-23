@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/constraintLayout"
     android:layout_width="match_parent"
-    android:layout_height="80dp">
+    android:layout_height="82dp">
 
     <ImageView
         android:id="@+id/icon"
@@ -16,17 +16,18 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
-
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.39"/>
 
     <LinearLayout
         android:id="@+id/description_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:layout_marginStart="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@+id/icon"
         app:layout_constraintStart_toEndOf="@id/icon"
-        >
+        app:layout_constraintTop_toTopOf="@+id/icon">
 
         <TextView
             android:id="@+id/itemTaskTitle"
@@ -105,7 +106,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="@dimen/card_title_margin"
+        android:layout_marginTop="18dp"
         android:layout_marginEnd="16dp"
         android:paddingTop="@dimen/standard"
         android:background="@color/gray_light"
