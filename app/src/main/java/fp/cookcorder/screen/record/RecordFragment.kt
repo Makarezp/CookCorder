@@ -85,10 +85,18 @@ class RecordFragment : DaggerFragment() {
         setupSlidingUpLayout()
         setupSeekBar()
 
+
         addSlidingPanelListener((activity as MainActivity).slideListener)
 
         viewPager.addOnPageChangeListener((activity as MainActivity).onMainScreenSlide)
+        view!!.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+                view!!.removeOnLayoutChangeListener(this)
+                showIntro()
+            }
+        })
     }
+
 
     fun addSlidingPanelListener(listener: SlidingUpPanelLayout.PanelSlideListener) {
         slidingLayout.addPanelSlideListener(listener)
@@ -336,7 +344,7 @@ class RecordFragment : DaggerFragment() {
                 .cancelable(false)
                 .tintTarget(true)
                 .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
-                .targetRadius(pirckerView.width.dp)// Specify the target radius (in dp)
+                .targetRadius(200)// Specify the target radius (in dp)
         val fab = view!!.findViewById<View>(R.id.floatingActionButton)
         val tapTargetFab = TapTarget.forView(fab, getString(R.string.record_button_description_title), getString(R.string.record_button_description))
                 // All options below are optional
