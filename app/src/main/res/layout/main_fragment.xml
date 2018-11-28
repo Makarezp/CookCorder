@@ -10,7 +10,7 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoDragView="@+id/dragView"
-    sothree:umanoFadeColor="@color/colorPrimaryAlpha"
+    sothree:umanoFadeColor="@color/black"
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="86dp"
     sothree:umanoParallaxOffset="100dp"
@@ -195,7 +195,7 @@
         android:focusable="false"
         android:orientation="vertical">
 
-        <LinearLayout
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="68dp"
             android:orientation="horizontal">
@@ -206,10 +206,19 @@
                 android:layout_height="wrap_content"
                 android:alpha="0"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@android:color/white"
+                app:tabIndicatorColor="@color/colorAccent"
                 app:tabMode="fixed"/>
 
-        </LinearLayout>
+            <TextView
+                android:id="@+id/nextTaskTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="4dp"
+                android:text="Your next task"
+                android:layout_gravity="end|top"/>
+
+        </FrameLayout>
 
         <fp.cookcorder.screen.CustomViewPager
             android:id="@+id/mainActivityVP"

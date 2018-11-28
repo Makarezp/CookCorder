@@ -7,27 +7,14 @@
     android:layout_width="match_parent"
     android:layout_height="82dp">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:src="@drawable/ic_voice_record"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.39"/>
-
     <LinearLayout
         android:id="@+id/description_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="@+id/icon"
-        app:layout_constraintStart_toEndOf="@id/icon"
-        app:layout_constraintTop_toTopOf="@+id/icon">
+        app:layout_constraintStart_toStartOf="parent"
+        tools:layout_editor_absoluteY="6dp">
 
         <TextView
             android:id="@+id/itemTaskTitle"
@@ -108,7 +95,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="18dp"
         android:layout_marginEnd="16dp"
-        android:background="@color/gray_light"
+        android:background="@color/colorAccent"
         android:paddingTop="@dimen/standard"
         app:layout_constraintBottom_toBottomOf="parent"/>
 

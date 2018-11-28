@@ -153,6 +153,7 @@ class RecordFragment : DaggerFragment() {
             override fun onPanelSlide(panel: View?, slideOffset: Float) {
                 mainActivityTL.alpha = slideOffset
                 mainActivityVP.translationY = -((1 - slideOffset) * 65.px)
+                nextTaskTV.alpha = (1 - slideOffset)
             }
 
             override fun onPanelStateChanged(panel: View?,
