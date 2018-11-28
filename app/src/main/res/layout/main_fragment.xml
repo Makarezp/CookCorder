@@ -27,7 +27,7 @@
         <FrameLayout
             android:id="@+id/top_bg"
             android:layout_width="match_parent"
-            android:layout_height="115dp"
+            android:layout_height="140dp"
             android:background="@drawable/upper_region"/>
 
         <TextView
@@ -44,8 +44,7 @@
         <FrameLayout
             android:id="@+id/title_container"
             android:layout_width="250dp"
-            android:layout_height="40dp"
-            android:layout_gravity="bottom|center_horizontal"
+            android:layout_height="36dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
@@ -55,7 +54,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/top_bg"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/top_bg">
+            app:layout_constraintTop_toTopOf="@+id/cardContainer"
+            app:layout_constraintVertical_bias="0.69">
 
             <TextView
                 android:id="@+id/repeatsTV"
@@ -70,13 +70,13 @@
                 android:id="@+id/seekBar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                app:dsb_min="0"
-                app:dsb_max="15"
-                app:dsb_trackColor="@color/white"
-                app:dsb_progressColor="@color/colorAccent"
+                android:padding="4dp"
                 app:dsb_indicatorColor="@color/colorAccent"
                 app:dsb_indicatorTextAppearance="@style/Text"
-                android:padding="4dp"/>
+                app:dsb_max="15"
+                app:dsb_min="0"
+                app:dsb_progressColor="@color/colorAccent"
+                app:dsb_trackColor="@color/white"/>
 
         </FrameLayout>
 
@@ -102,6 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:padding="@dimen/standard"
+                    android:visibility="gone"
                     android:src="@drawable/ic_clock"/>
 
                 <TextView
@@ -109,6 +110,7 @@
                     style="@style/Text.H1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
                     android:layout_gravity="center"
                     android:textAlignment="center"
                     tools:text="15:30"/>
@@ -119,7 +121,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/margin_xl"
-                android:layout_marginTop="36dp"
+                android:layout_marginTop="60dp"
                 android:layout_marginEnd="@dimen/margin_xl"
                 card_view:cardCornerRadius="20dp">
 
