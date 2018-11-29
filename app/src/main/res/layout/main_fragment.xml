@@ -104,16 +104,16 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:padding="@dimen/standard"
-                    android:visibility="gone"
-                    android:src="@drawable/ic_clock"/>
+                    android:src="@drawable/ic_clock"
+                    android:visibility="gone"/>
 
                 <TextView
                     android:id="@+id/minTV"
                     style="@style/Text.H1"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingTop="8dp"
                     android:layout_gravity="center"
+                    android:paddingTop="8dp"
                     android:textAlignment="center"
                     tools:text="15:30"/>
 
@@ -130,8 +130,7 @@
 
                 <FrameLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/bg_card">
+                    android:layout_height="wrap_content">
 
                     <android.support.v4.view.ViewPager
                         android:id="@+id/viewPager"
@@ -148,39 +147,61 @@
                         app:ipi_pageIndicatorColor="@color/gray_light"/>
 
                 </FrameLayout>
+
             </android.support.v7.widget.CardView>
+
+            <android.support.v7.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginEnd="8dp"
+                card_view:cardCornerRadius="10dp">
+
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_xl"
+                    android:layout_marginTop="@dimen/margin_xl"
+                    android:layout_marginEnd="@dimen/margin_xl"
+                    android:padding="@dimen/standard">
+
+
+                    <FrameLayout
+                        android:id="@+id/recordButtonContainer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="100dp"
+                        android:layout_gravity="center">
+
+                        <include
+                            layout="@layout/action_button"/>
+
+                    </FrameLayout>
+
+                    <TextView
+                        android:id="@+id/timeTV"
+                        style="@style/Text.H1"
+                        android:visibility="gone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="64dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center"
+                        android:text="00:00:00"/>
+
+
+                </FrameLayout>
+
+
+            </android.support.v7.widget.CardView>
+            x
 
         </LinearLayout>
 
 
-        <FrameLayout
-            android:id="@+id/recordButtonContainer"
-            android:layout_width="wrap_content"
-            android:layout_height="100dp"
-            android:layout_marginEnd="68dp"
-            app:layout_constraintBottom_toBottomOf="@+id/timeTV"
-            app:layout_constraintEnd_toEndOf="@+id/timeTV"
-            app:layout_constraintTop_toTopOf="@+id/timeTV"
-            >
 
-            <include layout="@layout/action_button"/>
-
-        </FrameLayout>
-
-        <TextView
-            android:id="@+id/timeTV"
-            style="@style/Text.H1"
-            android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_gravity="center"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="64dp"
-            android:layout_marginEnd="8dp"
-            android:gravity="start"
-            android:text="00:00:00"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/cardContainer"/>
 
 
     </android.support.constraint.ConstraintLayout>
@@ -215,10 +236,10 @@
                 android:id="@+id/nextTaskTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
+                android:layout_gravity="end|top"
                 android:layout_marginTop="4dp"
-                android:text="Your next task"
-                android:layout_gravity="end|top"/>
+                android:layout_marginEnd="16dp"
+                android:text="Your next task"/>
 
         </FrameLayout>
 
