@@ -84,7 +84,7 @@ class RecordFragment : DaggerFragment() {
         }
 
         viewPager.adapter = recordAdapter
-        indicator.setViewPager(viewPager)
+        tabLayout.setupWithViewPager(viewPager)
         main.setOnTouchListener { _, event -> viewPager.onTouchEvent(event) }
 
         observeLiveData()

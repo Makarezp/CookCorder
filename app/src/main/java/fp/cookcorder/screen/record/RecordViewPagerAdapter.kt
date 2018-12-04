@@ -20,4 +20,12 @@ class RecordViewPagerAdapter @Inject constructor(
     override fun getCount(): Int {
         return 2
     }
+
+    override fun getPageTitle(position: Int): CharSequence? {
+        return when (position) {
+            0 -> "Time"
+            1 -> "Options"
+            else -> throw NullPointerException()
+        }
+    }
 }
