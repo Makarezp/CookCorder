@@ -18,6 +18,7 @@ import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.screen.MainActivity
 import kotlinx.android.synthetic.main.options_fragment.*
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import javax.inject.Inject
 
 class OptionsFragment : DaggerFragment() {
@@ -38,6 +39,8 @@ class OptionsFragment : DaggerFragment() {
         activity?.let {
             if (it is MainActivity) it.onTouchListener = { clearFocusOnTouchOutside(it) }
         }
+        setupSeekBar()
+
     }
 
     private fun setupEditText() {
@@ -80,6 +83,28 @@ class OptionsFragment : DaggerFragment() {
         v.clearFocus()
         val imm = context!!.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(v.windowToken, 0)
+    }
+
+    private fun setupSeekBar() {
+        seekBar.setOnProgressChangeListener(object : DiscreteSeekBar.OnProgressChangeListener {
+            override fun onProgressChanged(seekBar: DiscreteSeekBar?, value: Int, fromUser: Boolean) {
+                viewModel.repeats.value = value
+            }
+
+            override fun onStartTrackingTouch(seekBar: DiscreteSeekBar?) {
+                repeatsTV.animate()
+                        .setDuration(100L)
+                        .alpha(0F)
+                        .start()
+            }
+
+            override fun onStopTrackingTouch(seekBar: DiscreteSeekBar?) {
+                repeatsTV.animate()
+                        .setDuration(100L)
+                        .alpha(1F)
+                        .start()
+            }
+        })
     }
 
 }

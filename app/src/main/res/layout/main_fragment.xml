@@ -42,47 +42,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
-        <FrameLayout
-            android:id="@+id/title_container"
-            android:layout_width="250dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:background="@drawable/title_container"
-            android:paddingStart="4dp"
-            android:paddingEnd="4dp"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/top_bg"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/cardContainer"
-            app:layout_constraintVertical_bias="0.69">
-
-            <TextView
-                android:id="@+id/repeatsTV"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal"
-                android:text="Repeats"
-                android:textColor="@color/textRed"
-                android:textSize="12sp"/>
-
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="4dp"
-                app:dsb_indicatorColor="@color/colorAccent"
-                app:dsb_indicatorTextAppearance="@style/Text"
-                app:dsb_max="15"
-                app:dsb_min="0"
-                app:dsb_progressColor="@color/colorAccent"
-                app:dsb_trackColor="@color/white"/>
-
-        </FrameLayout>
-
-
         <LinearLayout
             android:id="@+id/cardContainer"
             android:layout_width="match_parent"

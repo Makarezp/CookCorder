@@ -29,7 +29,6 @@ import fp.cookcorder.screen.utils.*
 import kotlinx.android.synthetic.main.action_button.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.options_fragment.*
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import org.jetbrains.anko.design.longSnackbar
 import timber.log.Timber
 import javax.inject.Inject
@@ -93,7 +92,6 @@ class RecordFragment : DaggerFragment() {
         setupSuccessAnimationListener()
         handleFirstRun()
         setupSlidingUpLayout()
-        setupSeekBar()
 
         addSlidingPanelListener((activity as MainActivity).slideListener)
 
@@ -169,28 +167,6 @@ class RecordFragment : DaggerFragment() {
             override fun onPanelStateChanged(panel: View?,
                                              previousState: SlidingUpPanelLayout.PanelState?,
                                              newState: SlidingUpPanelLayout.PanelState?) {
-            }
-        })
-    }
-
-    private fun setupSeekBar() {
-        seekBar.setOnProgressChangeListener(object : DiscreteSeekBar.OnProgressChangeListener {
-            override fun onProgressChanged(seekBar: DiscreteSeekBar?, value: Int, fromUser: Boolean) {
-                viewModel.repeats.value = value
-            }
-
-            override fun onStartTrackingTouch(seekBar: DiscreteSeekBar?) {
-                repeatsTV.animate()
-                        .setDuration(100L)
-                        .alpha(0F)
-                        .start()
-            }
-
-            override fun onStopTrackingTouch(seekBar: DiscreteSeekBar?) {
-                repeatsTV.animate()
-                        .setDuration(100L)
-                        .alpha(1F)
-                        .start()
             }
         })
     }
