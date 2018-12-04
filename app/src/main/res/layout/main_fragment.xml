@@ -172,17 +172,34 @@
 
         </LinearLayout>
 
-
-        <TextView
-            android:id="@+id/nextTaskTV"
-            android:layout_width="wrap_content"
+        <FrameLayout
+            android:id="@+id/panelHelperContainer"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_xl"
-            android:layout_marginEnd="16dp"
             android:layout_marginBottom="110dp"
-            android:text="Your next task"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"/>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
+
+
+            <TextView
+                android:id="@+id/nextTaskTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_xl"
+                android:layout_marginEnd="16dp"
+                android:layout_gravity="start"
+                android:text="Your next task"/>
+
+
+            <ImageView
+                android:id="@+id/iconUpIMG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_expand_less"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
 
 
     </android.support.constraint.ConstraintLayout>

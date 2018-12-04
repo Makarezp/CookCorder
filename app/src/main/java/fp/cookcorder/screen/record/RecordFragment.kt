@@ -136,6 +136,10 @@ class RecordFragment : DaggerFragment() {
 
     private fun setupSlidingUpLayout() {
 
+        iconUpIMG.setOnClickListener {
+            slidingLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
+        }
+
         fun getTabTintList(): ColorStateList? {
             return if (Build.VERSION.SDK_INT >= 23) {
                 resources.getColorStateList(R.color.tab_icon_selector, context!!.theme)
@@ -164,6 +168,15 @@ class RecordFragment : DaggerFragment() {
                 mainActivityTL.alpha = slideOffset
                 mainActivityVP.translationY = -((1 - slideOffset) * 65.px)
                 nextTaskTV.alpha = (1 - slideOffset)
+
+
+                iconUpIMG.translationY = slideOffset * 500
+                iconUpIMG.scaleX = (1 - (10 * slideOffset))
+                iconUpIMG.scaleY = (1 - (10 * slideOffset))
+                panelHelperContainer.alpha = (1 - slideOffset)
+                iconUpIMG.rotation = slideOffset * 360
+                nextTaskTV.translationX = -(slideOffset * 8000)
+
             }
 
             override fun onPanelStateChanged(panel: View?,
