@@ -39,6 +39,8 @@ class RecordFragment : DaggerFragment() {
 
     companion object {
 
+        const val IS_FIRST_RUN_KEY = "IS_FIRST_RUN"
+
         const val RECORDING_PERMISSION_REQUEST = 1
 
         fun newInstance() = RecordFragment()
@@ -63,6 +65,8 @@ class RecordFragment : DaggerFragment() {
     @Inject
     lateinit var recordAdapter: RecordViewPagerAdapter
 
+    private var isFirstRun = true
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
         return inflater.inflate(R.layout.main_fragment, container, false)
@@ -73,6 +77,12 @@ class RecordFragment : DaggerFragment() {
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestAudioRecordingPermission()
+
+        //check if is first run
+        isFirstRun = prefs.getBoolean(IS_FIRST_RUN_KEY, true)
+        if (isFirstRun) {
+            prefs.edit().putBoolean(IS_FIRST_RUN_KEY, false).apply()
+        }
 
         viewPager.adapter = recordAdapter
         indicator.setViewPager(viewPager)
@@ -85,14 +95,14 @@ class RecordFragment : DaggerFragment() {
         setupSlidingUpLayout()
         setupSeekBar()
 
-
         addSlidingPanelListener((activity as MainActivity).slideListener)
 
+        //after fragment loads show intro
         viewPager.addOnPageChangeListener((activity as MainActivity).onMainScreenSlide)
         view!!.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
             override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
                 view!!.removeOnLayoutChangeListener(this)
-                showIntro()
+                if (isFirstRun) showIntro()
             }
         })
     }
@@ -119,7 +129,7 @@ class RecordFragment : DaggerFragment() {
             observe(currentRecordTime) { timeTV.text = it }
             observe(minutes) { minTV.text = it }
             observe(isToday) {
-                dateText.text = getString(if(it) R.string.today else R.string.tomorrow)
+                dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
             }
         }
     }
@@ -175,6 +185,7 @@ class RecordFragment : DaggerFragment() {
                         .alpha(0F)
                         .start()
             }
+
             override fun onStopTrackingTouch(seekBar: DiscreteSeekBar?) {
                 repeatsTV.animate()
                         .setDuration(100L)
@@ -317,8 +328,6 @@ class RecordFragment : DaggerFragment() {
                     }
         }
     }
-
-
 
 
     private fun handleFirstRun() {
