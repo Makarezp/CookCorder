@@ -158,7 +158,7 @@
                 android:layout_marginEnd="8dp"
                 card_view:cardCornerRadius="10dp">
 
-                <FrameLayout
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/margin_xl"
@@ -166,37 +166,32 @@
                     android:layout_marginEnd="@dimen/margin_xl"
                     android:padding="@dimen/standard">
 
+                    <TextView
+                        android:id="@+id/timeTV"
+                        style="@style/Text.H1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="30dp"
+                        android:layout_gravity="center_vertical|left"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:gravity="center"
+                        android:text="00:00:00"/>
 
                     <FrameLayout
                         android:id="@+id/recordButtonContainer"
                         android:layout_width="wrap_content"
                         android:layout_height="100dp"
-                        android:layout_gravity="center">
+                        android:layout_gravity="center_vertical|right">
 
                         <include
                             layout="@layout/action_button"/>
 
                     </FrameLayout>
 
-                    <TextView
-                        android:id="@+id/timeTV"
-                        style="@style/Text.H1"
-                        android:visibility="gone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="30dp"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="64dp"
-                        android:layout_marginEnd="8dp"
-                        android:gravity="center"
-                        android:text="00:00:00"/>
-
-
-                </FrameLayout>
+                </LinearLayout>
 
 
             </android.support.v7.widget.CardView>
-            x
 
         </LinearLayout>
 
