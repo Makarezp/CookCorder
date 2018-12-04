@@ -129,6 +129,8 @@ class RecordFragment : DaggerFragment() {
             observe(isToday) {
                 dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
             }
+            observe(repeats) { numberOfRepeatsTV.text = it.toString() }
+            observe(title) { titleTV.setTextHideIfNull(it) }
         }
     }
 

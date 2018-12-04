@@ -36,7 +36,7 @@ class RecordViewModel @Inject constructor(
 
     val minutes = MutableLiveData<String>()
 
-    var title: String? = null
+    var title = MutableLiveData<String>()
 
     var repeats = MutableLiveData<Int>().apply { value = 1 }
 
@@ -92,7 +92,7 @@ class RecordViewModel @Inject constructor(
         exe(recordUseCase
                 .finishRecordingNewTask(
                         currentMinutesToSchedule.value!!.minutestToMilliseconds(),
-                        title,
+                        title.value,
                         repeats.value ?: 1),
                 onError = {
                     Timber.d(it)
@@ -104,6 +104,10 @@ class RecordViewModel @Inject constructor(
             isRecording.postValue(false)
             recordTimerDisposable?.dispose()
         }
+    }
+
+    fun setTitle(text: String) {
+        title.value = text
     }
 
     private fun recordTimeCounter(): Observable<String> {
