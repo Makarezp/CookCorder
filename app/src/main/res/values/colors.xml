@@ -15,6 +15,6 @@
     <color name="text">#e6e6e6</color>
     <color name="textRed">@color/colorAccent</color>
 
-    <color name="background">#5b5b5b</color>
+    <color name="background">#b4b4b4</color>
 
 </resources>
