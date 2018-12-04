@@ -163,8 +163,12 @@
 
                 </LinearLayout>
 
-
             </android.support.v7.widget.CardView>
+
+            <!--hack to make shadow visible-->
+            <View
+                android:layout_width="1dp"
+                android:layout_height="10dp"/>
 
         </LinearLayout>
 
