@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.PopupMenu
 import android.widget.SeekBar
 import android.widget.TextView
 import fp.cookcorder.R
@@ -109,8 +110,7 @@ class PlayAdapter @Inject constructor(
             subTitle = itemView.findViewById(R.id.itemTaskTVTime)
             details = itemView.findViewById(R.id.itemTaskTvTimePlayed)
             playButton = itemView.findViewById(R.id.itemTaskPlayIB)
-            editButton = itemView.findViewById(R.id.itemTaskIBEdit)
-            deleteButton = itemView.findViewById(R.id.itemTaskDeleteIB)
+            moreButton = itemView.findViewById(R.id.itemTaskMoreIB)
             seekBar = itemView.findViewById(R.id.itemTaskSeekBar)
         }
         return holder
@@ -161,8 +161,7 @@ class PlayAdapter @Inject constructor(
 
                 }
             }
-            editButton.setOnClickListener { viewModel.editTask(task.id) }
-            deleteButton.setOnClickListener { viewModel.delete(task) }
+            moreButton.setOnClickListener { v -> showPopUp(v, task) }
             subTitle.text = if (isCurrent) getTimeFromEpoch(task.scheduleTime)
             else getDateTimeFromEpoch(task.scheduleTime)
             if (isCurrent) {
@@ -180,6 +179,22 @@ class PlayAdapter @Inject constructor(
                 ))
             }
         }
+    }
+
+    private fun showPopUp(view: View, task: Task) {
+        val popupMenu = PopupMenu(view.context, view)
+        popupMenu.inflate(R.menu.task_menu)
+        popupMenu.setOnMenuItemClickListener { menuItem -> onMoreItemClicked(menuItem.itemId, task) }
+        popupMenu.show()
+    }
+
+    private fun onMoreItemClicked(itemId: Int, task: Task): Boolean {
+        when (itemId) {
+            R.id.editMenuItem -> viewModel.editTask(task.id)
+            R.id.removeMenuItem -> viewModel.delete(task)
+        }
+
+        return true
     }
 
     override fun onViewRecycled(holder: TaskViewHolder) {
@@ -216,8 +231,7 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     lateinit var subTitle: TextView
     lateinit var details: TextView
     lateinit var playButton: ImageButton
-    lateinit var editButton: ImageButton
-    lateinit var deleteButton: ImageButton
+    lateinit var moreButton: ImageButton
     lateinit var seekBar: SeekBar
     val compositeDisposable = CompositeDisposable()
     val recordCompositeDisposable = CompositeDisposable()

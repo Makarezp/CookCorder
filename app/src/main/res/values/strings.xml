@@ -20,4 +20,6 @@
     <string name="your_next_task">Your next task</string>
     <string name="current">CURRENT</string>
     <string name="past">PAST</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
 </resources>
