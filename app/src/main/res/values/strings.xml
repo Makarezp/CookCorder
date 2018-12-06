@@ -18,4 +18,6 @@
     <string name="today">TODAY</string>
     <string name="tomorrow">TOMORROW</string>
     <string name="your_next_task">Your next task</string>
+    <string name="current">CURRENT</string>
+    <string name="past">PAST</string>
 </resources>

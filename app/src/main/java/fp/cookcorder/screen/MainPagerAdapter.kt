@@ -1,7 +1,7 @@
 package fp.cookcorder.screen
 
 import android.content.Context
-import android.support.annotation.DrawableRes
+import android.support.annotation.StringRes
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v4.app.FragmentPagerAdapter
@@ -10,26 +10,27 @@ import fp.cookcorder.screen.play.PlayFragment
 import javax.inject.Inject
 
 class MainPagerAdapter @Inject constructor(
-        fragmentManager: FragmentManager)
+        fragmentManager: FragmentManager,
+        val context: Context)
     : FragmentPagerAdapter(fragmentManager) {
 
     override fun getItem(position: Int) = Page.get(position).createFragment()
 
     override fun getCount() = Page.values().size
 
-    override fun getPageTitle(position: Int): CharSequence? = null
+    override fun getPageTitle(position: Int): CharSequence? =
+            context.getString(Page.get(position).stringRes)
+
 
     enum class Page(val position: Int,
                     val createFragment: () -> Fragment,
-                    @DrawableRes val iconRes: Int) {
+                    @StringRes val stringRes: Int) {
         PLAY(0,
                 { PlayFragment.newInstance(isCurrent = true) },
-                R.drawable.ic_tab_scheduled),
+                R.string.current),
         HISTORY(1,
                 { PlayFragment.newInstance(isCurrent = false) },
-                R.drawable.ic_tab_history);
-
-        fun getPageIcon(context: Context) = context.getDrawable(iconRes)
+                R.string.past);
 
         companion object {
             private val map = Page.values().associateBy { it.position }

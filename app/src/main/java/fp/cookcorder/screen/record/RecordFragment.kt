@@ -6,14 +6,12 @@ import android.animation.Animator
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
-import android.content.res.ColorStateList
 import android.graphics.Typeface
 import android.os.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
-import android.support.v4.graphics.drawable.DrawableCompat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -140,27 +138,10 @@ class RecordFragment : DaggerFragment() {
             slidingLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
         }
 
-        fun getTabTintList(): ColorStateList? {
-            return if (Build.VERSION.SDK_INT >= 23) {
-                resources.getColorStateList(R.color.tab_icon_selector, context!!.theme)
-            } else {
-                resources.getColorStateList(R.color.tab_icon_selector)
-            }
-        }
-
         with(mainActivityTL) {
 
             mainActivityVP.adapter = pageAdapter
             setupWithViewPager(mainActivityVP)
-
-            for (i in 0 until tabCount) {
-                getTabAt(i)?.icon =
-                        DrawableCompat.wrap(
-                                MainPagerAdapter.Page.get(i).getPageIcon(context)
-                        ).apply {
-                            DrawableCompat.setTintList(this, getTabTintList())
-                        }
-            }
         }
 
         slidingLayout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
