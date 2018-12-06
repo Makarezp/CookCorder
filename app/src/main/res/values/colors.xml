@@ -2,14 +2,15 @@
 <resources>
     <color name="colorPrimary">#37acff</color>
     <color name="colorPrimaryDark">#ffffff</color>
-    <color name="colorAccent">#349b20</color>
+    <color name="colorAccent">#ffab40</color>
     <color name="background">#e7e7e7</color>
 
     <color name="white">#ffffff</color>
     <color name="black">#37acff</color>
 
 
-    <color name="text">#404040</color>
+    <color name="text">#747474</color>
+    <color name="textInverse">@color/white</color>
 
     <color name="icon">@color/text</color>
     <color name="micIconColor">@color/white</color>
@@ -17,13 +18,13 @@
     <color name="colorIconSelected">@color/white</color>
     <color name="colorIconNotSelected">@color/white</color>
     <color name="cardBackground">@color/white</color>
-    <color name="pickerNotSelected">#b33939</color>
+    <color name="pickerNotSelected">@color/text</color>
     <color name="pickerSelected">@color/colorAccent</color>
 
     <color name="upperRegionGradient1">@color/colorPrimary</color>
     <color name="upperRegionGradient2">@color/colorPrimary</color>
-    <color name="lowerRegionGradient1">@color/colorPrimary</color>
-    <color name="lowerRegionGradient2">@color/colorPrimary</color>
+    <color name="lowerRegionGradient1">@color/white</color>
+    <color name="lowerRegionGradient2">@color/white</color>
 
     <color name="panelFadeColor">@color/colorPrimary</color>
 

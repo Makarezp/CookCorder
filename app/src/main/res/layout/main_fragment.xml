@@ -32,7 +32,7 @@
 
         <TextView
             android:id="@+id/dateText"
-            style="@style/Text"
+            style="@style/Text.UpperDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
@@ -73,7 +73,7 @@
 
                 <TextView
                     android:id="@+id/minTV"
-                    style="@style/Text.H1"
+                    style="@style/Text.H1.Accent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -83,6 +83,7 @@
 
                 <TextView
                     android:id="@+id/numberOfRepeatsTV"
+                    style="@style/Text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
@@ -118,7 +119,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
                         app:tabTextColor="@color/pickerNotSelected"
-                        app:tabSelectedTextColor="@color/colorAccent"
+                        app:tabSelectedTextColor="@color/colorPrimary"
+                        app:tabIndicatorColor="@color/colorPrimary"
                         app:tabMode="fixed"/>
 
                 </FrameLayout>
