@@ -40,8 +40,8 @@
         app:layout_constraintTop_toBottomOf="@id/textInputLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:shp_normal_color="@color/white_70"
-        app:shp_selected_color="@color/white"/>
+        app:shp_normal_color="@color/pickerNotSelected"
+        app:shp_selected_color="@color/pickerSelected"/>
 
     <Button
         style="@style/Base.TextAppearance.AppCompat.Widget.Button.Borderless.Colored"

@@ -80,6 +80,7 @@ class RecordFragment : DaggerFragment() {
         //check if is first run
         isFirstRun = prefs.getBoolean(IS_FIRST_RUN_KEY, true)
         if (isFirstRun) {
+            showIntro()
             prefs.edit().putBoolean(IS_FIRST_RUN_KEY, false).apply()
         }
 
@@ -90,7 +91,6 @@ class RecordFragment : DaggerFragment() {
         observeLiveData()
         setupRecordingButton()
         setupSuccessAnimationListener()
-        handleFirstRun()
         setupSlidingUpLayout()
 
         addSlidingPanelListener((activity as MainActivity).slideListener)
@@ -321,15 +321,6 @@ class RecordFragment : DaggerFragment() {
     }
 
 
-    private fun handleFirstRun() {
-//        val isFirstRunKey = "RecordFragmentFirstRun"
-//        val isFirstRun = prefs.getBoolean(isFirstRunKey, true)
-//        if (isFirstRun) {
-//            showIntro()
-//            prefs.edit().putBoolean(isFirstRunKey, false).apply()
-//        }
-    }
-
     private fun showIntro() {
         val pirckerView = view!!.findViewById<View>(R.id.minutePicker)
         val tapTargetPicker = TapTarget.forView(pirckerView, getString(R.string.time_picker_description_title), getString(R.string.time_picker_description))
@@ -337,10 +328,10 @@ class RecordFragment : DaggerFragment() {
                 .titleTextSize(20)                  // Specify the size (in sp) of the title text
                 .titleTextColor(R.color.text)      // Specify the color of the title text
                 .descriptionTextSize(10)            // Specify the size (in sp) of the description text
-                .descriptionTextColor(R.color.white_70)  // Specify the color of the description text
+                .descriptionTextColor(R.color.text)  // Specify the color of the description text
                 .textColor(R.color.text)            // Specify a color for both the title and description text
                 .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                .dimColor(R.color.colorPrimary)            // If set, will dim behind the view with 30% opacity of the given color
                 .drawShadow(true)                   // Whether to draw a drop shadow or not
                 .cancelable(false)
                 .tintTarget(true)
@@ -352,10 +343,10 @@ class RecordFragment : DaggerFragment() {
                 .titleTextSize(20)                  // Specify the size (in sp) of the title text
                 .titleTextColor(R.color.text)      // Specify the color of the title text
                 .descriptionTextSize(10)            // Specify the size (in sp) of the description text
-                .descriptionTextColor(R.color.white_70)  // Specify the color of the description text
+                .descriptionTextColor(R.color.text)  // Specify the color of the description text
                 .textColor(R.color.text)            // Specify a color for both the title and description text
                 .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
+                .dimColor(R.color.colorPrimary)            // If set, will dim behind the view with 30% opacity of the given color
                 .drawShadow(true)                   // Whether to draw a drop shadow or not
                 .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
                 .tintTarget(true)

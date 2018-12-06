@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#4C4C5D</color>
-    <color name="colorPrimaryDark">#2E2E3F</color>
-    <color name="colorAccent">#E53935</color>
-    <color name="colorPrimaryAlpha">#a1515151</color>
+    <color name="colorPrimary">@color/black</color>
+    <color name="colorPrimaryDark">#ffffff</color>
+    <color name="colorAccent">#349b20</color>
 
-    <color name="colorPrimaryLight">#5491f5</color>
 
     <color name="white">#ffffff</color>
-    <color name="black">#000000</color>
-    <color name="gray_deep">#666666</color>
-    <color name="gray_light">#CCCCCC</color>
-    <color name="white_70">#B7E6E6E6</color>
-    <color name="text">#e6e6e6</color>
-    <color name="textRed">@color/colorAccent</color>
+    <color name="black">#37acff</color>
+    <color name="secondBlack">#3b769f</color>
+    <color name="text">#ffffff</color>
 
-    <color name="background">#818181</color>
+    <color name="background">#e7e7e7</color>
+
+
+    <color name="pickerNotSelected">#b33939</color>
+    <color name="pickerSelected">@color/colorAccent</color>
 
 </resources>

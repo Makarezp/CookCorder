@@ -52,7 +52,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="top|center_horizontal"
                 android:text="Repeats"
-                android:textColor="@color/textRed"
+                android:textColor="@color/text"
                 android:textSize="12sp"/>
 
             <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar

@@ -4,7 +4,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">#d52c2d2e</item>
+        <item name="colorPrimaryDark">#d5000000</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="android:windowBackground">@color/background</item>
         <item name="android:navigationBarColor">@color/black</item>
@@ -26,7 +26,7 @@
     <style name="Text.Sub">
         <item name="android:textSize">13sp</item>
         <item name="android:lineSpacingExtra">15sp</item>
-        <item name="android:textColor">@color/textRed</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <!--text-->
@@ -38,7 +38,7 @@
     <style name="Text.H1">
         <item name="android:textSize">24sp</item>
         <item name="android:letterSpacing">-0.05</item>
-        <item name="android:textColor">@color/textRed</item>
+        <item name="android:textColor">@color/text</item>
         <item name="android:textStyle">bold</item>
     </style>
 
@@ -65,7 +65,7 @@
         <item name="android:textAppearance">@style/TextAppearance.AppCompat.Headline</item>
         <item name="android:textSize">@dimen/text_size_label</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textColor">@color/textRed</item>
+        <item name="android:textColor">@color/text</item>
     </style>
 
     <!--PlayCell-->

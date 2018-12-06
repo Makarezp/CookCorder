@@ -98,7 +98,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="8dp"
                 card_view:cardElevation="5dp"
-                card_view:cardCornerRadius="10dp">
+                card_view:cardCornerRadius="10dp"
+                card_view:cardBackgroundColor="@color/colorPrimaryDark">
 
 
                 <FrameLayout
@@ -116,6 +117,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
+                        app:tabTextColor="@color/pickerNotSelected"
+                        app:tabSelectedTextColor="@color/colorAccent"
                         app:tabMode="fixed"/>
 
                 </FrameLayout>
@@ -129,7 +132,8 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="8dp"
                 card_view:cardElevation="5dp"
-                card_view:cardCornerRadius="5dp">
+                card_view:cardCornerRadius="5dp"
+                card_view:cardBackgroundColor="@color/colorPrimaryDark">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -211,7 +215,6 @@
         android:id="@+id/dragView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/lower_region"
         android:clickable="true"
         android:focusable="false"
         android:orientation="vertical">
