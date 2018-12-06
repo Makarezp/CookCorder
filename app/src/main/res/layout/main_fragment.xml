@@ -218,7 +218,7 @@
         android:clickable="true"
         android:focusable="false"
         android:orientation="vertical"
-        android:background="@drawable/lower_region">
+        android:background="@color/cardBackground">
 
         <FrameLayout
             android:layout_width="match_parent"

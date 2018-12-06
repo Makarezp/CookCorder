@@ -3,7 +3,9 @@ package fp.cookcorder.screen.play
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.widget.CardView
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +37,8 @@ class PlayFragment : DaggerFragment() {
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<PlayViewModel>
 
+    lateinit var layoutManager: RecyclerView.LayoutManager
+
     private lateinit var viewModel: PlayViewModel
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -61,6 +65,16 @@ class PlayFragment : DaggerFragment() {
                     .addSlidingPanelListener(object : SlidingUpPanelLayout.PanelSlideListener {
                         override fun onPanelSlide(panel: View?, slideOffset: Float) {
                             playFragmentTVNoTasks.translationY = ((1 - slideOffset) * -230).px
+
+                            for (i in 0 until layoutManager.childCount) {
+
+                                val card = layoutManager.getChildAt(i) as CardView
+                                card.cardElevation = slideOffset * 5
+                                val margin = (slideOffset * 5).toInt()
+//                                (card.layoutParams as ViewGroup.MarginLayoutParams)
+//                                        .setMargins(margin, margin, margin, margin)
+                            }
+
                         }
 
                         override fun onPanelStateChanged(panel: View, previousState: SlidingUpPanelLayout.PanelState, newState: SlidingUpPanelLayout.PanelState) {
@@ -71,6 +85,9 @@ class PlayFragment : DaggerFragment() {
 
                             if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
                                 playFragRV.scrollToPosition(0)
+                                viewModel.isPanelPeeked = false
+                            } else {
+                                viewModel.isPanelPeeked = true
                             }
                         }
                     })
@@ -97,7 +114,8 @@ class PlayFragment : DaggerFragment() {
     }
 
     private fun setupRecycler() {
-        playFragRV.layoutManager = ScrollEnabledLinearLayoutManager(context!!)
+        layoutManager = ScrollEnabledLinearLayoutManager(context!!)
+        playFragRV.layoutManager = layoutManager
         playFragRV.adapter = viewModel.adapter
     }
 

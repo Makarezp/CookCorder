@@ -3,6 +3,7 @@ package fp.cookcorder.screen.play
 import android.arch.lifecycle.MutableLiveData
 import android.support.v7.recyclerview.extensions.AsyncListDiffer
 import android.support.v7.util.DiffUtil
+import android.support.v7.widget.CardView
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Named
+import kotlin.properties.Delegates
 
 
 class PlayViewModel @Inject constructor(
@@ -35,7 +37,9 @@ class PlayViewModel @Inject constructor(
     val adapter = playAdapter
     val showNoTasks = MutableLiveData<Boolean>()
     val editTaskCmd = SingleLiveEvent<Long>()
-
+    var isPanelPeeked: Boolean by Delegates.observable(false) { _, _, newValue ->
+        adapter.isPanelPeeked = newValue
+    }
 
     @Inject
     fun init() {
@@ -78,6 +82,8 @@ class PlayAdapter @Inject constructor(
             differ.submitList(value)
         }
 
+    var isPanelPeeked = false
+
     private val timer = Observable.interval(100, TimeUnit.MILLISECONDS)
             .subscribeOn(schedulerFactory.single())
             .observeOn(schedulerFactory.ui())
@@ -97,7 +103,8 @@ class PlayAdapter @Inject constructor(
 
         val holder = TaskViewHolder(view)
         with(holder) {
-            upperContainer = itemView.findViewById<View>(R.id.constraintLayout)
+
+            cardView = itemView.findViewById(R.id.cardView)
             title = itemView.findViewById(R.id.itemTaskTitle)
             subTitle = itemView.findViewById(R.id.itemTaskTVTime)
             details = itemView.findViewById(R.id.itemTaskTvTimePlayed)
@@ -116,6 +123,7 @@ class PlayAdapter @Inject constructor(
         val task = differ.currentList[position]
         var isPlaying = false
         with(holder) {
+            if (isPanelPeeked) cardView.cardElevation = 5f
             title.setTextInvisibleIfEmptyOrNull(task.title)
             playButton.setOnClickListener { _ ->
                 if (!isPlaying) {
@@ -203,7 +211,7 @@ object DiffCallback : DiffUtil.ItemCallback<Task>() {
 }
 
 class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-    lateinit var upperContainer: View
+    lateinit var cardView: CardView
     lateinit var title: TextView
     lateinit var subTitle: TextView
     lateinit var details: TextView
