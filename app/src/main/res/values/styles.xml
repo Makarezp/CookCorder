@@ -35,6 +35,10 @@
         <item name="android:textColor">@color/text</item>
     </style>
 
+    <style name="Text.Invervse">
+        <item name="android:textColor">@color/textInverse</item>
+    </style>
+
     <style name="Text.H1">
         <item name="android:textSize">24sp</item>
         <item name="android:letterSpacing">-0.05</item>
@@ -85,10 +89,16 @@
         <item name="android:textColor">@color/text</item>
     </style>
 
-    //Text
 
     <style name="Text.UpperDate">
         <item name="android:textColor">@color/textInverse</item>
+    </style>
+
+
+    <style name="AppTabLayout" parent="Widget.Design.TabLayout">
+        <item name="tabTextColor">@color/pickerNotSelected</item>
+        <item name="tabIndicatorColor">@color/colorPrimary</item>
+        <item name="tabSelectedTextColor">@color/colorPrimary</item>
     </style>
 
 

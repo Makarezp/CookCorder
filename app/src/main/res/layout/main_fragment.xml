@@ -63,6 +63,7 @@
 
                 <TextView
                     android:id="@+id/titleTV"
+                    style="@style/Text.Invervse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
@@ -83,7 +84,7 @@
 
                 <TextView
                     android:id="@+id/numberOfRepeatsTV"
-                    style="@style/Text"
+                    style="@style/Text.Invervse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|end"
@@ -115,12 +116,10 @@
 
                     <android.support.design.widget.TabLayout
                         android:id="@+id/tabLayout"
+                        style="@style/AppTabLayout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="top"
-                        app:tabTextColor="@color/pickerNotSelected"
-                        app:tabSelectedTextColor="@color/colorPrimary"
-                        app:tabIndicatorColor="@color/colorPrimary"
                         app:tabMode="fixed"/>
 
                 </FrameLayout>
@@ -228,14 +227,12 @@
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/mainActivityTL"
+                style="@style/AppTabLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:alpha="0"
                 app:tabGravity="fill"
-                app:tabIndicatorColor="@color/colorAccent"
                 app:tabMode="fixed"/>
-
-
         </FrameLayout>
 
         <fp.cookcorder.screen.CustomViewPager
