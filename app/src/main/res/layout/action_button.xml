@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         app:fabSize="normal"
         android:clickable="true"
-        android:src="@drawable/ic_mic_none"
+        android:src="@drawable/ic_mic"
         android:layout_gravity="center"
         />
 

@@ -17,4 +17,5 @@
     <string name="record_button_description">Press it and hold to record your task. When you want to cancel recording just swipe away.</string>
     <string name="today">TODAY</string>
     <string name="tomorrow">TOMORROW</string>
+    <string name="your_next_task">Your next task</string>
 </resources>
