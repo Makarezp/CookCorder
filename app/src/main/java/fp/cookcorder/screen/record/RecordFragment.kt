@@ -191,6 +191,7 @@ class RecordFragment : DaggerFragment() {
                     floatingActionButton.setImageDrawable(
                             resources.getDrawable(R.drawable.ic_mic, activity!!.theme))
                     invisible()
+                    animateTimerTVFinishRecording(300)
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
@@ -217,7 +218,7 @@ class RecordFragment : DaggerFragment() {
                             success.speed = -1.3F
                             success.playAnimation()
                             animationSuccess = false
-
+                            animateTimerTVFinishRecording(600)
                         }
                     }, 400)
                 } else {
@@ -225,12 +226,20 @@ class RecordFragment : DaggerFragment() {
                 }
             }
 
+
             override fun onAnimationCancel(animation: Animator?) {
             }
 
             override fun onAnimationStart(animation: Animator?) {
             }
         })
+    }
+
+    private fun animateTimerTVFinishRecording(duration: Long) {
+        timeTV.animate()
+                .alpha(0f)
+                .setDuration(duration)
+                .start()
     }
 
     private fun setupRecordingButton() {
@@ -248,7 +257,7 @@ class RecordFragment : DaggerFragment() {
     private fun handleRecordingState(isRecording: Boolean) {
         if (isRecording) {
             timeTV.animate()
-                    .alphaBy(1f)
+                    .alpha(1f)
                     .setDuration(300)
                     .start()
             vibrate()
@@ -257,6 +266,8 @@ class RecordFragment : DaggerFragment() {
         } else {
             recordAnimation.invisible()
             recordAnimation.playAnimation()
+
+
         }
     }
 
