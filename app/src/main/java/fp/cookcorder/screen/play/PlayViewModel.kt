@@ -124,6 +124,7 @@ class PlayAdapter @Inject constructor(
         var isPlaying = false
         with(holder) {
             if (isPanelPeeked) cardView.cardElevation = 5f
+            playButton.setImageResource(R.drawable.ic_play)
             title.setTextInvisibleIfEmptyOrNull(task.title)
             playButton.setOnClickListener { _ ->
                 if (!isPlaying) {

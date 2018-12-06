@@ -40,11 +40,15 @@
         <item name="android:textColor">@color/textInverse</item>
     </style>
 
+    <style name="Text.Accent">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
     <style name="Text.H1">
         <item name="android:textSize">24sp</item>
         <item name="android:letterSpacing">-0.05</item>
         <item name="android:textColor">@color/text</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textStyle">normal</item>
     </style>
 
     <style name="Text.H1.Accent">
@@ -78,7 +82,7 @@
         <item name="android:gravity">center_horizontal</item>
         <item name="android:textSize">18sp</item>
         <item name="android:fontFamily">sans-serif</item>
-        <item name="android:textStyle">normal</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:letterSpacing">-0.05</item>
         <item name="android:textColor">@color/text</item>
     </style>

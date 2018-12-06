@@ -5,10 +5,10 @@ import org.threeten.bp.format.DateTimeFormatter
 import org.threeten.bp.temporal.ChronoUnit
 
 fun getTimeFromEpoch(epoch: Long) =
-        epoch.getTimeInstant().format(DateTimeFormatter.ofPattern("hh:mm a"))
+        epoch.getTimeInstant().format(DateTimeFormatter.ofPattern("HH:mm"))
 
 fun getDateTimeFromEpoch(epoch: Long) =
-        epoch.getTimeInstant().format(DateTimeFormatter.ofPattern("dd MMM hh:mm a"))
+        epoch.getTimeInstant().format(DateTimeFormatter.ofPattern("dd MMM HH:mm"))
 
 fun Long.getTimeInstant() = Instant.ofEpochMilli(this)
         .atZone(ZoneId.systemDefault())

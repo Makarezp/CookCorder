@@ -82,15 +82,6 @@
                     android:textAlignment="center"
                     tools:text="15:30"/>
 
-                <TextView
-                    android:id="@+id/numberOfRepeatsTV"
-                    style="@style/Text.Invervse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|end"
-                    android:drawableStart="@drawable/ic_repeat"
-                    tools:text='10'/>
-
             </FrameLayout>
 
             <android.support.v7.widget.CardView
@@ -101,7 +92,7 @@
                 android:layout_marginEnd="8dp"
                 card_view:cardElevation="5dp"
                 card_view:cardCornerRadius="10dp"
-                card_view:cardBackgroundColor="@color/colorPrimaryDark">
+                card_view:cardBackgroundColor="@color/cardBackground">
 
 
                 <FrameLayout
@@ -134,7 +125,7 @@
                 android:layout_marginEnd="8dp"
                 card_view:cardElevation="5dp"
                 card_view:cardCornerRadius="5dp"
-                card_view:cardBackgroundColor="@color/colorPrimaryDark">
+                card_view:cardBackgroundColor="@color/cardBackground">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -177,34 +168,6 @@
 
         </LinearLayout>
 
-        <FrameLayout
-            android:id="@+id/panelHelperContainer"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="110dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
-
-            <TextView
-                android:id="@+id/nextTaskTV"
-                style="@style/Text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/margin_xl"
-                android:layout_marginEnd="16dp"
-                android:layout_gravity="start"
-                android:text="@string/your_next_task"/>
-
-            <ImageView
-                android:id="@+id/iconUpIMG"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_expand_less"
-                android:layout_gravity="center"/>
-
-        </FrameLayout>
-
 
     </android.support.constraint.ConstraintLayout>
 
@@ -223,7 +186,36 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="68dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:translationZ="10dp">
+
+            <FrameLayout
+                android:id="@+id/panelHelperContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
+
+                <TextView
+                    android:id="@+id/nextTaskTV"
+                    style="@style/Text.Accent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_xl"
+                    android:layout_marginEnd="16dp"
+                    android:layout_gravity="start"
+                    android:text="@string/your_next_task"/>
+
+                <ImageView
+                    android:id="@+id/iconUpIMG"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_expand_less"
+                    android:layout_gravity="center"/>
+
+            </FrameLayout>
 
             <android.support.design.widget.TabLayout
                 android:id="@+id/mainActivityTL"
@@ -242,6 +234,7 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:translationY="-65dp"
+            android:elevation="2dp"
             />
     </LinearLayout>
 

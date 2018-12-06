@@ -64,15 +64,11 @@ class PlayFragment : DaggerFragment() {
             (it as RecordFragment)
                     .addSlidingPanelListener(object : SlidingUpPanelLayout.PanelSlideListener {
                         override fun onPanelSlide(panel: View?, slideOffset: Float) {
-                            playFragmentTVNoTasks.translationY = ((1 - slideOffset) * -230).px
+                            playFragmentTVNoTasks.translationY = ((1 - slideOffset) * -210).px
 
                             for (i in 0 until layoutManager.childCount) {
-
                                 val card = layoutManager.getChildAt(i) as CardView
                                 card.cardElevation = slideOffset * 5
-                                val margin = (slideOffset * 5).toInt()
-//                                (card.layoutParams as ViewGroup.MarginLayoutParams)
-//                                        .setMargins(margin, margin, margin, margin)
                             }
 
                         }
