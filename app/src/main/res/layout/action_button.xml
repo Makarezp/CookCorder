@@ -11,19 +11,20 @@
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/floatingActionButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:fabSize="normal"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
         android:clickable="true"
+        android:background="?attr/selectableItemBackground"
         android:src="@drawable/ic_mic"
         android:layout_gravity="center"
+        android:elevation="0dp"
         />
 
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/recordAnimation"
-        android:layout_width="155dp"
-        android:layout_height="155dp"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         app:lottie_autoPlay="true"
         app:lottie_fileName="record.json"
         android:visibility="invisible"
@@ -32,8 +33,8 @@
 
     <com.airbnb.lottie.LottieAnimationView
         android:id="@+id/success"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
         app:lottie_autoPlay="true"
         app:lottie_fileName="animation_success.json"
         android:layout_gravity="center"
@@ -43,8 +44,8 @@
 
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/cancel"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
             app:lottie_autoPlay="true"
             app:lottie_fileName="error.json"
             android:layout_gravity="center"
