@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#37acff</color>
     <color name="colorPrimaryDark">#ffffff</color>
-    <color name="colorAccent">#e57373</color>
+    <color name="colorAccent">#ff6d00</color>
     <color name="background">#f5f5f5</color>
 
     <color name="white">#ffffff</color>
@@ -18,7 +18,7 @@
     <color name="colorIconSelected">@color/white</color>
     <color name="colorIconNotSelected">@color/white</color>
     <color name="cardBackground">@color/white</color>
-    <color name="pickerNotSelected">@color/text</color>
+    <color name="pickerNotSelected">@color/colorPrimary</color>
     <color name="pickerSelected">@color/colorAccent</color>
 
     <color name="upperRegionGradient1">@color/colorPrimary</color>

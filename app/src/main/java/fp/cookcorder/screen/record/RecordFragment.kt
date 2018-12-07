@@ -21,7 +21,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.screen.MainActivity
 import fp.cookcorder.screen.MainPagerAdapter
 import fp.cookcorder.screen.utils.*
 import kotlinx.android.synthetic.main.action_button.*
@@ -75,32 +74,15 @@ class RecordFragment : DaggerFragment() {
         viewModel.permissionGranted = isPermissionGranted()
         if (!viewModel.permissionGranted) requestAudioRecordingPermission()
 
-        //check if is first run
-        isFirstRun = prefs.getBoolean(IS_FIRST_RUN_KEY, true)
-        if (isFirstRun) {
-            showIntro()
-            prefs.edit().putBoolean(IS_FIRST_RUN_KEY, false).apply()
-        }
-
         viewPager.adapter = recordAdapter
         tabLayout.setupWithViewPager(viewPager)
         main.setOnTouchListener { _, event -> viewPager.onTouchEvent(event) }
 
+        handleFirstRun()
         observeLiveData()
         setupRecordingButton()
         setupSuccessAnimationListener()
         setupSlidingUpLayout()
-
-        addSlidingPanelListener((activity as MainActivity).slideListener)
-
-        //after fragment loads show intro
-        viewPager.addOnPageChangeListener((activity as MainActivity).onMainScreenSlide)
-        view!!.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
-            override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
-                view!!.removeOnLayoutChangeListener(this)
-                if (isFirstRun) showIntro()
-            }
-        })
     }
 
 
@@ -309,6 +291,21 @@ class RecordFragment : DaggerFragment() {
                                 grantResults[index] == PermissionChecker.PERMISSION_GRANTED
                     }
         }
+    }
+
+    private fun handleFirstRun() {
+        //check if is first run
+        isFirstRun = prefs.getBoolean(IS_FIRST_RUN_KEY, true)
+        if (isFirstRun) {
+            prefs.edit().putBoolean(IS_FIRST_RUN_KEY, false).apply()
+        }
+
+        view!!.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+                view!!.removeOnLayoutChangeListener(this)
+                if (isFirstRun) showIntro()
+            }
+        })
     }
 
 

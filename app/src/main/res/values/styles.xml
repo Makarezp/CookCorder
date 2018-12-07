@@ -101,7 +101,7 @@
 
 
     <style name="AppTabLayout" parent="Widget.Design.TabLayout">
-        <item name="tabTextColor">@color/pickerNotSelected</item>
+        <item name="tabTextColor">@color/text</item>
         <item name="tabIndicatorColor">@color/colorPrimary</item>
         <item name="tabSelectedTextColor">@color/colorPrimary</item>
     </style>
