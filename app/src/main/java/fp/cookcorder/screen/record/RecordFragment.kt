@@ -72,7 +72,6 @@ class RecordFragment : DaggerFragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
         viewModel.permissionGranted = isPermissionGranted()
-        if (!viewModel.permissionGranted) requestAudioRecordingPermission()
 
         viewPager.adapter = recordAdapter
         tabLayout.setupWithViewPager(viewPager)
