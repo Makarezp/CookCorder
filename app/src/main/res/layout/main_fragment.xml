@@ -63,7 +63,7 @@
 
                 <TextView
                     android:id="@+id/titleTV"
-                    style="@style/Text.Invervse"
+                    style="@style/Text.Inverse"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|start"
@@ -74,11 +74,11 @@
 
                 <TextView
                     android:id="@+id/minTV"
-                    style="@style/Text.H1.Accent"
+                    style="@style/Text.Time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:paddingTop="8dp"
+                    android:paddingTop="16dp"
                     android:textAlignment="center"
                     tools:text="15:30"/>
 
@@ -137,13 +137,15 @@
 
                     <TextView
                         android:id="@+id/timeTV"
-                        style="@style/Text.H1"
+                        style="@style/Text.H1.Accent"
                         android:layout_width="wrap_content"
                         android:layout_height="30dp"
                         android:layout_gravity="center_vertical|left"
                         android:layout_marginStart="8dp"
                         android:layout_marginEnd="8dp"
                         android:gravity="center"
+                        android:alpha="0"
+                        tools:alpha="1"
                         android:text="00:00:00"/>
 
                     <FrameLayout

@@ -62,7 +62,7 @@ class RecordViewModel @Inject constructor(
             val now = LocalDateTime.now()
             val alarmTime = now.plusMinutes(it.toLong())
             isToday.value = alarmTime.isToday()
-            minutes.value = alarmTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+            minutes.value = alarmTime.format(DateTimeFormatter.ofPattern("HH:mm"))
         }
 
     }

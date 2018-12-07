@@ -36,7 +36,7 @@
         <item name="android:textColor">@color/text</item>
     </style>
 
-    <style name="Text.Invervse">
+    <style name="Text.Inverse">
         <item name="android:textColor">@color/textInverse</item>
     </style>
 
@@ -96,6 +96,15 @@
 
 
     <style name="Text.UpperDate">
+        <item name="android:textColor">@color/textInverse</item>
+        <item name="android:textSize">24sp</item>
+        <item name="android:textStyle">normal</item>
+    </style>
+
+    <style name="Text.Time">
+        <item name="android:textSize">48sp</item>
+        <item name="android:letterSpacing">0</item>
+        <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/textInverse</item>
     </style>
 
