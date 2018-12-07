@@ -16,6 +16,8 @@
         app:layout_constraintTop_toTopOf="@+id/pickerSeconds"
         app:npv_MaxValue="23"
         app:npv_MinValue="0"
+        app:npv_TextSizeSelected="34sp"
+        app:npv_TextSizeNormal="14sp"
         app:npv_TextArray="@array/array_0to23"
         app:npv_WrapSelectorWheel="false"/>
 
@@ -58,6 +60,8 @@
         app:layout_constraintTop_toTopOf="@+id/pickerTVMinutes"
         app:npv_MaxValue="59"
         app:npv_MinValue="0"
+        app:npv_TextSizeSelected="28sp"
+        app:npv_TextSizeNormal="14sp"
         app:npv_TextArray="@array/array_0to59"/>
 
     <TextView
