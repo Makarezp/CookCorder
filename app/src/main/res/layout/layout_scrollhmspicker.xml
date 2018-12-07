@@ -10,15 +10,17 @@
         style="@style/ScrollNumberPickerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/pickerTVHours"
         app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/pickerSeconds"
         app:npv_MaxValue="23"
         app:npv_MinValue="0"
-        app:npv_TextSizeSelected="34sp"
-        app:npv_TextSizeNormal="14sp"
         app:npv_TextArray="@array/array_0to23"
+        app:npv_TextSizeNormal="14sp"
+        app:npv_TextSizeSelected="38sp"
         app:npv_WrapSelectorWheel="false"/>
 
     <TextView
@@ -42,6 +44,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="20dp"
         android:gravity="center"
+        android:visibility="invisible"
         android:text="@string/scroll_hms_picker_and_label"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/pickerMinutes"

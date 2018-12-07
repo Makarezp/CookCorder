@@ -18,11 +18,12 @@
     <color name="colorIconSelected">@color/white</color>
     <color name="colorIconNotSelected">@color/white</color>
     <color name="cardBackground">@color/white</color>
-    <color name="pickerNotSelected">@color/colorPrimary</color>
+    <color name="pickerNotSelected">#8937acff</color>
     <color name="pickerSelected">@color/colorAccent</color>
 
     <color name="upperRegionGradient1">@color/colorPrimary</color>
-    <color name="upperRegionGradient2">@color/colorPrimary</color>
+    r
+    <color name="upperRegionGradient2">#0078ce</color>
     <color name="lowerRegionGradient1">@color/white</color>
     <color name="lowerRegionGradient2">@color/white</color>
 
