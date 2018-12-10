@@ -17,6 +17,7 @@ import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.screen.MainActivity
+import fp.cookcorder.screen.utils.observe
 import kotlinx.android.synthetic.main.options_fragment.*
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import javax.inject.Inject
@@ -39,6 +40,7 @@ class OptionsFragment : DaggerFragment() {
         activity?.let {
             if (it is MainActivity) it.onTouchListener = { clearFocusOnTouchOutside(it) }
         }
+        observe(viewModel.repeats) { repeatsNumTV.text = it.toString() }
         setupSeekBar()
 
     }
@@ -96,12 +98,20 @@ class OptionsFragment : DaggerFragment() {
                         .setDuration(100L)
                         .alpha(0F)
                         .start()
+                repeatsNumTV.animate()
+                        .setDuration(100L)
+                        .alpha(0f)
+                        .start()
             }
 
             override fun onStopTrackingTouch(seekBar: DiscreteSeekBar?) {
                 repeatsTV.animate()
                         .setDuration(100L)
                         .alpha(1F)
+                        .start()
+                repeatsNumTV.animate()
+                        .setDuration(100L)
+                        .alpha(1f)
                         .start()
             }
         })

@@ -19,6 +19,7 @@
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".screen.MainActivity"
                   android:windowSoftInputMode="adjustNothing"
+                  android:screenOrientation="portrait"
                   android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

@@ -38,7 +38,7 @@ class RecordViewModel @Inject constructor(
 
     var title = MutableLiveData<String>()
 
-    var repeats = MutableLiveData<Int>().apply { value = 1 }
+    var repeats = MutableLiveData<Int>().apply { value = 0 }
 
     private val timer = Observable.interval(1, TimeUnit.SECONDS)
 
