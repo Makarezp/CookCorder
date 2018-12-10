@@ -18,7 +18,8 @@
         android:name=".app.App"
         tools:ignore="GoogleAppIndexingWarning">
         <activity android:name=".screen.MainActivity"
-            android:launchMode="singleTop">
+                  android:windowSoftInputMode="adjustNothing"
+                  android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

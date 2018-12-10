@@ -373,33 +373,33 @@ class RecordFragment : DaggerFragment() {
         val pirckerView = view!!.findViewById<View>(R.id.minutePicker)
         val tapTargetPicker = TapTarget.forView(pirckerView, getString(R.string.time_picker_description_title), getString(R.string.time_picker_description))
                 // All options below are optional
-                .titleTextSize(20)                  // Specify the size (in sp) of the title text
-                .titleTextColor(R.color.text)      // Specify the color of the title text
-                .descriptionTextSize(10)            // Specify the size (in sp) of the description text
-                .descriptionTextColor(R.color.text)  // Specify the color of the description text
-                .textColor(R.color.text)            // Specify a color for both the title and description text
+                .titleTextSize(30)                  // Specify the size (in sp) of the title text
+                .titleTextColor(R.color.white)      // Specify the color of the title text
+                .descriptionTextSize(20)            // Specify the size (in sp) of the description text
+                .descriptionTextColor(R.color.white)  // Specify the color of the description text
+                .textColor(R.color.white)            // Specify a color for both the title and description text
                 .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                .dimColor(R.color.colorPrimary)            // If set, will dim behind the view with 30% opacity of the given color
                 .drawShadow(true)                   // Whether to draw a drop shadow or not
                 .cancelable(false)
+                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
                 .tintTarget(true)
                 .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
-                .targetRadius(200)// Specify the target radius (in dp)
+                .targetRadius(150)// Specify the target radius (in dp)
         val fab = view!!.findViewById<View>(R.id.floatingActionButton)
         val tapTargetFab = TapTarget.forView(fab, getString(R.string.record_button_description_title), getString(R.string.record_button_description))
                 // All options below are optional
-                .titleTextSize(20)                  // Specify the size (in sp) of the title text
-                .titleTextColor(R.color.text)      // Specify the color of the title text
-                .descriptionTextSize(10)            // Specify the size (in sp) of the description text
-                .descriptionTextColor(R.color.text)  // Specify the color of the description text
-                .textColor(R.color.text)            // Specify a color for both the title and description text
+                .titleTextSize(30)                  // Specify the size (in sp) of the title text
+                .titleTextColor(R.color.white)      // Specify the color of the title text
+                .descriptionTextSize(20)            // Specify the size (in sp) of the description text
+                .descriptionTextColor(R.color.white)  // Specify the color of the description text
+                .textColor(R.color.white)            // Specify a color for both the title and description text
                 .textTypeface(Typeface.SANS_SERIF)  // Specify a typeface for the text
-                .dimColor(R.color.colorPrimary)            // If set, will dim behind the view with 30% opacity of the given color
+                .dimColor(R.color.black)            // If set, will dim behind the view with 30% opacity of the given color
                 .drawShadow(true)                   // Whether to draw a drop shadow or not
                 .cancelable(false)                  // Whether tapping outside the outer circle dismisses the view
                 .tintTarget(true)
                 .transparentTarget(true)           // Specify whether the target is transparent (displays the content underneath)
-                .targetRadius(50)// Specify the target radius (in dp)
+                .targetRadius(80)// Specify the target radius (in dp)
 
         TapTargetSequence(activity!!).targets(tapTargetPicker, tapTargetFab)
                 .considerOuterCircleCanceled(true)
