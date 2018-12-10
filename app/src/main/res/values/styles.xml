@@ -41,7 +41,8 @@
     </style>
 
     <style name="Text.Accent">
-        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="Text.H1">

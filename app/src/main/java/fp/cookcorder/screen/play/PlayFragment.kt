@@ -70,7 +70,6 @@ class PlayFragment : DaggerFragment() {
                                 val card = layoutManager.getChildAt(i) as CardView
                                 card.cardElevation = slideOffset * 5
                             }
-
                         }
 
                         override fun onPanelStateChanged(panel: View, previousState: SlidingUpPanelLayout.PanelState, newState: SlidingUpPanelLayout.PanelState) {

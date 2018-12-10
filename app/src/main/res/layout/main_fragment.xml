@@ -88,7 +88,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="20dp"
                 android:layout_marginEnd="8dp"
                 card_view:cardElevation="5dp"
                 card_view:cardCornerRadius="10dp"
@@ -172,58 +171,16 @@
 
     <!-- SLIDING LAYOUT -->
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:id="@+id/dragView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clickable="true"
         android:focusable="false"
+        android:clipChildren="false"
         android:orientation="vertical"
         android:background="@color/cardBackground">
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="68dp"
-            android:orientation="horizontal"
-            android:translationZ="10dp">
-
-            <FrameLayout
-                android:id="@+id/panelHelperContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top|center_horizontal"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
-
-                <TextView
-                    android:id="@+id/nextTaskTV"
-                    style="@style/Text.Accent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/margin_xl"
-                    android:layout_marginEnd="16dp"
-                    android:layout_gravity="start"
-                    android:text="@string/your_next_task"/>
-
-                <ImageView
-                    android:id="@+id/iconUpIMG"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_expand_less"
-                    android:layout_gravity="center"/>
-
-            </FrameLayout>
-
-            <android.support.design.widget.TabLayout
-                android:id="@+id/mainActivityTL"
-                style="@style/AppTabLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:alpha="0"
-                app:tabGravity="fill"
-                app:tabMode="fixed"/>
-        </FrameLayout>
 
         <fp.cookcorder.screen.CustomViewPager
             android:id="@+id/mainActivityVP"
@@ -232,8 +189,45 @@
             android:layout_weight="1"
             android:background="@android:color/transparent"
             android:translationY="-65dp"
-            android:elevation="2dp"
+            app:layout_constraintTop_toBottomOf="@id/tabContainer"
+            app:layout_constraintBottom_toBottomOf="parent"
             />
-    </LinearLayout>
+
+        <FrameLayout
+            android:id="@+id/tabContainer"
+            android:layout_width="match_parent"
+            android:layout_height="68dp"
+            android:orientation="horizontal"
+            android:clipChildren="false"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.design.widget.TabLayout
+                android:id="@+id/mainActivityTL"
+                style="@style/AppTabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="108dp"
+                app:tabGravity="fill"
+                app:tabMode="fixed"/>
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/panelHelperContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipChildren="false"
+            android:layout_gravity="top|center_horizontal"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <ImageView
+                android:id="@+id/iconUpIMG"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_expand_less"
+                android:layout_gravity="center"/>
+
+        </FrameLayout>
+
+    </android.support.constraint.ConstraintLayout>
 
 </com.sothree.slidinguppanel.SlidingUpPanelLayout>

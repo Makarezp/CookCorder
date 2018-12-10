@@ -15,6 +15,7 @@ import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
@@ -62,6 +63,9 @@ class RecordFragment : DaggerFragment() {
     lateinit var recordAdapter: RecordViewPagerAdapter
 
     private var isFirstRun = true
+
+    var textViewPosition = 0f
+
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View {
@@ -114,6 +118,7 @@ class RecordFragment : DaggerFragment() {
 
     private fun setupSlidingUpLayout() {
 
+
         iconUpIMG.setOnClickListener {
             slidingLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
         }
@@ -124,27 +129,78 @@ class RecordFragment : DaggerFragment() {
             setupWithViewPager(mainActivityVP)
         }
 
+
+        var tabViewHeight = 0
+        var initialTabHeight = 0
+        var tabDifference = 0
+
+
+        //get access to views of tablayout
+        //tablayout at 0
+        val tab = mainActivityTL.getChildAt(0) as ViewGroup
+        val tabViewNext = tab.getChildAt(0) as ViewGroup
+        val textViewNext = tabViewNext.getChildAt(1)
+        val tabViewPast = tab.getChildAt(1) as ViewGroup
+        val textViewPast = tabViewPast.getChildAt(1)
+
+        tabViewNext.isClickable = false
+        tabViewPast.isClickable = false
+
+        textViewNext.setOnClickListener { mainActivityTL.getTabAt(0)?.select() }
+        textViewPast.setOnClickListener { mainActivityTL.getTabAt(1)?.select() }
+
+        mainActivityTL.addOnLayoutChangeListener(object : View.OnLayoutChangeListener {
+            override fun onLayoutChange(v: View?, left: Int, top: Int, right: Int, bottom: Int, oldLeft: Int, oldTop: Int, oldRight: Int, oldBottom: Int) {
+                mainActivityTL.removeOnLayoutChangeListener(this)
+                tabViewHeight = tab.height
+                initialTabHeight = tabLayout.height
+                textViewNext.x = 0f + tabViewNext.paddingStart
+                textViewNext.y = 0f + tabViewNext.paddingTop
+                textViewPast.x = (tabViewPast.width - tabViewPast.paddingEnd - textViewPast.width).toFloat()
+                textViewPast.y = 0f + tabViewNext.paddingTop
+                tabDifference = tabViewHeight - initialTabHeight
+            }
+        })
+
+
         slidingLayout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
             override fun onPanelSlide(panel: View?, slideOffset: Float) {
-                mainActivityTL.alpha = slideOffset
+
+
+                val layoutParams = mainActivityTL.layoutParams as FrameLayout.LayoutParams
+                layoutParams.height = (((1 - slideOffset) * tabDifference) + initialTabHeight).toInt()
+                textViewNext.x = (slideOffset * (tabViewNext.width / 2 - textViewNext.width / 2)) + ((1 - slideOffset) * tabViewNext.paddingStart)
+                textViewNext.y = (slideOffset * (tabViewNext.height / 2 - textViewNext.height / 2)) + ((1 - slideOffset) * tabViewNext.paddingTop)
+                textViewPast.x = (slideOffset * (tabViewPast.width / 2 - textViewPast.width / 2)) +
+                        ((1 - slideOffset) * (tabViewPast.width - tabViewPast.paddingStart - textViewPast.width))
+                textViewPast.y = (slideOffset * (tabViewPast.height / 2 - textViewPast.height / 2)) + ((1 - slideOffset) * tabViewPast.paddingTop)
+                mainActivityTL.layoutParams = layoutParams
+
+
                 mainActivityVP.translationY = -((1 - slideOffset) * 65.px)
-                nextTaskTV.alpha = (1 - slideOffset)
 
 
                 iconUpIMG.translationY = slideOffset * 500
                 iconUpIMG.scaleX = (1 - (10 * slideOffset))
                 iconUpIMG.scaleY = (1 - (10 * slideOffset))
-                panelHelperContainer.alpha = (1 - slideOffset)
+                iconUpIMG.alpha = (1 - slideOffset)
                 iconUpIMG.rotation = slideOffset * 360
-                nextTaskTV.translationX = -(slideOffset * 8000)
 
             }
 
             override fun onPanelStateChanged(panel: View?,
                                              previousState: SlidingUpPanelLayout.PanelState?,
                                              newState: SlidingUpPanelLayout.PanelState?) {
+                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+                    tabViewNext.isClickable = false
+                    tabViewPast.isClickable = false
+                } else {
+                    tabViewNext.isClickable = true
+                    tabViewPast.isClickable = true
+                }
             }
         })
+
     }
 
     private fun showSuccess() {

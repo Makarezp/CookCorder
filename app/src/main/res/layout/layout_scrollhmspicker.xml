@@ -58,14 +58,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="1dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/pickerTVMinutes"
         app:layout_constraintStart_toEndOf="@+id/textAnd"
         app:layout_constraintTop_toTopOf="@+id/pickerTVMinutes"
         app:npv_MaxValue="59"
         app:npv_MinValue="0"
-        app:npv_TextSizeSelected="28sp"
+        app:npv_TextArray="@array/array_0to59"
         app:npv_TextSizeNormal="14sp"
-        app:npv_TextArray="@array/array_0to59"/>
+        app:npv_TextSizeSelected="28sp"/>
 
     <TextView
         android:id="@+id/pickerTVMinutes"

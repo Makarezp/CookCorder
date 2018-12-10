@@ -19,7 +19,7 @@ class MainPagerAdapter @Inject constructor(
     override fun getCount() = Page.values().size
 
     override fun getPageTitle(position: Int): CharSequence? =
-            context.getString(Page.get(position).stringRes)
+            context.getString(Page.get(position).stringRes).toUpperCase()
 
 
     enum class Page(val position: Int,
@@ -27,7 +27,7 @@ class MainPagerAdapter @Inject constructor(
                     @StringRes val stringRes: Int) {
         PLAY(0,
                 { PlayFragment.newInstance(isCurrent = true) },
-                R.string.current),
+                R.string.next),
         HISTORY(1,
                 { PlayFragment.newInstance(isCurrent = false) },
                 R.string.past);
