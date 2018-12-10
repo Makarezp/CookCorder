@@ -41,13 +41,31 @@
                 android:maxLines="1"
                 tools:text="Task"/>
 
-            <TextView
-                android:id="@+id/itemTaskTVTime"
-                style="@style/TaskTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                tools:text="14/11 15:34"/>
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+
+                <com.airbnb.lottie.LottieAnimationView
+                    android:id="@+id/taskProgress"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    app:lottie_autoPlay="true"
+                    app:lottie_fileName="loding_dots.json"
+                    app:lottie_loop="true"
+                    android:visibility="gone"
+                    />
+
+                <TextView
+                    android:id="@+id/itemTaskTVTime"
+                    style="@style/TaskTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    tools:text="14/11 15:34"/>
+
+
+            </LinearLayout>
+
 
             <TextView
                 android:id="@+id/itemTaskTvTimePlayed"

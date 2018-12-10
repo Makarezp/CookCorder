@@ -15,8 +15,8 @@
     <string name="time_picker_description">Swipe up and down and select what time the task should play</string>
     <string name="record_button_description_title">Record button</string>
     <string name="record_button_description">Press and hold to record task. To cancel swipe away.</string>
-    <string name="today">TODAY</string>
-    <string name="tomorrow">TOMORROW</string>
+    <string name="today">Today</string>
+    <string name="tomorrow">Tomorrow</string>
     <string name="next">NEXT</string>
     <string name="past">Past</string>
     <string name="delete">Delete</string>

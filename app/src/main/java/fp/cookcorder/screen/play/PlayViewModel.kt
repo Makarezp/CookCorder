@@ -112,6 +112,7 @@ class PlayAdapter @Inject constructor(
             playButton = itemView.findViewById(R.id.itemTaskPlayIB)
             moreButton = itemView.findViewById(R.id.itemTaskMoreIB)
             seekBar = itemView.findViewById(R.id.itemTaskSeekBar)
+            progressView = itemView.findViewById(R.id.taskProgress)
         }
         return holder
     }
@@ -124,6 +125,7 @@ class PlayAdapter @Inject constructor(
         var isPlaying = false
         with(holder) {
             if (isPanelPeeked) cardView.cardElevation = 5f
+            if (isCurrent) progressView.visible()
             playButton.setImageResource(R.drawable.ic_play)
             title.setTextInvisibleIfEmptyOrNull(task.title)
             playButton.setOnClickListener { _ ->
@@ -207,9 +209,9 @@ class PlayAdapter @Inject constructor(
 
     private fun makeHourString(timeToCompare: Long): String {
         with(calculateTimeDifference(timeToCompare)) {
-            val hours = if (first != 0L) first.toString() + ":" else ""
-            val minutes = String.format("%02d", second) + ":"
-            val seconds = String.format("%02d", third)
+            val hours = if (first != 0L) first.toString() + "h " else ""
+            val minutes = if (second > 0) String.format("%2d", second) + " min " else ""
+            val seconds = if (second < 5) String.format("%2d", third) + " sec" else ""
             return "in $hours$minutes$seconds"
         }
     }
@@ -234,6 +236,7 @@ class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     lateinit var playButton: ImageButton
     lateinit var moreButton: ImageButton
     lateinit var seekBar: SeekBar
+    lateinit var progressView: View
     val compositeDisposable = CompositeDisposable()
     val recordCompositeDisposable = CompositeDisposable()
 }
