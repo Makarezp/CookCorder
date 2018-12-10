@@ -3,6 +3,7 @@ package fp.cookcorder.screen.record
 import android.Manifest
 import android.Manifest.permission.RECORD_AUDIO
 import android.animation.Animator
+import android.animation.ObjectAnimator
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
@@ -65,7 +66,7 @@ class RecordFragment : DaggerFragment() {
 
     private var isFirstRun = true
 
-    var textViewPosition = 0f
+    var currentTextViewAnimation: ObjectAnimator? = null
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -220,6 +221,7 @@ class RecordFragment : DaggerFragment() {
         with(cancel) {
             visible()
             speed = 1.5F
+            animateTimerTVFinishRecording(300)
             addAnimatorListener(object : Animator.AnimatorListener {
                 override fun onAnimationRepeat(animation: Animator?) {
 
@@ -230,7 +232,6 @@ class RecordFragment : DaggerFragment() {
                     floatingActionButton.setImageDrawable(
                             resources.getDrawable(R.drawable.ic_mic, activity!!.theme))
                     invisible()
-                    animateTimerTVFinishRecording(300)
                 }
 
                 override fun onAnimationCancel(animation: Animator?) {
@@ -257,7 +258,9 @@ class RecordFragment : DaggerFragment() {
                             success.speed = -1.3F
                             success.playAnimation()
                             animationSuccess = false
-                            animateTimerTVFinishRecording(600)
+                            if (viewModel.isRecording.value != true) {
+                                animateTimerTVFinishRecording(600)
+                            }
                         }
                     }, 400)
                 } else {
@@ -274,13 +277,6 @@ class RecordFragment : DaggerFragment() {
         })
     }
 
-    private fun animateTimerTVFinishRecording(duration: Long) {
-        timeTV.animate()
-                .alpha(0f)
-                .setDuration(duration)
-                .start()
-    }
-
     private fun setupRecordingButton() {
         floatingActionButton.setOnTouchListener(
                 handleCancellableTouch(
@@ -295,10 +291,11 @@ class RecordFragment : DaggerFragment() {
 
     private fun handleRecordingState(isRecording: Boolean) {
         if (isRecording) {
-            timeTV.animate()
-                    .alpha(1f)
+            currentTextViewAnimation?.cancel()
+            currentTextViewAnimation = ObjectAnimator.ofFloat(timeTV, View.ALPHA, 0f, 1f)
                     .setDuration(300)
-                    .start()
+            currentTextViewAnimation?.start()
+
             vibrate()
             recordAnimation.visible()
             recordAnimation.playAnimation()
@@ -308,6 +305,15 @@ class RecordFragment : DaggerFragment() {
 
 
         }
+    }
+
+
+    private fun animateTimerTVFinishRecording(duration: Long) {
+        currentTextViewAnimation?.end()
+        currentTextViewAnimation = ObjectAnimator.ofFloat(timeTV, View.ALPHA, 1f, 0f)
+                .setDuration(duration)
+        currentTextViewAnimation?.start()
+
     }
 
     private fun vibrate() {
