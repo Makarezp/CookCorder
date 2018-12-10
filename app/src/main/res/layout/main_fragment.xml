@@ -62,17 +62,6 @@
 
 
                 <TextView
-                    android:id="@+id/titleTV"
-                    style="@style/Text.Inverse"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical|start"
-                    android:drawableStart="@drawable/ic_title"
-                    android:visibility="invisible"
-                    tools:text="Bydle"/>
-
-
-                <TextView
                     android:id="@+id/minTV"
                     style="@style/Text.Time"
                     android:layout_width="wrap_content"
@@ -193,7 +182,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             />
 
-        <FrameLayout
+        <fp.cookcorder.screen.record.InterceptingFrameLayout
             android:id="@+id/tabContainer"
             android:layout_width="match_parent"
             android:layout_height="68dp"
@@ -208,7 +197,7 @@
                 android:layout_height="108dp"
                 app:tabGravity="fill"
                 app:tabMode="fixed"/>
-        </FrameLayout>
+        </fp.cookcorder.screen.record.InterceptingFrameLayout>
 
         <FrameLayout
             android:id="@+id/panelHelperContainer"

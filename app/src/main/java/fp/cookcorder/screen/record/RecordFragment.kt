@@ -14,7 +14,9 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
+import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
@@ -114,7 +116,6 @@ class RecordFragment : DaggerFragment() {
             observe(isToday) {
                 dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
             }
-            observe(title) { titleTV.setTextHideIfNull(it) }
         }
     }
 
@@ -136,6 +137,9 @@ class RecordFragment : DaggerFragment() {
         var initialTabHeight = 0
         var tabDifference = 0
 
+        val tabContainer = (tabContainer as InterceptingFrameLayout)
+        tabContainer.viewToDispatch = mainActivityVP
+        tabContainer.disableClicking = true
 
         //get access to views of tablayout
         //tablayout at 0
@@ -145,8 +149,6 @@ class RecordFragment : DaggerFragment() {
         val tabViewPast = tab.getChildAt(1) as ViewGroup
         val textViewPast = tabViewPast.getChildAt(1)
 
-        tabViewNext.isClickable = false
-        tabViewPast.isClickable = false
 
         textViewNext.setOnClickListener { mainActivityTL.getTabAt(0)?.select() }
         textViewPast.setOnClickListener { mainActivityTL.getTabAt(1)?.select() }
@@ -163,7 +165,6 @@ class RecordFragment : DaggerFragment() {
                 tabDifference = tabViewHeight - initialTabHeight
             }
         })
-
 
         slidingLayout.addPanelSlideListener(object : SlidingUpPanelLayout.PanelSlideListener {
             override fun onPanelSlide(panel: View?, slideOffset: Float) {
@@ -195,17 +196,12 @@ class RecordFragment : DaggerFragment() {
             override fun onPanelStateChanged(panel: View?,
                                              previousState: SlidingUpPanelLayout.PanelState?,
                                              newState: SlidingUpPanelLayout.PanelState?) {
-                if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
-                    tabViewNext.isClickable = false
-                    tabViewPast.isClickable = false
-                } else {
-                    tabViewNext.isClickable = true
-                    tabViewPast.isClickable = true
-                }
+                tabContainer.disableClicking = newState == SlidingUpPanelLayout.PanelState.COLLAPSED
+
             }
         })
-
     }
+
 
     private fun showSuccess() {
 
@@ -410,6 +406,23 @@ class RecordFragment : DaggerFragment() {
                 .continueOnCancel(true)
                 .start()
     }
+
+}
+
+class InterceptingFrameLayout : FrameLayout {
+
+    var viewToDispatch: ViewGroup? = null
+    var disableClicking: Boolean = false
+
+    constructor(context: Context?) : super(context)
+    constructor(context: Context?, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
+
+    override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {
+        return if (disableClicking && viewToDispatch?.dispatchTouchEvent(ev) != false) true
+        else super.dispatchTouchEvent(ev)
+    }
+
 
 }
 
