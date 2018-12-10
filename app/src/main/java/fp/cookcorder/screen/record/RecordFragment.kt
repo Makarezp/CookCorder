@@ -6,6 +6,7 @@ import android.animation.Animator
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.*
 import android.support.v4.app.ActivityCompat
@@ -176,15 +177,17 @@ class RecordFragment : DaggerFragment() {
                 textViewPast.y = (slideOffset * (tabViewPast.height / 2 - textViewPast.height / 2)) + ((1 - slideOffset) * tabViewPast.paddingTop)
                 mainActivityTL.layoutParams = layoutParams
 
-
                 mainActivityVP.translationY = -((1 - slideOffset) * 65.px)
-
 
                 iconUpIMG.translationY = slideOffset * 500
                 iconUpIMG.scaleX = (1 - (10 * slideOffset))
                 iconUpIMG.scaleY = (1 - (10 * slideOffset))
+                iconUpIMG.visibility = if (iconUpIMG.scaleX > 0) View.VISIBLE else View.INVISIBLE
+
                 iconUpIMG.alpha = (1 - slideOffset)
                 iconUpIMG.rotation = slideOffset * 360
+
+                mainActivityTL.setSelectedTabIndicatorColor(Color.argb((slideOffset * 255).toInt(), 55, 172, 255))
 
             }
 
