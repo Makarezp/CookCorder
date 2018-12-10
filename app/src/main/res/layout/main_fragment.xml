@@ -10,7 +10,6 @@
     android:layout_height="match_parent"
     android:gravity="bottom"
     sothree:umanoDragView="@+id/dragView"
-    sothree:umanoFadeColor="@color/panelFadeColor"
     sothree:umanoOverlay="true"
     sothree:umanoPanelHeight="103dp"
     sothree:umanoParallaxOffset="100dp"

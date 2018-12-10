@@ -48,7 +48,7 @@ class PlayViewModel @Inject constructor(
         val taskObs = if (isCurrent) manageTaskUseCase.getCurrentTasks() else manageTaskUseCase.getPastTasks()
         exe(taskObs) {
             showNoTasks.value = it.isEmpty()
-            playAdapter.tasks = it.sortedBy { it.scheduleTime }.apply { if (!isCurrent) it.reversed() }
+            playAdapter.tasks = it.sortedBy { it.scheduleTime }.let { if (isCurrent) it else it.reversed() }
         }
     }
 

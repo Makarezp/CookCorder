@@ -12,25 +12,39 @@
         android:animateLayoutChanges="true"
         android:layout_gravity="center">
 
-
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/titleET"
+        <FrameLayout
+            android:id="@+id/textContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/margin_xl"
-            android:layout_marginEnd="@dimen/margin_xl"
-            android:backgroundTint="@color/text"
-            android:hint="@string/title"
-            android:inputType="text"
-            android:maxLines="1"
-            android:textColor="@color/text"
-            android:textColorHint="@color/text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.196"/>
+            app:layout_constraintVertical_bias="0.196"
+            android:background="@drawable/title_container"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            >
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/titleET"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margin_xl"
+                android:layout_marginEnd="@dimen/margin_xl"
+                android:backgroundTint="@color/text"
+                android:hint="@string/title"
+                android:inputType="text"
+                android:maxLines="1"
+                android:textColor="@color/text"
+                android:textColorHint="@color/colorAccent"
+                android:layout_marginBottom="-8dp"
+                />
+
+        </FrameLayout>
+
 
         <FrameLayout
             android:id="@+id/title_container"
@@ -44,7 +58,7 @@
             android:paddingEnd="4dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/titleET">
+            app:layout_constraintTop_toBottomOf="@+id/textContainer">
 
             <TextView
                 android:id="@+id/repeatsTV"
@@ -61,7 +75,7 @@
                 android:layout_height="match_parent"
                 android:padding="4dp"
                 app:dsb_indicatorColor="@color/colorAccent"
-                app:dsb_indicatorTextAppearance="@style/Text"
+                app:dsb_indicatorTextAppearance="@style/Text.Inverse"
                 app:dsb_max="15"
                 app:dsb_min="0"
                 app:dsb_progressColor="@color/colorAccent"
