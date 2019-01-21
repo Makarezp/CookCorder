@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">CookCorder</string>
+    <string name="app_name">Record Todo</string>
     <string name="notif_channel_name">Task Notifications</string>
 
     <!--HMS picker-->
