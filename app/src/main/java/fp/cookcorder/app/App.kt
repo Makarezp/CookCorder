@@ -19,7 +19,7 @@ class App : DaggerApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        Fabric.with(this, Crashlytics())
+//        Fabric.with(this, Crashlytics())
         initTimber()
         buildNotificationChannel(this)
         AndroidThreeTen.init(this)

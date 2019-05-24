@@ -6,7 +6,7 @@ import android.arch.persistence.room.RoomDatabase
 import android.content.Context
 import fp.cookcorder.model.Task
 
-@Database(entities = [Task::class], version = 3)
+@Database(entities = [Task::class], version = 3,  exportSchema = false)
 abstract class CookCorderDb : RoomDatabase() {
 
     abstract val taskDao: TaskDao

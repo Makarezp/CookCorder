@@ -6,7 +6,7 @@ apply plugin: 'kotlin-android-extensions'
 
 apply plugin: 'kotlin-kapt'
 
-apply plugin: 'io.fabric'
+//apply plugin: 'io.fabric'
 
 
 
@@ -42,7 +42,7 @@ android {
     }
 }
 
-ext.anko_version='0.10.5'
+ext.anko_version='0.10.8'
 
 
 repositories {
