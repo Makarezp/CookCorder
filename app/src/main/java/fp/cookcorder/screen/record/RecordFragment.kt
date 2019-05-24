@@ -12,7 +12,6 @@ import android.graphics.Typeface
 import android.os.*
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
-import android.support.v4.content.PermissionChecker
 import android.support.v4.content.PermissionChecker.PERMISSION_GRANTED
 import android.util.AttributeSet
 import android.view.LayoutInflater
@@ -343,12 +342,12 @@ class RecordFragment : DaggerFragment() {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
                                             grantResults: IntArray) {
         Timber.e(requestCode.toString())
-        if (requestCode == RecordFragment.RECORDING_PERMISSION_REQUEST) {
+        if (requestCode == RECORDING_PERMISSION_REQUEST) {
             permissions
-                    .filter { it == Manifest.permission.RECORD_AUDIO }
+                    .filter { it == RECORD_AUDIO }
                     .forEachIndexed { index, s ->
                         viewModel.permissionGranted =
-                                grantResults[index] == PermissionChecker.PERMISSION_GRANTED
+                                grantResults[index] == PERMISSION_GRANTED
                     }
         }
     }
