@@ -21,6 +21,7 @@ import org.mockito.Mock
 import org.mockito.Mockito
 import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
+import java.lang.IllegalStateException
 
 class RecordIntentFactoryTest {
 
@@ -111,6 +112,8 @@ class RecordIntentFactoryTest {
             Recording(500)
         })
 
+        recordModelStore.modelState().subscribe(testObserver)
+
         // when
         recordIntentFactory.process(
                 RecordViewEvent.FinishRecordingTask(100, "any", 1)
@@ -118,8 +121,40 @@ class RecordIntentFactoryTest {
         testScheduler.triggerActions()
 
         // then
-        testObserver.assertValueCount(4)
-
+        testObserver.assertValueCount(5)
+        // starts in a recording state
+        testObserver.assertValueAt(1, Recording(500))
+        testObserver.assertValueAt(2, Recording(500))
+        testObserver.assertValueAt(3, Success)
+        testObserver.assertValueAt(4, Idle)
     }
 
+    @Test
+    fun `finish recording with failed state when unsuccessful`() {
+        // given
+        val testObserver = TestObserver<RecorderState>()
+
+        Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
+                .thenReturn(Maybe.error(IllegalStateException()))
+
+        recordModelStore.process(intent {
+            Recording(500)
+        })
+
+        recordModelStore.modelState().subscribe(testObserver)
+
+        // when
+        recordIntentFactory.process(
+                RecordViewEvent.FinishRecordingTask(100, "any", 1)
+        )
+        testScheduler.triggerActions()
+
+        // then
+        testObserver.assertValueCount(5)
+        // starts in a recording state
+        testObserver.assertValueAt(1, Recording(500))
+        testObserver.assertValueAt(2, Recording(500))
+        testObserver.assertValueAt(3, Failed)
+        testObserver.assertValueAt(4, Idle)
+    }
 }

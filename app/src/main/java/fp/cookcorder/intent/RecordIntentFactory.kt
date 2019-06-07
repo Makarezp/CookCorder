@@ -10,6 +10,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import io.reactivex.schedulers.Schedulers
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,7 +44,6 @@ class RecordIntentFactory @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(::updateRecordingState)
-
         this@recorderIntent
     }
 
@@ -54,7 +54,6 @@ class RecordIntentFactory @Inject constructor(
                 timerDisposable.clear()
                 cancel()
             })
-
             recordModelStore.process(recorderIntent<Cancelled> {
                 idle()
             })
@@ -65,27 +64,44 @@ class RecordIntentFactory @Inject constructor(
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe { processCancelRecord() }
-
         this
     }
 
     private fun buildFinishRecordingIntent(viewEvent: FinishRecordingTask) = recorderIntent<Recording> {
 
-        fun processFinishRecord() = recordModelStore.process(recorderIntent<Recording> {
-            timerDisposable.clear()
-            finishRecording()
-        })
+        fun processFinishRecord() {
+            recordModelStore.process(recorderIntent<Recording> {
+                timerDisposable.clear()
+                finishRecording()
+            })
+            recordModelStore.process(recorderIntent<Success> {
+                idle()
+            })
+        }
+
+        fun processUnsuccessfulRecording(recordingError: Throwable) {
+            Timber.d(recordingError)
+            recordModelStore.process(recorderIntent<Recording> {
+                timerDisposable.clear()
+                failRecording()
+            })
+            recordModelStore.process(recorderIntent<Failed> {
+                idle()
+            })
+        }
 
         with(viewEvent) {
             val disposable = recordUseCase
                     .finishRecordingNewTask(milisecondsToSchedule, title, repeats)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe {
+                    .subscribe({
                         processFinishRecord()
-                    }
-        }
+                    }, {
+                        processUnsuccessfulRecording(it)
+                    })
 
+        }
         this
     }
 
@@ -95,7 +111,8 @@ class RecordIntentFactory @Inject constructor(
         ): Intent<RecorderState> {
             return intent {
                 (this as? S)?.block()
-                        ?: throw java.lang.IllegalStateException("Inconsistent state")
+                        ?: throw java.lang.IllegalStateException(
+                                "Inconsistent state should be ${this.javaClass.canonicalName}")
             }
         }
     }
