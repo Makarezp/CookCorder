@@ -6,12 +6,14 @@ import fp.cookcorder.infrastructure.TaskScheduler
 import fp.cookcorder.model.Task
 import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Maybe
+import io.reactivex.Observable
 import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 interface RecordUseCase: UseCase {
 
-    fun startRecordingNewTask(): Maybe<Any>
+    fun startRecordingNewTask(): Observable<Long>
 
     fun finishRecordingNewTask(
             msToSchedule: Long,
@@ -27,8 +29,13 @@ class RecordUseCaseImpl @Inject constructor(
         private val taskRepo: TaskRepo,
         private val taskScheduler: TaskScheduler) : RecordUseCase {
 
-    override fun startRecordingNewTask(): Maybe<Any> {
+    override fun startRecordingNewTask(): Observable<Long> {
         return recorder.startRecording("r${Random().nextInt()}")
+                .flatMapObservable {
+                    Observable.concat(
+                            Observable.just(0L),
+                            Observable.interval(100, TimeUnit.MILLISECONDS))
+                }
     }
 
     override fun finishRecordingNewTask(msToSchedule: Long,
@@ -49,6 +56,6 @@ class RecordUseCaseImpl @Inject constructor(
                 }
     }
 
-    override fun cancelRecordingNewTask() = recorder.cancelRecording()
+    override fun cancelRecordingNewTask(): Maybe<Any> = recorder.cancelRecording()
 
 }
