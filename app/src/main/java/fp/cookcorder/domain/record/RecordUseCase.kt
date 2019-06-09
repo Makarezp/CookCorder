@@ -21,7 +21,6 @@ interface RecordUseCase: UseCase {
             repeats: Int): Maybe<Task>
 
     fun cancelRecordingNewTask(): Maybe<Any>
-
 }
 
 class RecordUseCaseImpl @Inject constructor(

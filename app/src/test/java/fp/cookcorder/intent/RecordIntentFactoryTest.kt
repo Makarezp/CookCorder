@@ -2,16 +2,15 @@ package fp.cookcorder.intent
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
-import fp.cookcorder.ReplaceJavaSchedulers
+import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
 import fp.cookcorder.domain.record.RecordUseCase
-import fp.cookcorder.intent.RecordIntentFactory.Companion.recorderIntent
 import fp.cookcorder.intentmodel.RecordModelStore
 import fp.cookcorder.intentmodel.RecorderState
 import fp.cookcorder.intentmodel.RecorderState.*
-import fp.cookcorder.model.Task
 import fp.cookcorder.view.RecordViewEvent
 import io.reactivex.Maybe
 import io.reactivex.Observable
+import io.reactivex.Scheduler
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
@@ -28,40 +27,40 @@ class RecordIntentFactoryTest {
     val testScheduler = TestScheduler()
 
     @get:Rule
-    val schedulerRule = ReplaceJavaSchedulers(testScheduler)
+    val schedulerRule = ReplaceJavaSchedulersWithTestScheduler(testScheduler)
 
     @get:Rule
     val mockitoRule: MockitoRule = MockitoJUnit.rule()
 
-    lateinit var recordModelStore: RecordModelStore
+    private lateinit var recordModelStore: RecordModelStore
 
     @Mock
     lateinit var recordUseCase: RecordUseCase
 
-    lateinit var recordIntentFactory: RecordIntentFactory
+    private lateinit var recordIntentFactory: RecordIntentFactory
+
+    lateinit var testObserver: TestObserver<RecorderState>
 
     @Before
     fun setUp() {
         recordModelStore = RecordModelStore()
         recordIntentFactory = RecordIntentFactory(recordUseCase, recordModelStore)
+        testObserver = TestObserver()
     }
 
     @Test
     fun `start recording`() {
-        // given
-        val testObserver = TestObserver<RecorderState>()
-
+        // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask())
                 .thenReturn(Observable.just(0, 100))
         recordModelStore.modelState().subscribe(testObserver)
 
-
-        // when
+        // WHEN
         recordIntentFactory.process(RecordViewEvent.StartRecordingClick)
 
         testScheduler.triggerActions()
 
-        // then
+        // THEN
         // initial
         testObserver.assertValueAt(0, Idle)
         // after just after trying to record
@@ -74,20 +73,18 @@ class RecordIntentFactoryTest {
 
     @Test
     fun `cancel recording`() {
-        // given
-        val testObserver = TestObserver<RecorderState>()
-
+        // GIVEN
         Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.just(Any()))
         recordModelStore.process(intent {
             Recording(500)
         })
         recordModelStore.modelState().subscribe(testObserver)
 
-        // when
+        // WHEN
         recordIntentFactory.process(RecordViewEvent.CancelRecordingClick)
         testScheduler.triggerActions()
 
-        // then
+        // THEN
         testObserver.assertValueCount(5)
         // initially
         testObserver.assertValueAt(0, Idle)
@@ -102,9 +99,7 @@ class RecordIntentFactoryTest {
 
     @Test
     fun `finish recording`() {
-        // given
-        val testObserver = TestObserver<RecorderState>()
-
+        // GIVEN
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.just(mock()))
 
@@ -114,13 +109,13 @@ class RecordIntentFactoryTest {
 
         recordModelStore.modelState().subscribe(testObserver)
 
-        // when
+        // WHEN
         recordIntentFactory.process(
-                RecordViewEvent.FinishRecordingTask(100, "any", 1)
+                RecordViewEvent.FinishRecordingClick(100, "any", 1)
         )
         testScheduler.triggerActions()
 
-        // then
+        // THEN
         testObserver.assertValueCount(5)
         // starts in a recording state
         testObserver.assertValueAt(1, Recording(500))
@@ -131,9 +126,7 @@ class RecordIntentFactoryTest {
 
     @Test
     fun `finish recording with failed state when unsuccessful`() {
-        // given
-        val testObserver = TestObserver<RecorderState>()
-
+        // GIVEN
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.error(IllegalStateException()))
 
@@ -143,18 +136,44 @@ class RecordIntentFactoryTest {
 
         recordModelStore.modelState().subscribe(testObserver)
 
-        // when
+        // WHEN
         recordIntentFactory.process(
-                RecordViewEvent.FinishRecordingTask(100, "any", 1)
+                RecordViewEvent.FinishRecordingClick(100, "any", 1)
         )
         testScheduler.triggerActions()
 
-        // then
+        // THEN
         testObserver.assertValueCount(5)
         // starts in a recording state
         testObserver.assertValueAt(1, Recording(500))
         testObserver.assertValueAt(2, Recording(500))
         testObserver.assertValueAt(3, Failed)
         testObserver.assertValueAt(4, Idle)
+    }
+
+    @Test
+    fun `keeps idle state when starting record doesn't start`() {
+        // GIVEN
+        Mockito.`when`(recordUseCase.startRecordingNewTask()).thenReturn(Observable.empty())
+
+        recordModelStore.modelState().subscribe(testObserver)
+
+        // WHEN
+        recordIntentFactory.process(
+                RecordViewEvent.StartRecordingClick
+        )
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueCount(2)
+        // state doesn't change
+        testObserver.assertValueAt(0, Idle)
+        testObserver.assertValueAt(1, Idle)
+    }
+
+    @Test
+    fun `when cancelling is unsuccessful state doesn't change`() {
+        // GIVEN
+
     }
 }

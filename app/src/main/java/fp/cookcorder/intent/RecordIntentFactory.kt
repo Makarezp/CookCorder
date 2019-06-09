@@ -24,9 +24,9 @@ class RecordIntentFactory @Inject constructor(
     }
 
     private fun toIntent(viewEvent: RecordViewEvent): Intent<RecorderState> {
-        return when(viewEvent) {
+        return when (viewEvent) {
             is StartRecordingClick -> buildStartRecordingIntent()
-            is FinishRecordingTask -> buildFinishRecordingIntent(viewEvent)
+            is FinishRecordingClick -> buildFinishRecordingIntent(viewEvent)
             is CancelRecordingClick -> buildCancelRecordingIntent()
         }
     }
@@ -43,7 +43,11 @@ class RecordIntentFactory @Inject constructor(
                 .startRecordingNewTask()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(::updateRecordingState)
+                .subscribe({
+                    updateRecordingState(it)
+                }, {
+                    Timber.e(it)
+                })
         this@recorderIntent
     }
 
@@ -63,11 +67,16 @@ class RecordIntentFactory @Inject constructor(
                 .cancelRecordingNewTask()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { processCancelRecord() }
+                .subscribe({
+                    processCancelRecord()
+                }, {
+                    Timber.d(it)
+                })
         this
+
     }
 
-    private fun buildFinishRecordingIntent(viewEvent: FinishRecordingTask) = recorderIntent<Recording> {
+    private fun buildFinishRecordingIntent(viewEvent: FinishRecordingClick) = recorderIntent<Recording> {
 
         fun processFinishRecord() {
             recordModelStore.process(recorderIntent<Recording> {
