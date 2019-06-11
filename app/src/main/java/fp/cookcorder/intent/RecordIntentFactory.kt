@@ -19,6 +19,8 @@ class RecordIntentFactory @Inject constructor(
         private val recordUseCase: RecordUseCase,
         private val recordModelStore: RecordModelStore) {
 
+    private val timerDisposable = CompositeDisposable()
+
     fun process(viewEvent: RecordViewEvent) {
         recordModelStore.process(toIntent(viewEvent))
     }
@@ -31,8 +33,6 @@ class RecordIntentFactory @Inject constructor(
         }
     }
 
-    private val timerDisposable = CompositeDisposable()
-
     private fun buildStartRecordingIntent(): Intent<RecorderState> = recorderSideEffect<Idle> {
 
         fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
@@ -43,48 +43,45 @@ class RecordIntentFactory @Inject constructor(
                 .startRecordingNewTask()
                 .applySchedulers()
                 .subscribe({ updateRecordingState(it) }, Timber::e)
-
     }
 
     private fun buildCancelRecordingIntent() = recorderSideEffect<Recording> {
 
         fun processCancelRecord() {
-            recordModelStore.process(recorderIntent<Recording> {
+            chainedRecorderIntent<Recording> {
                 timerDisposable.clear()
                 cancel()
-            })
-            recordModelStore.process(recorderIntent<Cancelled> {
+            }
+            chainedRecorderIntent<Cancelled> {
                 idle()
-            })
+            }
         }
         recordUseCase
                 .cancelRecordingNewTask()
                 .applySchedulers()
                 .subscribe({ processCancelRecord() }, Timber::e)
-
     }
 
     private fun buildFinishRecordingIntent(viewEvent: FinishRecordingClick) = recorderSideEffect<Recording> {
 
         fun processFinishRecord() {
-            recordModelStore.process(recorderIntent<Recording> {
+            chainedRecorderIntent<Recording> {
                 timerDisposable.clear()
                 finishRecording()
-            })
-            recordModelStore.process(recorderIntent<Success> {
+            }
+            chainedRecorderIntent<Success> {
                 idle()
-            })
+            }
         }
 
         fun processUnsuccessfulRecording(recordingError: Throwable) {
-            Timber.d(recordingError)
-            recordModelStore.process(recorderIntent<Recording> {
+            chainedRecorderIntent<Recording> {
                 timerDisposable.clear()
                 failRecording()
-            })
-            recordModelStore.process(recorderIntent<Failed> {
+            }
+            chainedRecorderIntent<Failed> {
                 idle()
-            })
+            }
         }
 
         with(viewEvent) {
@@ -93,6 +90,11 @@ class RecordIntentFactory @Inject constructor(
                     .applySchedulers()
                     .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)
         }
+    }
+
+    private inline fun <reified T : RecorderState> chainedRecorderIntent(
+            crossinline block: T.() -> RecorderState) {
+        recordModelStore.process(recorderIntent(block))
     }
 
     companion object {
@@ -111,5 +113,4 @@ class RecordIntentFactory @Inject constructor(
         (this as? S)?.apply(block) ?: throw java.lang.IllegalStateException(
                 "Inconsistent state should be ${this.javaClass.canonicalName}")
     }
-
 }
