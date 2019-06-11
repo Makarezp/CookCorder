@@ -33,7 +33,7 @@ class RecordIntentFactory @Inject constructor(
 
     private val timerDisposable = CompositeDisposable()
 
-    private fun buildStartRecordingIntent(): Intent<RecorderState> = recorderIntent<Idle> {
+    private fun buildStartRecordingIntent(): Intent<RecorderState> = recorderSideEffect<Idle> {
 
         fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
             Recording(timer)
@@ -41,17 +41,12 @@ class RecordIntentFactory @Inject constructor(
 
         timerDisposable += recordUseCase
                 .startRecordingNewTask()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    updateRecordingState(it)
-                }, {
-                    Timber.e(it)
-                })
-        this@recorderIntent
+                .applySchedulers()
+                .subscribe({ updateRecordingState(it) }, Timber::e)
+
     }
 
-    private fun buildCancelRecordingIntent() = recorderIntent<Recording> {
+    private fun buildCancelRecordingIntent() = recorderSideEffect<Recording> {
 
         fun processCancelRecord() {
             recordModelStore.process(recorderIntent<Recording> {
@@ -62,21 +57,14 @@ class RecordIntentFactory @Inject constructor(
                 idle()
             })
         }
-
-        val disposable = recordUseCase
+        recordUseCase
                 .cancelRecordingNewTask()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    processCancelRecord()
-                }, {
-                    Timber.d(it)
-                })
-        this
+                .applySchedulers()
+                .subscribe({ processCancelRecord() }, Timber::e)
 
     }
 
-    private fun buildFinishRecordingIntent(viewEvent: FinishRecordingClick) = recorderIntent<Recording> {
+    private fun buildFinishRecordingIntent(viewEvent: FinishRecordingClick) = recorderSideEffect<Recording> {
 
         fun processFinishRecord() {
             recordModelStore.process(recorderIntent<Recording> {
@@ -100,29 +88,28 @@ class RecordIntentFactory @Inject constructor(
         }
 
         with(viewEvent) {
-            val disposable = recordUseCase
+            recordUseCase
                     .finishRecordingNewTask(milisecondsToSchedule, title, repeats)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe({
-                        processFinishRecord()
-                    }, {
-                        processUnsuccessfulRecording(it)
-                    })
-
+                    .applySchedulers()
+                    .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)
         }
-        this
     }
 
     companion object {
         inline fun <reified S : RecorderState> recorderIntent(
                 crossinline block: S.() -> RecorderState
-        ): Intent<RecorderState> {
-            return intent {
-                (this as? S)?.block()
-                        ?: throw java.lang.IllegalStateException(
-                                "Inconsistent state should be ${this.javaClass.canonicalName}")
-            }
+        ): Intent<RecorderState> = intent {
+            (this as? S)?.block() ?: throw java.lang.IllegalStateException(
+                    "Inconsistent state should be ${this.javaClass.canonicalName}")
         }
+
     }
+
+    inline fun <reified S : RecorderState> recorderSideEffect(
+            crossinline block: S.() -> Unit
+    ): Intent<RecorderState> = sideEffect {
+        (this as? S)?.apply(block) ?: throw java.lang.IllegalStateException(
+                "Inconsistent state should be ${this.javaClass.canonicalName}")
+    }
+
 }

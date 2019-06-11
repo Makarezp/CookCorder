@@ -103,9 +103,7 @@ class RecordIntentFactoryTest {
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.just(mock()))
 
-        recordModelStore.process(intent {
-            Recording(500)
-        })
+        recordModelStore.process(intent { Recording(500) })
 
         recordModelStore.modelState().subscribe(testObserver)
 
@@ -130,9 +128,7 @@ class RecordIntentFactoryTest {
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.error(IllegalStateException()))
 
-        recordModelStore.process(intent {
-            Recording(500)
-        })
+        recordModelStore.process(intent { Recording(500) })
 
         recordModelStore.modelState().subscribe(testObserver)
 
@@ -159,9 +155,7 @@ class RecordIntentFactoryTest {
         recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordIntentFactory.process(
-                RecordViewEvent.StartRecordingClick
-        )
+        recordIntentFactory.process(RecordViewEvent.StartRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
@@ -174,6 +168,21 @@ class RecordIntentFactoryTest {
     @Test
     fun `when cancelling is unsuccessful state doesn't change`() {
         // GIVEN
+        Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.empty())
 
+        recordModelStore.modelState().subscribe(testObserver)
+
+        recordModelStore.process(intent {
+            Recording(500)
+        })
+
+        // WHEN
+        recordIntentFactory.process(RecordViewEvent.CancelRecordingClick)
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueCount(3)
+        testObserver.assertValueAt(1, Recording(500))
+        testObserver.assertValueAt(2, Recording(500))
     }
 }
