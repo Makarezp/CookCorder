@@ -182,10 +182,7 @@ class PlayService : DaggerService() {
                 }.doFinally {
                     stopForeground(false)
                 }
-                .subscribe({
-                }, {
-                    Timber.d(it)
-                }, {})
+                .subscribe({},Timber::d,{})
     }
 
     @SuppressLint("CheckResult")

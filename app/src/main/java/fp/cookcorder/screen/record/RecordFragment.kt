@@ -1,6 +1,5 @@
 package fp.cookcorder.screen.record
 
-import android.Manifest
 import android.Manifest.permission.RECORD_AUDIO
 import android.animation.Animator
 import android.animation.ObjectAnimator

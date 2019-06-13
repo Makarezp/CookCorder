@@ -4,13 +4,13 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
 import fp.cookcorder.domain.record.RecordUseCase
+import fp.cookcorder.intentmodel.RecordIntentFactory
 import fp.cookcorder.intentmodel.RecordModelStore
 import fp.cookcorder.intentmodel.RecorderState
 import fp.cookcorder.intentmodel.RecorderState.*
 import fp.cookcorder.view.RecordViewEvent
 import io.reactivex.Maybe
 import io.reactivex.Observable
-import io.reactivex.Scheduler
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before

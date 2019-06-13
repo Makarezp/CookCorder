@@ -42,7 +42,6 @@ class OptionsFragment : DaggerFragment() {
         }
         observe(viewModel.repeats) { repeatsNumTV.text = it.toString() }
         setupSeekBar()
-
     }
 
     private fun setupEditText() {
