@@ -8,4 +8,5 @@ sealed class RecordViewEvent {
             val repeats: Int): RecordViewEvent()
     object CancelRecordingClick: RecordViewEvent()
     data class TitleTextChanged(val text: String): RecordViewEvent()
+    data class MinsToScheduleChanged(val mins: Int): RecordViewEvent()
 }

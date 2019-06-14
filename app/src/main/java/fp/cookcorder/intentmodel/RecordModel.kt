@@ -6,6 +6,7 @@ import fp.cookcorder.intent.applySchedulers
 import fp.cookcorder.intent.intent
 import fp.cookcorder.intent.sideEffect
 import fp.cookcorder.intentmodel.RecorderStatus.*
+import fp.cookcorder.screen.utils.minutestToMilliseconds
 import fp.cookcorder.view.RecordViewEvent
 import fp.cookcorder.view.RecordViewEvent.*
 import io.reactivex.disposables.CompositeDisposable
@@ -18,7 +19,7 @@ import javax.inject.Singleton
 class RecordModelStore @Inject constructor() : ModelStore<RecorderState>(
         RecorderState(
                 titleForFinishedRecording = "",
-                timeToScheduleInMiliseconds = 0,
+                minsToSchedule = 0,
                 repeats = 1,
                 recorderStatus = Idle
         )
@@ -32,7 +33,7 @@ class RecordModelStore @Inject constructor() : ModelStore<RecorderState>(
 
 data class RecorderState(
         val titleForFinishedRecording: String,
-        val timeToScheduleInMiliseconds: Long,
+        val minsToSchedule: Int,
         val repeats: Int,
         val recorderStatus: RecorderStatus)
 
@@ -75,11 +76,16 @@ class RecordViewProcessor @Inject constructor(
             is StartRecordingClick -> buildStartRecordingIntent()
             is FinishRecordingClick -> buildFinishRecordingIntent()
             is CancelRecordingClick -> buildCancelRecordingIntent()
-            is TitleTextChanged -> buildTitleChangedIntent(viewEvent.text)
+            is TitleTextChanged -> buildChangeTitleIntent(viewEvent.text)
+            is MinsToScheduleChanged -> buildScheduleTimeChangeIntent(viewEvent.mins)
         }
     }
 
-    private fun buildTitleChangedIntent(text: String) = intent<RecorderState> {
+    private fun buildScheduleTimeChangeIntent(minsToSchedule: Int) = intent<RecorderState> {
+        copy(minsToSchedule = minsToSchedule)
+    }
+
+    private fun buildChangeTitleIntent(text: String) = intent<RecorderState> {
         copy(titleForFinishedRecording = text)
     }
 
@@ -144,7 +150,7 @@ class RecordViewProcessor @Inject constructor(
         }
 
         recordUseCase
-                .finishRecordingNewTask(timeToScheduleInMiliseconds,
+                .finishRecordingNewTask(minsToSchedule.minutestToMilliseconds(),
                         titleForFinishedRecording, repeats)
                 .applySchedulers()
                 .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)

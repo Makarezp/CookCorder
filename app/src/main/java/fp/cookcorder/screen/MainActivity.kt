@@ -20,7 +20,6 @@ class MainActivity : DaggerAppCompatActivity() {
 
     var onTouchListener: ((MotionEvent) -> Unit)? = null
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         recordViewModel = ViewModelProviders.of(this, recordVmFactory).get(RecordViewModel::class.java)

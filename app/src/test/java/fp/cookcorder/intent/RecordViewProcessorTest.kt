@@ -7,6 +7,7 @@ import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.intentmodel.*
 import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.view.RecordViewEvent
+import fp.cookcorder.view.RecordViewEvent.MinsToScheduleChanged
 import fp.cookcorder.view.RecordViewEvent.TitleTextChanged
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -187,16 +188,31 @@ class RecordViewProcessorTest {
 
     @Test
     fun `change tile view event`() {
-        //GIVEN
+        // GIVEN
         val title = "new title"
-        val setTitleViewEvent = TitleTextChanged(title)
+        val titleTextChangedViewEvent = TitleTextChanged(title)
         recordModelStore.modelState().subscribe(testObserver)
 
-        //WHEN
-        recordViewProcessor.process(setTitleViewEvent)
+        // WHEN
+        recordViewProcessor.process(titleTextChangedViewEvent)
         testScheduler.triggerActions()
 
-        //THEN
+        // THEN
         testObserver.assertValueAt(1) { it.titleForFinishedRecording == title}
+    }
+
+    @Test
+    fun `change time to schedule view event`() {
+        // GIVEN
+        val timeToSchedule = 5
+        val timeToScheduleChangedViewEvent = MinsToScheduleChanged(timeToSchedule)
+        recordModelStore.modelState().subscribe(testObserver)
+
+        // WHEN
+        recordViewProcessor.process(timeToScheduleChangedViewEvent)
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueAt(1) { it.minsToSchedule == timeToSchedule}
     }
 }
