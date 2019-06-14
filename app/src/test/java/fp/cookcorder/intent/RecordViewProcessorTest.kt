@@ -7,6 +7,7 @@ import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.intentmodel.*
 import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.view.RecordViewEvent
+import fp.cookcorder.view.RecordViewEvent.TitleTextChanged
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
@@ -20,7 +21,7 @@ import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
 import java.lang.IllegalStateException
 
-class RecordIntentFactoryTest {
+class RecordViewProcessorTest {
 
     val testScheduler = TestScheduler()
 
@@ -35,14 +36,14 @@ class RecordIntentFactoryTest {
     @Mock
     lateinit var recordUseCase: RecordUseCase
 
-    private lateinit var recordIntentFactory: RecordIntentFactory
+    private lateinit var recordViewProcessor: RecordViewProcessor
 
-    lateinit var testObserver: TestObserver<RecorderStatus>
+    lateinit var testObserver: TestObserver<RecorderState>
 
     @Before
     fun setUp() {
         recordModelStore = RecordModelStore()
-        recordIntentFactory = RecordIntentFactory(recordUseCase, recordModelStore)
+        recordViewProcessor = RecordViewProcessor(recordUseCase, recordModelStore)
         testObserver = TestObserver()
     }
 
@@ -51,22 +52,22 @@ class RecordIntentFactoryTest {
         // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask())
                 .thenReturn(Observable.just(0, 100))
-        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
+        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordIntentFactory.process(RecordViewEvent.StartRecordingClick)
+        recordViewProcessor.process(RecordViewEvent.StartRecordingClick)
 
         testScheduler.triggerActions()
 
         // THEN
         // initial
-        testObserver.assertValueAt(0, Idle)
+        testObserver.assertValueAt(0) { it.recorderStatus == Idle }
         // after just after trying to record
-        testObserver.assertValueAt(1, Idle)
+        testObserver.assertValueAt(1) { it.recorderStatus == Idle }
         // first tick
-        testObserver.assertValueAt(2, Recording(0))
+        testObserver.assertValueAt(2) { it.recorderStatus == Recording(0) }
         // second tick
-        testObserver.assertValueAt(3, Recording(100))
+        testObserver.assertValueAt(3) { it.recorderStatus == Recording(100) }
     }
 
     @Test
@@ -76,23 +77,23 @@ class RecordIntentFactoryTest {
         recordModelStore.applyRecordIntent {
             Recording(500)
         }
-        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
+        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordIntentFactory.process(RecordViewEvent.CancelRecordingClick)
+        recordViewProcessor.process(RecordViewEvent.CancelRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
         testObserver.assertValueCount(5)
         // initially
-        testObserver.assertValueAt(0, Idle)
-        testObserver.assertValueAt(1, Recording(500))
+        testObserver.assertValueAt(0) { it.recorderStatus == Idle }
+        testObserver.assertValueAt(1) { it.recorderStatus == Recording(500) }
         // just after cancellation state should not change
-        testObserver.assertValueAt(2, Recording(500))
+        testObserver.assertValueAt(2) { it.recorderStatus == Recording(500) }
         //  cancelled
-        testObserver.assertValueAt(3, Cancelled)
+        testObserver.assertValueAt(3) { it.recorderStatus == Cancelled }
         // immediately move to idle
-        testObserver.assertValueAt(4, Idle)
+        testObserver.assertValueAt(4) { it.recorderStatus == Idle }
     }
 
     @Test
@@ -103,10 +104,10 @@ class RecordIntentFactoryTest {
 
         recordModelStore.applyRecordIntent { Recording(500) }
 
-        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
+        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordIntentFactory.process(
+        recordViewProcessor.process(
                 RecordViewEvent.FinishRecordingClick(100, "any", 1)
         )
         testScheduler.triggerActions()
@@ -114,10 +115,10 @@ class RecordIntentFactoryTest {
         // THEN
         testObserver.assertValueCount(5)
         // starts in a recording state
-        testObserver.assertValueAt(1, Recording(500))
-        testObserver.assertValueAt(2, Recording(500))
-        testObserver.assertValueAt(3, Success)
-        testObserver.assertValueAt(4, Idle)
+        testObserver.assertValueAt(1) { it.recorderStatus == Recording(500) }
+        testObserver.assertValueAt(2) { it.recorderStatus == Recording(500) }
+        testObserver.assertValueAt(3) { it.recorderStatus == Success }
+        testObserver.assertValueAt(4) { it.recorderStatus == Idle }
     }
 
     @Test
@@ -128,10 +129,10 @@ class RecordIntentFactoryTest {
 
         recordModelStore.applyRecordIntent { Recording(500) }
 
-        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
+        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordIntentFactory.process(
+        recordViewProcessor.process(
                 RecordViewEvent.FinishRecordingClick(100, "any", 1)
         )
         testScheduler.triggerActions()
@@ -139,10 +140,10 @@ class RecordIntentFactoryTest {
         // THEN
         testObserver.assertValueCount(5)
         // starts in a recording state
-        testObserver.assertValueAt(1, Recording(500))
-        testObserver.assertValueAt(2, Recording(500))
-        testObserver.assertValueAt(3, Failed)
-        testObserver.assertValueAt(4, Idle)
+        testObserver.assertValueAt(1) { it.recorderStatus == Recording(500) }
+        testObserver.assertValueAt(2) { it.recorderStatus == Recording(500) }
+        testObserver.assertValueAt(3) { it.recorderStatus == Failed }
+        testObserver.assertValueAt(4) { it.recorderStatus == Idle }
     }
 
     @Test
@@ -150,17 +151,17 @@ class RecordIntentFactoryTest {
         // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask()).thenReturn(Observable.empty())
 
-        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
+        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordIntentFactory.process(RecordViewEvent.StartRecordingClick)
+        recordViewProcessor.process(RecordViewEvent.StartRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
         testObserver.assertValueCount(2)
         // state doesn't change
-        testObserver.assertValueAt(0, Idle)
-        testObserver.assertValueAt(1, Idle)
+        testObserver.assertValueAt(0) { it.recorderStatus == Idle }
+        testObserver.assertValueAt(1) { it.recorderStatus == Idle }
     }
 
     @Test
@@ -168,19 +169,34 @@ class RecordIntentFactoryTest {
         // GIVEN
         Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.empty())
 
-        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
+        recordModelStore.modelState().subscribe(testObserver)
 
         recordModelStore.applyRecordIntent {
             Recording(500)
         }
 
         // WHEN
-        recordIntentFactory.process(RecordViewEvent.CancelRecordingClick)
+        recordViewProcessor.process(RecordViewEvent.CancelRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
         testObserver.assertValueCount(3)
-        testObserver.assertValueAt(1, Recording(500))
-        testObserver.assertValueAt(2, Recording(500))
+        testObserver.assertValueAt(1) { it.recorderStatus == Recording(500) }
+        testObserver.assertValueAt(2) { it.recorderStatus == Recording(500) }
+    }
+
+    @Test
+    fun `change tile view event`() {
+        //GIVEN
+        val title = "new title"
+        val setTitleViewEvent = TitleTextChanged(title)
+        recordModelStore.modelState().subscribe(testObserver)
+
+        //WHEN
+        recordViewProcessor.process(setTitleViewEvent)
+        testScheduler.triggerActions()
+
+        //THEN
+        testObserver.assertValueAt(1) { it.titleForFinishedRecording == title}
     }
 }

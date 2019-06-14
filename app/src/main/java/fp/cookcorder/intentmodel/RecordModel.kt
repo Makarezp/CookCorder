@@ -60,7 +60,7 @@ sealed class RecorderStatus {
 }
 
 @Singleton
-class RecordIntentFactory @Inject constructor(
+class RecordViewProcessor @Inject constructor(
         private val recordUseCase: RecordUseCase,
         private val recordModelStore: RecordModelStore) {
 
@@ -75,7 +75,12 @@ class RecordIntentFactory @Inject constructor(
             is StartRecordingClick -> buildStartRecordingIntent()
             is FinishRecordingClick -> buildFinishRecordingIntent()
             is CancelRecordingClick -> buildCancelRecordingIntent()
+            is TitleTextChanged -> buildTitleChangedIntent(viewEvent.text)
         }
+    }
+
+    private fun buildTitleChangedIntent(text: String) = intent<RecorderState> {
+        copy(titleForFinishedRecording = text)
     }
 
     private fun buildStartRecordingIntent(): Intent<RecorderState> = sideEffect {
