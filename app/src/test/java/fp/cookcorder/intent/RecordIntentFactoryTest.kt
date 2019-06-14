@@ -4,10 +4,8 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
 import fp.cookcorder.domain.record.RecordUseCase
-import fp.cookcorder.intentmodel.RecordIntentFactory
-import fp.cookcorder.intentmodel.RecordModelStore
-import fp.cookcorder.intentmodel.RecorderState
-import fp.cookcorder.intentmodel.RecorderState.*
+import fp.cookcorder.intentmodel.*
+import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.view.RecordViewEvent
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -39,7 +37,7 @@ class RecordIntentFactoryTest {
 
     private lateinit var recordIntentFactory: RecordIntentFactory
 
-    lateinit var testObserver: TestObserver<RecorderState>
+    lateinit var testObserver: TestObserver<RecorderStatus>
 
     @Before
     fun setUp() {
@@ -53,7 +51,7 @@ class RecordIntentFactoryTest {
         // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask())
                 .thenReturn(Observable.just(0, 100))
-        recordModelStore.modelState().subscribe(testObserver)
+        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
 
         // WHEN
         recordIntentFactory.process(RecordViewEvent.StartRecordingClick)
@@ -75,10 +73,10 @@ class RecordIntentFactoryTest {
     fun `cancel recording`() {
         // GIVEN
         Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.just(Any()))
-        recordModelStore.process(intent {
+        recordModelStore.applyRecordIntent {
             Recording(500)
-        })
-        recordModelStore.modelState().subscribe(testObserver)
+        }
+        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
 
         // WHEN
         recordIntentFactory.process(RecordViewEvent.CancelRecordingClick)
@@ -103,9 +101,9 @@ class RecordIntentFactoryTest {
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.just(mock()))
 
-        recordModelStore.process(intent { Recording(500) })
+        recordModelStore.applyRecordIntent { Recording(500) }
 
-        recordModelStore.modelState().subscribe(testObserver)
+        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
 
         // WHEN
         recordIntentFactory.process(
@@ -128,9 +126,9 @@ class RecordIntentFactoryTest {
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.error(IllegalStateException()))
 
-        recordModelStore.process(intent { Recording(500) })
+        recordModelStore.applyRecordIntent { Recording(500) }
 
-        recordModelStore.modelState().subscribe(testObserver)
+        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
 
         // WHEN
         recordIntentFactory.process(
@@ -152,7 +150,7 @@ class RecordIntentFactoryTest {
         // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask()).thenReturn(Observable.empty())
 
-        recordModelStore.modelState().subscribe(testObserver)
+        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
 
         // WHEN
         recordIntentFactory.process(RecordViewEvent.StartRecordingClick)
@@ -170,11 +168,11 @@ class RecordIntentFactoryTest {
         // GIVEN
         Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.empty())
 
-        recordModelStore.modelState().subscribe(testObserver)
+        recordModelStore.modelState().map { it.recorderStatus }.subscribe(testObserver)
 
-        recordModelStore.process(intent {
+        recordModelStore.applyRecordIntent {
             Recording(500)
-        })
+        }
 
         // WHEN
         recordIntentFactory.process(RecordViewEvent.CancelRecordingClick)

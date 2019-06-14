@@ -5,40 +5,58 @@ import fp.cookcorder.intent.Intent
 import fp.cookcorder.intent.applySchedulers
 import fp.cookcorder.intent.intent
 import fp.cookcorder.intent.sideEffect
-import fp.cookcorder.intentmodel.RecorderState.*
+import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.view.RecordViewEvent
 import fp.cookcorder.view.RecordViewEvent.*
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import timber.log.Timber
-import java.lang.IllegalStateException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class RecordModelStore @Inject constructor(): ModelStore<RecorderState>(Idle)
+class RecordModelStore @Inject constructor() : ModelStore<RecorderState>(
+        RecorderState(
+                titleForFinishedRecording = "",
+                timeToScheduleInMiliseconds = 0,
+                repeats = 1,
+                recorderStatus = Idle
+        )
+) {
+    fun applyRecordIntent(block: RecorderStatus.() -> RecorderStatus) {
+        process(intent {
+            copy(recorderStatus = block(this.recorderStatus))
+        })
+    }
+}
 
-sealed class RecorderState {
+data class RecorderState(
+        val titleForFinishedRecording: String,
+        val timeToScheduleInMiliseconds: Long,
+        val repeats: Int,
+        val recorderStatus: RecorderStatus)
+
+sealed class RecorderStatus {
 
     interface Idlable {
         fun idle() = Idle
     }
 
-    object Idle : RecorderState() {
-        fun recording(progress: Long): RecorderState = Recording(progress)
+    object Idle : RecorderStatus() {
+        fun recording(progress: Long): RecorderStatus = Recording(progress)
     }
 
-    data class Recording(val currentTime: Long = 0) : RecorderState() {
-        fun cancel(): RecorderState = Cancelled
+    data class Recording(val currentTime: Long = 0) : RecorderStatus() {
+        fun cancel(): RecorderStatus = Cancelled
         fun finishRecording() = Success
         fun failRecording() = Failed
     }
 
-    object Cancelled : RecorderState(), Idlable
+    object Cancelled : RecorderStatus(), Idlable
 
-    object Failed : RecorderState(), Idlable
+    object Failed : RecorderStatus(), Idlable
 
-    object Success : RecorderState(), Idlable
+    object Success : RecorderStatus(), Idlable
 }
 
 @Singleton
@@ -48,22 +66,22 @@ class RecordIntentFactory @Inject constructor(
 
     private val timerDisposable = CompositeDisposable()
 
-    fun process(intent: Intent<RecorderState>) {
-        recordModelStore.process(intent)
+    fun process(viewEvent: RecordViewEvent) {
+        recordModelStore.process(toIntent(viewEvent))
     }
 
     private fun toIntent(viewEvent: RecordViewEvent): Intent<RecorderState> {
         return when (viewEvent) {
             is StartRecordingClick -> buildStartRecordingIntent()
-            is FinishRecordingClick -> buildFinishRecordingIntent(viewEvent)
+            is FinishRecordingClick -> buildFinishRecordingIntent()
             is CancelRecordingClick -> buildCancelRecordingIntent()
         }
     }
 
-    private fun buildStartRecordingIntent(): Intent<RecorderState> = recorderSideEffect<Idle> {
+    private fun buildStartRecordingIntent(): Intent<RecorderState> = sideEffect {
 
         fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
-            Recording(timer)
+            copy(recorderStatus = Recording(timer))
         })
 
         timerDisposable += recordUseCase
@@ -72,72 +90,65 @@ class RecordIntentFactory @Inject constructor(
                 .subscribe({ updateRecordingState(it) }, Timber::e)
     }
 
-    private fun buildCancelRecordingIntent() = recorderSideEffect<Recording> {
+    private fun buildCancelRecordingIntent(): Intent<RecorderState> =
+            sideEffect {
+                this.recorderStatus as Recording
+                fun processCancelRecord() {
+                    recorderIntentBuilder {
+                        this as Recording
+                        timerDisposable.clear()
+                        cancel()
 
-        fun processCancelRecord() {
-            chainedRecorderIntent<Recording> {
-                timerDisposable.clear()
-                cancel()
+                    }
+                    recorderIntentBuilder {
+                        this as Cancelled
+                        idle()
+                    }
+                }
+                recordUseCase
+                        .cancelRecordingNewTask()
+                        .applySchedulers()
+                        .subscribe({ processCancelRecord() }, Timber::e)
             }
-            chainedRecorderIntent<Cancelled> {
-                idle()
-            }
-        }
-        recordUseCase
-                .cancelRecordingNewTask()
-                .applySchedulers()
-                .subscribe({ processCancelRecord() }, Timber::e)
-    }
 
-    private fun buildFinishRecordingIntent(viewEvent: FinishRecordingClick) = recorderSideEffect<Recording> {
-
+    private fun buildFinishRecordingIntent(): Intent<RecorderState> = sideEffect {
+        this.recorderStatus as Recording
         fun processFinishRecord() {
-            chainedRecorderIntent<Recording> {
+            recorderIntentBuilder {
+                this as Recording
                 timerDisposable.clear()
                 finishRecording()
             }
-            chainedRecorderIntent<Success> {
+            recorderIntentBuilder {
+                this as Success
                 idle()
             }
         }
 
         fun processUnsuccessfulRecording(recordingError: Throwable) {
-            chainedRecorderIntent<Recording> {
+            Timber.d(recordingError)
+            recordModelStore.applyRecordIntent {
+                this as Recording
                 timerDisposable.clear()
                 failRecording()
             }
-            chainedRecorderIntent<Failed> {
+            recorderIntentBuilder {
+                this as Failed
                 idle()
             }
         }
 
-        with(viewEvent) {
-            recordUseCase
-                    .finishRecordingNewTask(milisecondsToSchedule, title, repeats)
-                    .applySchedulers()
-                    .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)
-        }
-    }
-
-    private inline fun <reified T : RecorderState> chainedRecorderIntent(
-            crossinline block: T.() -> RecorderState) {
-        recordModelStore.process(recorderIntent(block))
-    }
-
-    companion object {
-        inline fun <reified S : RecorderState> recorderIntent(
-                crossinline block: S.() -> RecorderState
-        ): Intent<RecorderState> = intent {
-            (this as? S)?.block() ?: throw IllegalStateException(
-                    "Inconsistent state should be ${this.javaClass.canonicalName}")
-        }
+        recordUseCase
+                .finishRecordingNewTask(timeToScheduleInMiliseconds,
+                        titleForFinishedRecording, repeats)
+                .applySchedulers()
+                .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)
 
     }
 
-    inline fun <reified S : RecorderState> recorderSideEffect(
-            crossinline block: S.() -> Unit
-    ): Intent<RecorderState> = sideEffect {
-        (this as? S)?.apply(block) ?: throw IllegalStateException(
-                "Inconsistent state should be ${this.javaClass.canonicalName}")
+    private fun recorderIntentBuilder(block: RecorderStatus.() -> RecorderStatus) {
+        recordModelStore.process(intent {
+            copy(recorderStatus = block(this.recorderStatus))
+        })
     }
 }
