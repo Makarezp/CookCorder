@@ -5,6 +5,7 @@ import fp.cookcorder.intent.Intent
 import fp.cookcorder.intent.applySchedulers
 import fp.cookcorder.intent.intent
 import fp.cookcorder.intent.sideEffect
+import fp.cookcorder.intentmodel.RecorderState.Event.Empty
 import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.screen.utils.minutestToMilliseconds
 import fp.cookcorder.view.RecordViewEvent
@@ -35,7 +36,15 @@ data class RecorderState(
         val titleForFinishedRecording: String,
         val minsToSchedule: Int,
         val repeats: Int,
-        val recorderStatus: RecorderStatus)
+        val recorderStatus: RecorderStatus,
+        val isRecordPermissionGranted: Boolean = false,
+        val event: Event = Empty) {
+    sealed class Event {
+        object Empty: Event()
+        object RequestRecordingPermission: Event()
+    }
+}
+
 
 sealed class RecorderStatus {
 
@@ -78,7 +87,12 @@ class RecordViewProcessor @Inject constructor(
             is CancelRecordingClick -> buildCancelRecordingIntent()
             is TitleTextChanged -> buildChangeTitleIntent(viewEvent.text)
             is MinsToScheduleChanged -> buildScheduleTimeChangeIntent(viewEvent.mins)
+            is RecordPermissionGranted -> buildRecordPermissionGrantedIntent(viewEvent.isGranted)
         }
+    }
+
+    private fun buildRecordPermissionGrantedIntent(granted: Boolean) = intent<RecorderState> {
+        copy(isRecordPermissionGranted = granted)
     }
 
     private fun buildScheduleTimeChangeIntent(minsToSchedule: Int) = intent<RecorderState> {

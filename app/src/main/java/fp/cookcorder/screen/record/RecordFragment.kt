@@ -420,8 +420,6 @@ class InterceptingFrameLayout : FrameLayout {
         return if (disableClicking && viewToDispatch?.dispatchTouchEvent(ev) != false) true
         else super.dispatchTouchEvent(ev)
     }
-
-
 }
 
 

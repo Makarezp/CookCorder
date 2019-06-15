@@ -7,8 +7,7 @@ import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.intentmodel.*
 import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.view.RecordViewEvent
-import fp.cookcorder.view.RecordViewEvent.MinsToScheduleChanged
-import fp.cookcorder.view.RecordViewEvent.TitleTextChanged
+import fp.cookcorder.view.RecordViewEvent.*
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
@@ -198,7 +197,7 @@ class RecordViewProcessorTest {
         testScheduler.triggerActions()
 
         // THEN
-        testObserver.assertValueAt(1) { it.titleForFinishedRecording == title}
+        testObserver.assertValueAt(1) { it.titleForFinishedRecording == title }
     }
 
     @Test
@@ -213,6 +212,21 @@ class RecordViewProcessorTest {
         testScheduler.triggerActions()
 
         // THEN
-        testObserver.assertValueAt(1) { it.minsToSchedule == timeToSchedule}
+        testObserver.assertValueAt(1) { it.minsToSchedule == timeToSchedule }
+    }
+
+    @Test
+    fun `record permission granted view event set permission flag on state`() {
+        // GIVEN
+        val permissionGrantedViewEvent = RecordPermissionGranted(true)
+        recordModelStore.modelState().subscribe(testObserver)
+
+        // WHEN
+        recordViewProcessor.process(permissionGrantedViewEvent)
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueAt(1) { it.isRecordPermissionGranted }
+
     }
 }
