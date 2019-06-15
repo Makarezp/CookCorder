@@ -6,6 +6,7 @@ import fp.cookcorder.intent.applySchedulers
 import fp.cookcorder.intent.intent
 import fp.cookcorder.intent.sideEffect
 import fp.cookcorder.intentmodel.RecorderState.Event.Empty
+import fp.cookcorder.intentmodel.RecorderState.Event.RequestRecordingPermission
 import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.screen.utils.minutestToMilliseconds
 import fp.cookcorder.view.RecordViewEvent
@@ -16,15 +17,14 @@ import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
+
 @Singleton
-class RecordModelStore @Inject constructor() : ModelStore<RecorderState>(
-        RecorderState(
-                titleForFinishedRecording = "",
-                minsToSchedule = 0,
-                repeats = 1,
-                recorderStatus = Idle
-        )
-) {
+class RecordModelStore @Inject constructor() : ModelStore<RecorderState>(RecorderState(
+        titleForFinishedRecording = "",
+        minsToSchedule = 0,
+        repeats = 1,
+        recorderStatus = Idle
+)) {
     fun applyRecordIntent(block: RecorderStatus.() -> RecorderStatus) {
         process(intent {
             copy(recorderStatus = block(this.recorderStatus))
@@ -40,8 +40,8 @@ data class RecorderState(
         val isRecordPermissionGranted: Boolean = false,
         val event: Event = Empty) {
     sealed class Event {
-        object Empty: Event()
-        object RequestRecordingPermission: Event()
+        object Empty : Event()
+        object RequestRecordingPermission : Event()
     }
 }
 
@@ -105,14 +105,21 @@ class RecordViewProcessor @Inject constructor(
 
     private fun buildStartRecordingIntent(): Intent<RecorderState> = sideEffect {
 
-        fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
-            copy(recorderStatus = Recording(timer))
-        })
+        if (this.isRecordPermissionGranted) {
+            fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
+                copy(recorderStatus = Recording(timer))
+            })
 
-        timerDisposable += recordUseCase
-                .startRecordingNewTask()
-                .applySchedulers()
-                .subscribe({ updateRecordingState(it) }, Timber::e)
+            timerDisposable += recordUseCase
+                    .startRecordingNewTask()
+                    .applySchedulers()
+                    .subscribe({ updateRecordingState(it) }, Timber::e)
+        } else {
+            recordModelStore.processInstantEvent(intent {
+                copy(event = RequestRecordingPermission)
+            })
+        }
+
     }
 
     private fun buildCancelRecordingIntent(): Intent<RecorderState> =

@@ -5,6 +5,8 @@ import com.nhaarman.mockito_kotlin.mock
 import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
 import fp.cookcorder.domain.record.RecordUseCase
 import fp.cookcorder.intentmodel.*
+import fp.cookcorder.intentmodel.RecorderState.Event.Empty
+import fp.cookcorder.intentmodel.RecorderState.Event.RequestRecordingPermission
 import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.view.RecordViewEvent
 import fp.cookcorder.view.RecordViewEvent.*
@@ -45,6 +47,7 @@ class RecordViewProcessorTest {
         recordModelStore = RecordModelStore()
         recordViewProcessor = RecordViewProcessor(recordUseCase, recordModelStore)
         testObserver = TestObserver()
+        recordModelStore.modelState().subscribe(testObserver)
     }
 
     @Test
@@ -52,10 +55,13 @@ class RecordViewProcessorTest {
         // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask())
                 .thenReturn(Observable.just(0, 100))
-        recordModelStore.modelState().subscribe(testObserver)
+
+        recordModelStore.process(intent {
+            copy(isRecordPermissionGranted = true)
+        })
 
         // WHEN
-        recordViewProcessor.process(RecordViewEvent.StartRecordingClick)
+        recordViewProcessor.process(StartRecordingClick)
 
         testScheduler.triggerActions()
 
@@ -63,11 +69,22 @@ class RecordViewProcessorTest {
         // initial
         testObserver.assertValueAt(0) { it.recorderStatus == Idle }
         // after just after trying to record
-        testObserver.assertValueAt(1) { it.recorderStatus == Idle }
+        testObserver.assertValueAt(2) { it.recorderStatus == Idle }
         // first tick
-        testObserver.assertValueAt(2) { it.recorderStatus == Recording(0) }
+        testObserver.assertValueAt(3) { it.recorderStatus == Recording(0) }
         // second tick
-        testObserver.assertValueAt(3) { it.recorderStatus == Recording(100) }
+        testObserver.assertValueAt(4) { it.recorderStatus == Recording(100) }
+    }
+
+    @Test
+    fun `fires request permission event when start recording without permission granted`() {
+        // WHEN
+        recordViewProcessor.process(StartRecordingClick)
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueAt(2) { it.event == RequestRecordingPermission }
+        testObserver.assertValueAt(3) { it.event == Empty }
     }
 
     @Test
@@ -77,10 +94,9 @@ class RecordViewProcessorTest {
         recordModelStore.applyRecordIntent {
             Recording(500)
         }
-        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
-        recordViewProcessor.process(RecordViewEvent.CancelRecordingClick)
+        recordViewProcessor.process(CancelRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
@@ -101,14 +117,11 @@ class RecordViewProcessorTest {
         // GIVEN
         Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.just(mock()))
-
         recordModelStore.applyRecordIntent { Recording(500) }
-
-        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
         recordViewProcessor.process(
-                RecordViewEvent.FinishRecordingClick(100, "any", 1)
+                FinishRecordingClick(100, "any", 1)
         )
         testScheduler.triggerActions()
 
@@ -129,11 +142,9 @@ class RecordViewProcessorTest {
 
         recordModelStore.applyRecordIntent { Recording(500) }
 
-        recordModelStore.modelState().subscribe(testObserver)
-
         // WHEN
         recordViewProcessor.process(
-                RecordViewEvent.FinishRecordingClick(100, "any", 1)
+                FinishRecordingClick(100, "any", 1)
         )
         testScheduler.triggerActions()
 
@@ -147,21 +158,24 @@ class RecordViewProcessorTest {
     }
 
     @Test
-    fun `keeps idle state when starting record doesn't start`() {
+    fun `keeps idle state when starting record doesn't start and permission is granted`() {
         // GIVEN
         Mockito.`when`(recordUseCase.startRecordingNewTask()).thenReturn(Observable.empty())
-
-        recordModelStore.modelState().subscribe(testObserver)
+        recordModelStore.process(intent {
+            copy(isRecordPermissionGranted = true)
+        })
 
         // WHEN
-        recordViewProcessor.process(RecordViewEvent.StartRecordingClick)
+        recordViewProcessor.process(StartRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
-        testObserver.assertValueCount(2)
+        testObserver.assertValueCount(3)
         // state doesn't change
         testObserver.assertValueAt(0) { it.recorderStatus == Idle }
+        // permission granted
         testObserver.assertValueAt(1) { it.recorderStatus == Idle }
+        testObserver.assertValueAt(2) { it.recorderStatus == Idle }
     }
 
     @Test
@@ -169,14 +183,12 @@ class RecordViewProcessorTest {
         // GIVEN
         Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.empty())
 
-        recordModelStore.modelState().subscribe(testObserver)
-
         recordModelStore.applyRecordIntent {
             Recording(500)
         }
 
         // WHEN
-        recordViewProcessor.process(RecordViewEvent.CancelRecordingClick)
+        recordViewProcessor.process(CancelRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
@@ -190,7 +202,6 @@ class RecordViewProcessorTest {
         // GIVEN
         val title = "new title"
         val titleTextChangedViewEvent = TitleTextChanged(title)
-        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
         recordViewProcessor.process(titleTextChangedViewEvent)
@@ -205,7 +216,6 @@ class RecordViewProcessorTest {
         // GIVEN
         val timeToSchedule = 5
         val timeToScheduleChangedViewEvent = MinsToScheduleChanged(timeToSchedule)
-        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
         recordViewProcessor.process(timeToScheduleChangedViewEvent)
@@ -219,7 +229,6 @@ class RecordViewProcessorTest {
     fun `record permission granted view event set permission flag on state`() {
         // GIVEN
         val permissionGrantedViewEvent = RecordPermissionGranted(true)
-        recordModelStore.modelState().subscribe(testObserver)
 
         // WHEN
         recordViewProcessor.process(permissionGrantedViewEvent)
@@ -227,6 +236,5 @@ class RecordViewProcessorTest {
 
         // THEN
         testObserver.assertValueAt(1) { it.isRecordPermissionGranted }
-
     }
 }
