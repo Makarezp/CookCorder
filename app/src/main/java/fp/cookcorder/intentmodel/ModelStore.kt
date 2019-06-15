@@ -25,4 +25,14 @@ open class ModelStore<S>(startingState: S): Model<S> {
     override fun modelState(): Observable<S> = store
 
     override fun process(intent: Intent<S>) = intents.accept(intent)
+
+    override fun processInstantEvent(intent: Intent<S>) {
+        val prevState = store.blockingFirst()
+        process(intent)
+        process(object : Intent<S> {
+            override fun reduce(oldState: S): S {
+                return prevState
+            }
+        })
+    }
 }
