@@ -70,9 +70,9 @@ class RecordViewProcessorTest {
         // just after trying to record
         testObserver.assertValueAt(2) { it.recorderStatus == Idle }
         // first tick
-        testObserver.assertValueAt(3) { it.recorderStatus == Recording(0) }
+        testObserver.assertValueAt(3) { it.recorderStatus == Recording(0, true) }
         // second tick
-        testObserver.assertValueAt(4) { it.recorderStatus == Recording(100) }
+        testObserver.assertValueAt(4) { it.recorderStatus == Recording(100, false) }
     }
 
     @Test

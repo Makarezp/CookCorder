@@ -62,10 +62,6 @@ class RecordFragment : DaggerFragment(),
         fun newInstance() = RecordFragment()
     }
 
-    @Inject
-    lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
-
-    //MVI
     val disposables = CompositeDisposable()
 
     @Inject
@@ -107,14 +103,11 @@ class RecordFragment : DaggerFragment(),
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
 
         viewPager.adapter = recordAdapter
         tabLayout.setupWithViewPager(viewPager)
         main.setOnTouchListener { _, event -> viewPager.onTouchEvent(event) }
-
         handleFirstRun()
-        observeLiveData()
         setupRecordingButton()
         setupSuccessAnimationListener()
         setupSlidingUpLayout()
@@ -129,20 +122,6 @@ class RecordFragment : DaggerFragment(),
         slidingLayout.setScrollableView(scrollableView)
     }
 
-
-    private fun observeLiveData() {
-//        with(viewModel) {
-//            observe(isRecording) { handleRecordingState(it) }
-//            observe(recordCancelled) { showCancel() }
-//            observe(requestRecordingPermission) { requestAudioRecordingPermission() }
-//            observe(currentRecordTime) { timeTV.text = it }
-//            observe(minutes) { minTV.text = it }
-//            observe(isToday) {
-//                dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
-//            }
-//        }
-    }
-
     override fun events(): Observable<RecordViewEvent> {
         return Observable.merge(
                 requestNewRecordRelay.map { RequestRecordingClick },
@@ -153,16 +132,34 @@ class RecordFragment : DaggerFragment(),
     }
 
     override fun Observable<RecorderState>.subscribeToState(): Disposable {
-       return subscribe {
-           if(it.event is RequestRecordingPermission) {
-               requestAudioRecordingPermission()
-           }
-           when(it.recorderStatus) {
-               is Success -> showSuccess()
-               is Cancelled -> showCancel()
-               is Recording -> {timeTV.text = it.recorderStatus.currentTime.toString()}
-           }
-       }
+        return subscribe {
+            if (it.event is RequestRecordingPermission) {
+                requestAudioRecordingPermission()
+            }
+
+            it.isToday.let {
+                dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
+            }
+            it.uiAlarmTime.let { minTV.text = it }
+
+            with(it.recorderStatus) {
+                when (this) {
+                    is Success -> showSuccess()
+                    is Cancelled -> showCancel()
+                    is Recording -> handleRecording(this)
+                }
+                if (this !is Recording) {
+                    stopRecordingAnimation()
+                }
+            }
+        }
+    }
+
+    private fun handleRecording(recording: Recording) {
+        timeTV.text = recording.currentTime.toString()
+        if (recording.justStarted) {
+            startRecordingAnimation()
+        }
     }
 
     override fun onResume() {
@@ -309,7 +306,9 @@ class RecordFragment : DaggerFragment(),
                             success.speed = -1.3F
                             success.playAnimation()
                             animationSuccess = false
-                            if (viewModel.isRecording.value != true) {
+                            val lastRecorderStatus = recordModelStore
+                                    .modelState().blockingFirst().recorderStatus
+                            if (lastRecorderStatus !is Recording) {
                                 animateTimerTVFinishRecording(600)
                             }
                         }
@@ -339,22 +338,21 @@ class RecordFragment : DaggerFragment(),
         )
     }
 
-    private fun handleRecordingState(isRecording: Boolean) {
-        if (isRecording) {
-            currentTextViewAnimation?.cancel()
-            currentTextViewAnimation = ObjectAnimator.ofFloat(timeTV, View.ALPHA, 0f, 1f)
-                    .setDuration(300)
-            currentTextViewAnimation?.start()
+    private fun startRecordingAnimation() {
+        currentTextViewAnimation?.cancel()
+        currentTextViewAnimation = ObjectAnimator.ofFloat(timeTV, View.ALPHA, 0f, 1f)
+                .setDuration(300)
+        currentTextViewAnimation?.start()
 
-            vibrate()
-            recordAnimation.visible()
-            recordAnimation.playAnimation()
-        } else {
-            recordAnimation.invisible()
-            recordAnimation.playAnimation()
-        }
+        vibrate()
+        recordAnimation.visible()
+        recordAnimation.playAnimation()
     }
 
+    private fun stopRecordingAnimation() {
+        recordAnimation.invisible()
+        recordAnimation.playAnimation()
+    }
 
     private fun animateTimerTVFinishRecording(duration: Long) {
         currentTextViewAnimation?.end()

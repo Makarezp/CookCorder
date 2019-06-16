@@ -42,11 +42,14 @@ sealed class RecorderStatus {
         fun idle() = Idle
     }
 
-    object Idle : RecorderStatus() {
-        fun recording(progress: Long): RecorderStatus = Recording(progress)
-    }
+    object Idle : RecorderStatus()
 
-    data class Recording(val currentTime: Long = 0) : RecorderStatus() {
+    data class Recording(
+            val currentTime: Long = 0,
+            // Indicates that this is first recording state so it's possible to detect when
+            // that state transitioned from idle to recording
+            val justStarted: Boolean = true) : RecorderStatus() {
+
         fun cancel(): RecorderStatus = Cancelled
         fun finishRecording() = Success
         fun failRecording() = Failed
