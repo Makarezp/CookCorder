@@ -8,7 +8,6 @@ import fp.cookcorder.intentmodel.*
 import fp.cookcorder.intentmodel.RecorderState.Event.Empty
 import fp.cookcorder.intentmodel.RecorderState.Event.RequestRecordingPermission
 import fp.cookcorder.intentmodel.RecorderStatus.*
-import fp.cookcorder.view.RecordViewEvent
 import fp.cookcorder.view.RecordViewEvent.*
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -61,7 +60,7 @@ class RecordViewProcessorTest {
         })
 
         // WHEN
-        recordViewProcessor.process(StartRecordingClick)
+        recordViewProcessor.process(RequestRecordingClick)
 
         testScheduler.triggerActions()
 
@@ -79,7 +78,7 @@ class RecordViewProcessorTest {
     @Test
     fun `fires request permission event when start recording without permission granted`() {
         // WHEN
-        recordViewProcessor.process(StartRecordingClick)
+        recordViewProcessor.process(RequestRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
@@ -120,9 +119,7 @@ class RecordViewProcessorTest {
         recordModelStore.applyRecordIntent { Recording(500) }
 
         // WHEN
-        recordViewProcessor.process(
-                FinishRecordingClick(100, "any", 1)
-        )
+        recordViewProcessor.process(FinishRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
@@ -143,9 +140,7 @@ class RecordViewProcessorTest {
         recordModelStore.applyRecordIntent { Recording(500) }
 
         // WHEN
-        recordViewProcessor.process(
-                FinishRecordingClick(100, "any", 1)
-        )
+        recordViewProcessor.process(FinishRecordingClick)
         testScheduler.triggerActions()
 
         // THEN
@@ -166,7 +161,7 @@ class RecordViewProcessorTest {
         })
 
         // WHEN
-        recordViewProcessor.process(StartRecordingClick)
+        recordViewProcessor.process(RequestRecordingClick)
         testScheduler.triggerActions()
 
         // THEN

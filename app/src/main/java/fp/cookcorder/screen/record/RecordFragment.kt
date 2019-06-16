@@ -20,12 +20,27 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.jakewharton.rxbinding2.view.clicks
+import com.jakewharton.rxrelay2.PublishRelay
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.intentmodel.RecordModelStore
+import fp.cookcorder.intentmodel.RecordViewProcessor
+import fp.cookcorder.intentmodel.RecorderState
+import fp.cookcorder.intentmodel.RecorderState.Event.RequestRecordingPermission
+import fp.cookcorder.intentmodel.RecorderStatus.*
 import fp.cookcorder.screen.MainPagerAdapter
 import fp.cookcorder.screen.utils.*
+import fp.cookcorder.view.EventObservable
+import fp.cookcorder.view.RecordViewEvent
+import fp.cookcorder.view.RecordViewEvent.*
+import fp.cookcorder.view.StateSubscriber
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.action_button.*
 import kotlinx.android.synthetic.main.main_fragment.*
 import kotlinx.android.synthetic.main.options_fragment.*
@@ -34,7 +49,9 @@ import timber.log.Timber
 import javax.inject.Inject
 
 
-class RecordFragment : DaggerFragment() {
+class RecordFragment : DaggerFragment(),
+        EventObservable<RecordViewEvent>,
+        StateSubscriber<RecorderState> {
 
     companion object {
 
@@ -47,6 +64,20 @@ class RecordFragment : DaggerFragment() {
 
     @Inject
     lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
+
+    //MVI
+    val disposables = CompositeDisposable()
+
+    @Inject
+    lateinit var recordViewProcessor: RecordViewProcessor
+
+    @Inject
+    lateinit var recordModelStore: RecordModelStore
+
+    private var recordPermissionRelay = PublishRelay.create<Boolean>()
+    private var requestNewRecordRelay = PublishRelay.create<Unit>()
+    private var finishRecordingRelay = PublishRelay.create<Unit>()
+    private var cancelRecordingRelay = PublishRelay.create<Unit>()
 
     private lateinit var viewModel: RecordViewModel
 
@@ -77,7 +108,6 @@ class RecordFragment : DaggerFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
-        viewModel.permissionGranted = isPermissionGranted()
 
         viewPager.adapter = recordAdapter
         tabLayout.setupWithViewPager(viewPager)
@@ -101,20 +131,50 @@ class RecordFragment : DaggerFragment() {
 
 
     private fun observeLiveData() {
-        with(viewModel) {
-            observe(isRecording) { handleRecordingState(it) }
-            observe(recordSuccess) {
-                titleET.text = null
-                showSuccess()
-            }
-            observe(recordCancelled) { showCancel() }
-            observe(requestRecordingPermission) { requestAudioRecordingPermission() }
-            observe(currentRecordTime) { timeTV.text = it }
-            observe(minutes) { minTV.text = it }
-            observe(isToday) {
-                dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
-            }
-        }
+//        with(viewModel) {
+//            observe(isRecording) { handleRecordingState(it) }
+//            observe(recordCancelled) { showCancel() }
+//            observe(requestRecordingPermission) { requestAudioRecordingPermission() }
+//            observe(currentRecordTime) { timeTV.text = it }
+//            observe(minutes) { minTV.text = it }
+//            observe(isToday) {
+//                dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
+//            }
+//        }
+    }
+
+    override fun events(): Observable<RecordViewEvent> {
+        return Observable.merge(
+                requestNewRecordRelay.map { RequestRecordingClick },
+                finishRecordingRelay.map { FinishRecordingClick },
+                cancelRecordingRelay.map { CancelRecordingClick },
+                recordPermissionRelay.map { RecordPermissionGranted(it) }
+        )
+    }
+
+    override fun Observable<RecorderState>.subscribeToState(): Disposable {
+       return subscribe {
+           if(it.event is RequestRecordingPermission) {
+               requestAudioRecordingPermission()
+           }
+           when(it.recorderStatus) {
+               is Success -> showSuccess()
+               is Cancelled -> showCancel()
+               is Recording -> {timeTV.text = it.recorderStatus.currentTime.toString()}
+           }
+       }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        disposables += recordModelStore.modelState().subscribeToState()
+        disposables += events().subscribe(recordViewProcessor::process)
+        recordPermissionRelay.accept(isPermissionGranted())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        disposables.clear()
     }
 
     private fun setupSlidingUpLayout() {
@@ -129,7 +189,6 @@ class RecordFragment : DaggerFragment() {
             mainActivityVP.adapter = pageAdapter
             setupWithViewPager(mainActivityVP)
         }
-
 
         var tabViewHeight = 0
         var initialTabHeight = 0
@@ -202,7 +261,7 @@ class RecordFragment : DaggerFragment() {
 
 
     private fun showSuccess() {
-
+        titleET.text = null
         with(success) {
             visible()
             speed = 1.0F
@@ -272,13 +331,12 @@ class RecordFragment : DaggerFragment() {
     }
 
     private fun setupRecordingButton() {
+
         floatingActionButton.setOnTouchListener(
                 handleCancellableTouch(
-                        { viewModel.requestNewRecord() },
-                        {
-                            viewModel.finishRecording()
-                        },
-                        { viewModel.cancelRecording() }
+                        { requestNewRecordRelay.accept(Unit) },
+                        { finishRecordingRelay.accept(Unit) },
+                        { cancelRecordingRelay.accept(Unit) }
                 ).invoke()
         )
     }
@@ -296,8 +354,6 @@ class RecordFragment : DaggerFragment() {
         } else {
             recordAnimation.invisible()
             recordAnimation.playAnimation()
-
-
         }
     }
 
@@ -345,8 +401,7 @@ class RecordFragment : DaggerFragment() {
             permissions
                     .filter { it == RECORD_AUDIO }
                     .forEachIndexed { index, s ->
-                        viewModel.permissionGranted =
-                                grantResults[index] == PERMISSION_GRANTED
+                        recordPermissionRelay.accept(grantResults[index] == PERMISSION_GRANTED)
                     }
         }
     }

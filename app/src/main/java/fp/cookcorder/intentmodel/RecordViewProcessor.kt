@@ -32,7 +32,7 @@ class RecordViewProcessor @Inject constructor(
 
     private fun toIntent(viewEvent: RecordViewEvent): Intent<RecorderState> {
         return when (viewEvent) {
-            is StartRecordingClick -> buildStartRecordingIntent()
+            is RequestRecordingClick -> buildStartRecordingIntent()
             is FinishRecordingClick -> buildFinishRecordingIntent()
             is CancelRecordingClick -> buildCancelRecordingIntent()
             is TitleTextChanged -> buildChangeTitleIntent(viewEvent.text)
