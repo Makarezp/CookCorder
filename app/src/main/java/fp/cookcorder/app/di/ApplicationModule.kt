@@ -7,7 +7,7 @@ import android.content.SharedPreferences
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
-import fp.cookcorder.domain.UseCaseModule
+import fp.cookcorder.interactors.InteractorModule
 import fp.cookcorder.infrastructure.InfrastructureModule
 import fp.cookcorder.repo.RepoModule
 import javax.inject.Singleton
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 @Module(includes = [
     RepoModule::class,
     InfrastructureModule::class,
-    UseCaseModule::class])
+    InteractorModule::class])
 abstract class ApplicationModule {
 
     @Binds

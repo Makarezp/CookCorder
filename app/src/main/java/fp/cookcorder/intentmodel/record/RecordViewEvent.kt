@@ -1,4 +1,4 @@
-package fp.cookcorder.view
+package fp.cookcorder.intentmodel.record
 
 sealed class RecordViewEvent {
     object RequestRecordingClick : RecordViewEvent()

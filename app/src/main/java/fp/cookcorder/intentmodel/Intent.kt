@@ -1,4 +1,4 @@
-package fp.cookcorder.intent
+package fp.cookcorder.intentmodel
 
 interface Intent<T> {
     fun reduce(oldState: T): T

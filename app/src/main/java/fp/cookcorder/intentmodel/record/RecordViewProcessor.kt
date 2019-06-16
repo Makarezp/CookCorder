@@ -1,16 +1,15 @@
-package fp.cookcorder.intentmodel
+package fp.cookcorder.intentmodel.record
 
-import fp.cookcorder.domain.record.RecordUseCase
-import fp.cookcorder.intent.Intent
-import fp.cookcorder.intent.applySchedulers
-import fp.cookcorder.intent.intent
-import fp.cookcorder.intent.sideEffect
-import fp.cookcorder.intentmodel.RecorderState.Event.RequestRecordingPermission
-import fp.cookcorder.intentmodel.RecorderStatus.*
-import fp.cookcorder.screen.utils.isToday
-import fp.cookcorder.screen.utils.minutestToMilliseconds
-import fp.cookcorder.view.RecordViewEvent
-import fp.cookcorder.view.RecordViewEvent.*
+import fp.cookcorder.intentmodel.Intent
+import fp.cookcorder.intentmodel.intent
+import fp.cookcorder.interactors.record.RecorderInteractor
+import fp.cookcorder.utils.applySchedulers
+import fp.cookcorder.intentmodel.record.RecorderState.Event.RequestRecordingPermission
+import fp.cookcorder.intentmodel.record.RecorderStatus.*
+import fp.cookcorder.utils.isToday
+import fp.cookcorder.utils.minutestToMilliseconds
+import fp.cookcorder.intentmodel.record.RecordViewEvent.*
+import fp.cookcorder.intentmodel.sideEffect
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
 import org.threeten.bp.LocalDateTime
@@ -21,7 +20,7 @@ import javax.inject.Singleton
 
 @Singleton
 class RecordViewProcessor @Inject constructor(
-        private val recordUseCase: RecordUseCase,
+        private val recorderInteractor: RecorderInteractor,
         private val recordModelStore: RecordModelStore) {
 
     private val timerDisposable = CompositeDisposable()
@@ -69,7 +68,7 @@ class RecordViewProcessor @Inject constructor(
                 recordState
             })
 
-            timerDisposable += recordUseCase
+            timerDisposable += recorderInteractor
                     .startRecordingNewTask()
                     .applySchedulers()
                     .subscribe({ updateRecordingState(it) }, Timber::e)
@@ -82,7 +81,7 @@ class RecordViewProcessor @Inject constructor(
 
     private fun buildCancelRecordingIntent(): Intent<RecorderState> =
             sideEffect {
-                if(this.recorderStatus is Recording) {
+                if (this.recorderStatus is Recording) {
                     fun processCancelRecord() {
                         recorderIntentBuilder {
                             this as Recording
@@ -95,7 +94,7 @@ class RecordViewProcessor @Inject constructor(
                             idle()
                         }
                     }
-                    recordUseCase
+                    recorderInteractor
                             .cancelRecordingNewTask()
                             .applySchedulers()
                             .subscribe({ processCancelRecord() }, Timber::e)
@@ -103,7 +102,7 @@ class RecordViewProcessor @Inject constructor(
             }
 
     private fun buildFinishRecordingIntent(): Intent<RecorderState> = sideEffect {
-        if(this.recorderStatus is Recording) {
+        if (this.recorderStatus is Recording) {
             fun processFinishRecord() {
                 recorderIntentBuilder {
                     this as Recording
@@ -129,7 +128,7 @@ class RecordViewProcessor @Inject constructor(
                 }
             }
 
-            recordUseCase
+            recorderInteractor
                     .finishRecordingNewTask(minsToSchedule.minutestToMilliseconds(),
                             titleForFinishedRecording, repeats)
                     .applySchedulers()

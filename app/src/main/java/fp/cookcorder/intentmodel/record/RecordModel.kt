@@ -1,8 +1,9 @@
-package fp.cookcorder.intentmodel
+package fp.cookcorder.intentmodel.record
 
-import fp.cookcorder.intent.intent
-import fp.cookcorder.intentmodel.RecorderState.Event.Empty
-import fp.cookcorder.intentmodel.RecorderStatus.*
+import fp.cookcorder.intentmodel.ModelStore
+import fp.cookcorder.intentmodel.intent
+import fp.cookcorder.intentmodel.record.RecorderState.Event.Empty
+import fp.cookcorder.intentmodel.record.RecorderStatus.*
 import javax.inject.Inject
 import javax.inject.Singleton
 

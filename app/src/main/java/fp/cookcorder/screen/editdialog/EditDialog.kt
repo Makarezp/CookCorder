@@ -8,7 +8,7 @@ import android.view.ViewGroup
 import dagger.android.support.DaggerAppCompatDialogFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
-import fp.cookcorder.screen.utils.observe
+import fp.cookcorder.utils.observe
 import kotlinx.android.synthetic.main.edit_dialog.*
 import javax.inject.Inject
 

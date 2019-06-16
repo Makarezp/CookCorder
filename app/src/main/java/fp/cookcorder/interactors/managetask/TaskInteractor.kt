@@ -1,15 +1,14 @@
-package fp.cookcorder.domain.managetask
+package fp.cookcorder.interactors.managetask
 
-import fp.cookcorder.domain.UseCase
 import fp.cookcorder.infrastructure.TaskScheduler
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Completable
 import io.reactivex.Flowable
 import io.reactivex.Single
 import javax.inject.Inject
 
-interface ManageTaskUseCase: UseCase {
+interface TaskInteractor {
 
     fun getTask(id: Long): Single<Task>
 
@@ -22,10 +21,10 @@ interface ManageTaskUseCase: UseCase {
     fun deleteTask(task: Task): Completable
 }
 
-class ManageTaskUseCaseImpl @Inject constructor(
+class TaskInteractorImpl @Inject constructor(
         private val taskRepo: TaskRepo,
         private val taskScheduler: TaskScheduler
-) : ManageTaskUseCase {
+) : TaskInteractor {
 
 
     override fun getTask(id: Long): Single<Task> {

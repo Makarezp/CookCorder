@@ -1,7 +1,7 @@
 package fp.cookcorder.repo.db
 
 import android.arch.persistence.room.*
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.model.Task
 import io.reactivex.Flowable
 import io.reactivex.Single
 

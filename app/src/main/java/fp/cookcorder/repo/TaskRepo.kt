@@ -1,6 +1,6 @@
 package fp.cookcorder.repo
 
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.repo.db.TaskDao
 import io.reactivex.Completable
 import io.reactivex.Flowable

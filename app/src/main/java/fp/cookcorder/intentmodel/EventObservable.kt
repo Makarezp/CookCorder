@@ -1,4 +1,4 @@
-package fp.cookcorder.view
+package fp.cookcorder.intentmodel
 
 import io.reactivex.Observable
 

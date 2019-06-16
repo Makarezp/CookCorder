@@ -17,7 +17,7 @@ import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.screen.MainActivity
-import fp.cookcorder.screen.utils.observe
+import fp.cookcorder.utils.observe
 import kotlinx.android.synthetic.main.options_fragment.*
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import javax.inject.Inject

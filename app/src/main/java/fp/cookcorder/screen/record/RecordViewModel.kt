@@ -1,11 +1,11 @@
 package fp.cookcorder.screen.record
 
 import android.arch.lifecycle.MutableLiveData
-import fp.cookcorder.domain.record.RecordUseCase
+import fp.cookcorder.interactors.record.RecorderInteractor
 import fp.cookcorder.screen.BaseViewModel
-import fp.cookcorder.screen.utils.SingleLiveEvent
-import fp.cookcorder.screen.utils.isToday
-import fp.cookcorder.screen.utils.minutestToMilliseconds
+import fp.cookcorder.utils.SingleLiveEvent
+import fp.cookcorder.utils.isToday
+import fp.cookcorder.utils.minutestToMilliseconds
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
 import org.threeten.bp.LocalDateTime
@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class RecordViewModel @Inject constructor(
-        private val recordUseCase: RecordUseCase
+        private val recorderInteractor: RecorderInteractor
 ) : BaseViewModel() {
 
     val isRecording = MutableLiveData<Boolean>()
@@ -69,7 +69,7 @@ class RecordViewModel @Inject constructor(
 
     fun requestNewRecord() {
         if (permissionGranted) {
-            exe(recordUseCase.startRecordingNewTask()) { _ ->
+            exe(recorderInteractor.startRecordingNewTask()) { _ ->
                 isRecording.value = true
                 recordTimerDisposable = recordTimeCounter()
                         .subscribeOn(schedulerFactory.io())
@@ -80,7 +80,7 @@ class RecordViewModel @Inject constructor(
     }
 
     fun cancelRecording() {
-        exe(recordUseCase.cancelRecordingNewTask()) {
+        exe(recorderInteractor.cancelRecordingNewTask()) {
             isRecording.value = false
             recordCancelled.call()
             recordTimerDisposable?.dispose()
@@ -89,7 +89,7 @@ class RecordViewModel @Inject constructor(
     }
 
     fun finishRecording() {
-        exe(recordUseCase
+        exe(recorderInteractor
                 .finishRecordingNewTask(
                         currentMinutesToSchedule.value!!.minutestToMilliseconds(),
                         title.value,

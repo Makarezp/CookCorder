@@ -1,6 +1,5 @@
 package fp.cookcorder.intentmodel
 
-import fp.cookcorder.intent.Intent
 import io.reactivex.Observable
 
 interface Model<S> {

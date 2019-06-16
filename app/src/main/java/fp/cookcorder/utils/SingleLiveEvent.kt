@@ -1,5 +1,5 @@
 
-package fp.cookcorder.screen.utils
+package fp.cookcorder.utils
 
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.MutableLiveData

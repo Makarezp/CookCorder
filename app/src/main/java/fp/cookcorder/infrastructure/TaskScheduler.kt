@@ -16,10 +16,10 @@ import dagger.android.DaggerBroadcastReceiver
 import dagger.android.DaggerService
 import fp.cookcorder.R
 import fp.cookcorder.app.SchedulerFactory
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.repo.TaskRepo
 import fp.cookcorder.screen.MainActivity
-import fp.cookcorder.screen.utils.getTimeFromEpoch
+import fp.cookcorder.utils.getTimeFromEpoch
 import timber.log.Timber
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject

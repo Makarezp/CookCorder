@@ -15,8 +15,8 @@ import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
 import fp.cookcorder.screen.editdialog.EditDialog
 import fp.cookcorder.screen.record.RecordFragment
-import fp.cookcorder.screen.utils.observe
-import fp.cookcorder.screen.utils.px
+import fp.cookcorder.utils.observe
+import fp.cookcorder.utils.px
 import kotlinx.android.synthetic.main.play_fragment.*
 import javax.inject.Inject
 

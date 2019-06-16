@@ -14,11 +14,11 @@ import android.widget.SeekBar
 import android.widget.TextView
 import fp.cookcorder.R
 import fp.cookcorder.app.SchedulerFactory
-import fp.cookcorder.domain.managetask.ManageTaskUseCase
-import fp.cookcorder.domain.play.PlayUseCase
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.managetask.TaskInteractor
+import fp.cookcorder.interactors.play.PlayerInteractor
+import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.screen.BaseViewModel
-import fp.cookcorder.screen.utils.*
+import fp.cookcorder.utils.*
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import timber.log.Timber
@@ -29,8 +29,8 @@ import kotlin.properties.Delegates
 
 
 class PlayViewModel @Inject constructor(
-        private val playUseCase: PlayUseCase,
-        private val manageTaskUseCase: ManageTaskUseCase,
+        private val playerInteractor: PlayerInteractor,
+        private val taskInteractor: TaskInteractor,
         private val playAdapter: PlayAdapter,
         @Named(PlayFragmentModule.NAMED_IS_CURRENT) private val isCurrent: Boolean
 ) : BaseViewModel() {
@@ -45,7 +45,7 @@ class PlayViewModel @Inject constructor(
     @Inject
     fun init() {
         playAdapter.viewModel = this
-        val taskObs = if (isCurrent) manageTaskUseCase.getCurrentTasks() else manageTaskUseCase.getPastTasks()
+        val taskObs = if (isCurrent) taskInteractor.getCurrentTasks() else taskInteractor.getPastTasks()
         exe(taskObs) {
             showNoTasks.value = it.isEmpty()
             playAdapter.tasks = it.sortedBy { it.scheduleTime }.let { if (isCurrent) it else it.reversed() }
@@ -53,11 +53,11 @@ class PlayViewModel @Inject constructor(
     }
 
     fun play(task: Task): Observable<Pair<Int, Int>> {
-        return playUseCase.playTask(task)
+        return playerInteractor.playTask(task)
     }
 
     fun stopPlaying(task: Task, onSuccess: () -> Unit) {
-        exe(playUseCase.stopPlayingTask(task)) { onSuccess() }
+        exe(playerInteractor.stopPlayingTask(task)) { onSuccess() }
     }
 
     fun editTask(taskId: Long) {
@@ -65,7 +65,7 @@ class PlayViewModel @Inject constructor(
     }
 
     fun delete(task: Task) {
-        exe(manageTaskUseCase.deleteTask(task)) {
+        exe(taskInteractor.deleteTask(task)) {
             Timber.d("Task with id ${task.name} has been deleted")
         }
     }

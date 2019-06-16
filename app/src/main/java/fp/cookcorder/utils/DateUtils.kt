@@ -1,4 +1,4 @@
-package fp.cookcorder.screen.utils
+package fp.cookcorder.utils
 
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter

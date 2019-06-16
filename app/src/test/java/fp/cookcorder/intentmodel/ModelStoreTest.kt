@@ -1,7 +1,6 @@
 package fp.cookcorder.intentmodel
 
 import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
-import fp.cookcorder.intent.intent
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before

@@ -4,7 +4,7 @@ import android.arch.persistence.room.Database
 import android.arch.persistence.room.Room
 import android.arch.persistence.room.RoomDatabase
 import android.content.Context
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.model.Task
 
 @Database(entities = [Task::class], version = 3,  exportSchema = false)
 abstract class CookCorderDb : RoomDatabase() {

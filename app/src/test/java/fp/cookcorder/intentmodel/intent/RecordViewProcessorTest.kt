@@ -1,14 +1,17 @@
-package fp.cookcorder.intent
+package fp.cookcorder.intentmodel.intent
 
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
-import fp.cookcorder.domain.record.RecordUseCase
+import fp.cookcorder.interactors.record.RecorderInteractor
 import fp.cookcorder.intentmodel.*
-import fp.cookcorder.intentmodel.RecorderState.Event.Empty
-import fp.cookcorder.intentmodel.RecorderState.Event.RequestRecordingPermission
-import fp.cookcorder.intentmodel.RecorderStatus.*
-import fp.cookcorder.view.RecordViewEvent.*
+import fp.cookcorder.intentmodel.record.RecordModelStore
+import fp.cookcorder.intentmodel.record.RecorderState.Event.Empty
+import fp.cookcorder.intentmodel.record.RecorderState.Event.RequestRecordingPermission
+import fp.cookcorder.intentmodel.record.RecorderStatus.*
+import fp.cookcorder.intentmodel.record.RecordViewEvent.*
+import fp.cookcorder.intentmodel.record.RecordViewProcessor
+import fp.cookcorder.intentmodel.record.RecorderState
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.observers.TestObserver
@@ -35,7 +38,7 @@ class RecordViewProcessorTest {
     private lateinit var recordModelStore: RecordModelStore
 
     @Mock
-    lateinit var recordUseCase: RecordUseCase
+    lateinit var recorderInteractor: RecorderInteractor
 
     private lateinit var recordViewProcessor: RecordViewProcessor
 
@@ -44,7 +47,7 @@ class RecordViewProcessorTest {
     @Before
     fun setUp() {
         recordModelStore = RecordModelStore()
-        recordViewProcessor = RecordViewProcessor(recordUseCase, recordModelStore)
+        recordViewProcessor = RecordViewProcessor(recorderInteractor, recordModelStore)
         testObserver = TestObserver()
         recordModelStore.modelState().subscribe(testObserver)
     }
@@ -52,7 +55,7 @@ class RecordViewProcessorTest {
     @Test
     fun `start recording`() {
         // GIVEN
-        Mockito.`when`(recordUseCase.startRecordingNewTask())
+        Mockito.`when`(recorderInteractor.startRecordingNewTask())
                 .thenReturn(Observable.just(0, 100))
 
         recordModelStore.process(intent {
@@ -89,7 +92,7 @@ class RecordViewProcessorTest {
     @Test
     fun `cancel recording`() {
         // GIVEN
-        Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.just(Any()))
+        Mockito.`when`(recorderInteractor.cancelRecordingNewTask()).thenReturn(Maybe.just(Any()))
         recordModelStore.applyRecordIntent {
             Recording(500)
         }
@@ -114,7 +117,7 @@ class RecordViewProcessorTest {
     @Test
     fun `finish recording`() {
         // GIVEN
-        Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
+        Mockito.`when`(recorderInteractor.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.just(mock()))
         recordModelStore.applyRecordIntent { Recording(500) }
 
@@ -134,7 +137,7 @@ class RecordViewProcessorTest {
     @Test
     fun `finish recording with failed state when unsuccessful`() {
         // GIVEN
-        Mockito.`when`(recordUseCase.finishRecordingNewTask(any(), any(), any()))
+        Mockito.`when`(recorderInteractor.finishRecordingNewTask(any(), any(), any()))
                 .thenReturn(Maybe.error(IllegalStateException()))
 
         recordModelStore.applyRecordIntent { Recording(500) }
@@ -155,7 +158,7 @@ class RecordViewProcessorTest {
     @Test
     fun `keeps idle state when starting record doesn't start and permission is granted`() {
         // GIVEN
-        Mockito.`when`(recordUseCase.startRecordingNewTask()).thenReturn(Observable.empty())
+        Mockito.`when`(recorderInteractor.startRecordingNewTask()).thenReturn(Observable.empty())
         recordModelStore.process(intent {
             copy(isRecordPermissionGranted = true)
         })
@@ -176,7 +179,7 @@ class RecordViewProcessorTest {
     @Test
     fun `when cancelling is unsuccessful state doesn't change`() {
         // GIVEN
-        Mockito.`when`(recordUseCase.cancelRecordingNewTask()).thenReturn(Maybe.empty())
+        Mockito.`when`(recorderInteractor.cancelRecordingNewTask()).thenReturn(Maybe.empty())
 
         recordModelStore.applyRecordIntent {
             Recording(500)

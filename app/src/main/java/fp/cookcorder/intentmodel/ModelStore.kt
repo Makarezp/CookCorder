@@ -1,7 +1,6 @@
 package fp.cookcorder.intentmodel
 
 import com.jakewharton.rxrelay2.PublishRelay
-import fp.cookcorder.intent.Intent
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import timber.log.Timber

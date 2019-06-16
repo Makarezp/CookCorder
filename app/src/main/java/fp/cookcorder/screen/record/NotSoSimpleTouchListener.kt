@@ -1,4 +1,4 @@
-package fp.cookcorder.screen.utils
+package fp.cookcorder.screen.record
 
 
 import android.view.MotionEvent

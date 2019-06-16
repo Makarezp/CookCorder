@@ -1,4 +1,4 @@
-package fp.cookcorder.model
+package fp.cookcorder.interactors.model
 
 import android.arch.persistence.room.Entity
 import android.arch.persistence.room.PrimaryKey

@@ -1,9 +1,8 @@
-package fp.cookcorder.domain.record
+package fp.cookcorder.interactors.record
 
-import fp.cookcorder.domain.UseCase
 import fp.cookcorder.infrastructure.Recorder
 import fp.cookcorder.infrastructure.TaskScheduler
-import fp.cookcorder.model.Task
+import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.repo.TaskRepo
 import io.reactivex.Maybe
 import io.reactivex.Observable
@@ -11,7 +10,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-interface RecordUseCase: UseCase {
+interface RecorderInteractor {
 
     fun startRecordingNewTask(): Observable<Long>
 
@@ -23,10 +22,10 @@ interface RecordUseCase: UseCase {
     fun cancelRecordingNewTask(): Maybe<Any>
 }
 
-class RecordUseCaseImpl @Inject constructor(
+class RecorderInteractorImpl @Inject constructor(
         private val recorder: Recorder,
         private val taskRepo: TaskRepo,
-        private val taskScheduler: TaskScheduler) : RecordUseCase {
+        private val taskScheduler: TaskScheduler) : RecorderInteractor {
 
     override fun startRecordingNewTask(): Observable<Long> {
         return recorder.startRecording("r${Random().nextInt()}")
