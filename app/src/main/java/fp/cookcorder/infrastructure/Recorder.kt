@@ -31,7 +31,6 @@ class RecorderImpl @Inject constructor(private val context: Context) : Recorder 
             val fileName: String,
             val recordStart: Long)
 
-
     override fun startRecording(fileName: String): Maybe<Any> {
         return Maybe.create { emitter ->
             synchronized(this) {

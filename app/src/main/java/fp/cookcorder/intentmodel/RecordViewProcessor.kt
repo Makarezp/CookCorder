@@ -78,57 +78,59 @@ class RecordViewProcessor @Inject constructor(
 
     private fun buildCancelRecordingIntent(): Intent<RecorderState> =
             sideEffect {
-                this.recorderStatus as Recording
-                fun processCancelRecord() {
-                    recorderIntentBuilder {
-                        this as Recording
-                        timerDisposable.clear()
-                        cancel()
+                if(this.recorderStatus is Recording) {
+                    fun processCancelRecord() {
+                        recorderIntentBuilder {
+                            this as Recording
+                            timerDisposable.clear()
+                            cancel()
 
+                        }
+                        recorderIntentBuilder {
+                            this as Cancelled
+                            idle()
+                        }
                     }
-                    recorderIntentBuilder {
-                        this as Cancelled
-                        idle()
-                    }
-                }
-                recordUseCase
-                        .cancelRecordingNewTask()
-                        .applySchedulers()
-                        .subscribe({ processCancelRecord() }, Timber::e)
+                    recordUseCase
+                            .cancelRecordingNewTask()
+                            .applySchedulers()
+                            .subscribe({ processCancelRecord() }, Timber::e)
+                } else Timber.d("Can't cancel if is not recording")
             }
 
     private fun buildFinishRecordingIntent(): Intent<RecorderState> = sideEffect {
-        this.recorderStatus as Recording
-        fun processFinishRecord() {
-            recorderIntentBuilder {
-                this as Recording
-                timerDisposable.clear()
-                finishRecording()
+        if(this.recorderStatus is Recording) {
+            fun processFinishRecord() {
+                recorderIntentBuilder {
+                    this as Recording
+                    timerDisposable.clear()
+                    finishRecording()
+                }
+                recorderIntentBuilder {
+                    this as Success
+                    idle()
+                }
             }
-            recorderIntentBuilder {
-                this as Success
-                idle()
-            }
-        }
 
-        fun processUnsuccessfulRecording(recordingError: Throwable) {
-            Timber.d(recordingError)
-            recordModelStore.applyRecordIntent {
-                this as Recording
-                timerDisposable.clear()
-                failRecording()
+            fun processUnsuccessfulRecording(recordingError: Throwable) {
+                Timber.d(recordingError)
+                recordModelStore.applyRecordIntent {
+                    this as Recording
+                    timerDisposable.clear()
+                    failRecording()
+                }
+                recorderIntentBuilder {
+                    this as Failed
+                    idle()
+                }
             }
-            recorderIntentBuilder {
-                this as Failed
-                idle()
-            }
-        }
 
-        recordUseCase
-                .finishRecordingNewTask(minsToSchedule.minutestToMilliseconds(),
-                        titleForFinishedRecording, repeats)
-                .applySchedulers()
-                .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)
+            recordUseCase
+                    .finishRecordingNewTask(minsToSchedule.minutestToMilliseconds(),
+                            titleForFinishedRecording, repeats)
+                    .applySchedulers()
+                    .subscribe({ processFinishRecord() }, ::processUnsuccessfulRecording)
+        } else Timber.d("Can't finish if is not recording")
 
     }
 

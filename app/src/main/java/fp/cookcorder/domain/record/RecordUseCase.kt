@@ -56,5 +56,4 @@ class RecordUseCaseImpl @Inject constructor(
     }
 
     override fun cancelRecordingNewTask(): Maybe<Any> = recorder.cancelRecording()
-
 }

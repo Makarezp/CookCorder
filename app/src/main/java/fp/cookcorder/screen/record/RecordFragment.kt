@@ -178,8 +178,6 @@ class RecordFragment : DaggerFragment(),
     }
 
     private fun setupSlidingUpLayout() {
-
-
         iconUpIMG.setOnClickListener {
             slidingLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
         }
