@@ -196,7 +196,7 @@ class RecordViewProcessorTest {
     }
 
     @Test
-    fun `change tile view event`() {
+    fun `change title view event`() {
         // GIVEN
         val title = "new title"
         val titleTextChangedViewEvent = TitleTextChanged(title)
@@ -207,6 +207,20 @@ class RecordViewProcessorTest {
 
         // THEN
         testObserver.assertValueAt(1) { it.titleForFinishedRecording == title }
+    }
+
+    @Test
+    fun `change repeats view event`() {
+        // GIVEN
+        val repeats = 5
+        val repeatsChangedViewEvent = RepeatsChanged(repeats)
+
+        // WHEN
+        recordViewProcessor.process(repeatsChangedViewEvent)
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueAt(1) { it.repeats == 5 }
     }
 
     @Test

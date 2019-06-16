@@ -159,18 +159,6 @@ class RecordFragment : DaggerFragment(),
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        disposables += recordModelStore.modelState().subscribeToState()
-        disposables += events().subscribe(recordViewProcessor::process)
-        recordPermissionRelay.accept(isPermissionGranted())
-    }
-
-    override fun onPause() {
-        super.onPause()
-        disposables.clear()
-    }
-
     private fun setupSlidingUpLayout() {
         iconUpIMG.setOnClickListener {
             slidingLayout.panelState = SlidingUpPanelLayout.PanelState.EXPANDED
@@ -451,6 +439,18 @@ class RecordFragment : DaggerFragment(),
                 .considerOuterCircleCanceled(true)
                 .continueOnCancel(true)
                 .start()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        disposables += recordModelStore.modelState().subscribeToState()
+        disposables += events().subscribe(recordViewProcessor::process)
+        recordPermissionRelay.accept(isPermissionGranted())
+    }
+
+    override fun onPause() {
+        super.onPause()
+        disposables.clear()
     }
 
 }

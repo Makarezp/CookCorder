@@ -3,6 +3,7 @@ package fp.cookcorder.screen.record
 import android.arch.lifecycle.ViewModelProviders
 import android.content.Context
 import android.graphics.Rect
+import android.icu.text.AlphabeticIndex.Record
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,21 +14,42 @@ import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import com.jakewharton.rxbinding2.widget.textChanges
+import com.jakewharton.rxrelay2.PublishRelay
+import com.jakewharton.rxrelay2.Relay
 import dagger.android.support.DaggerFragment
 import fp.cookcorder.R
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.intentmodel.EventObservable
+import fp.cookcorder.intentmodel.StateSubscriber
+import fp.cookcorder.intentmodel.record.RecordModelStore
+import fp.cookcorder.intentmodel.record.RecordViewEvent
+import fp.cookcorder.intentmodel.record.RecordViewEvent.RepeatsChanged
+import fp.cookcorder.intentmodel.record.RecordViewEvent.TitleTextChanged
+import fp.cookcorder.intentmodel.record.RecordViewProcessor
+import fp.cookcorder.intentmodel.record.RecorderState
 import fp.cookcorder.screen.MainActivity
 import fp.cookcorder.utils.observe
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.options_fragment.*
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
 import javax.inject.Inject
 
-class OptionsFragment : DaggerFragment() {
+class OptionsFragment : DaggerFragment(),
+        EventObservable<RecordViewEvent>,
+        StateSubscriber<RecorderState> {
+
+    private val disposable = CompositeDisposable()
 
     @Inject
-    lateinit var vmFactory: ViewModelProviderFactory<RecordViewModel>
+    lateinit var recordModelStore: RecordModelStore
+    @Inject
+    lateinit var recordViewEventProcessor: RecordViewProcessor
 
-    private lateinit var viewModel: RecordViewModel
+    private val repeatsRelay = PublishRelay.create<Int>()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.options_fragment, container, false)
@@ -35,26 +57,22 @@ class OptionsFragment : DaggerFragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(activity!!, vmFactory).get(RecordViewModel::class.java)
-        setupEditText()
+        removeEditTextFocusOnDone()
         activity?.let {
             if (it is MainActivity) it.onTouchListener = { clearFocusOnTouchOutside(it) }
         }
-        observe(viewModel.repeats) { repeatsNumTV.text = it.toString() }
         setupSeekBar()
     }
 
-    private fun setupEditText() {
-        removeEditTextFocusOnDone()
+    override fun events(): Observable<RecordViewEvent> =
+            Observable.merge(
+                    titleET.textChanges().map { TitleTextChanged(it.toString()) },
+                    repeatsRelay.map { RepeatsChanged(it) }
+            )
 
-        titleET.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                viewModel.setTitle(s.toString())
-            }
-        })
+    override fun Observable<RecorderState>.subscribeToState(): Disposable = subscribe {
+        repeatsNumTV.text = it.repeats.toString()
     }
 
     private fun removeEditTextFocusOnDone() {
@@ -65,7 +83,6 @@ class OptionsFragment : DaggerFragment() {
             } else false
         }
     }
-
 
     fun clearFocusOnTouchOutside(event: MotionEvent) {
         if (event.action == MotionEvent.ACTION_DOWN) {
@@ -89,7 +106,7 @@ class OptionsFragment : DaggerFragment() {
     private fun setupSeekBar() {
         seekBar.setOnProgressChangeListener(object : DiscreteSeekBar.OnProgressChangeListener {
             override fun onProgressChanged(seekBar: DiscreteSeekBar?, value: Int, fromUser: Boolean) {
-                viewModel.repeats.value = value
+                repeatsRelay.accept(value)
             }
 
             override fun onStartTrackingTouch(seekBar: DiscreteSeekBar?) {
@@ -116,4 +133,14 @@ class OptionsFragment : DaggerFragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        disposable += recordModelStore.modelState().subscribeToState()
+        disposable += events().subscribe(recordViewEventProcessor::process)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        disposable.clear()
+    }
 }

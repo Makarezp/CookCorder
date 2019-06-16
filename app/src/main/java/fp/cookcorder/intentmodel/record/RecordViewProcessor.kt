@@ -37,7 +37,12 @@ class RecordViewProcessor @Inject constructor(
             is TitleTextChanged -> buildChangeTitleIntent(viewEvent.text)
             is MinsToScheduleChanged -> buildScheduleTimeChangeIntent(viewEvent.mins)
             is RecordPermissionGranted -> buildRecordPermissionGrantedIntent(viewEvent.isGranted)
+            is RepeatsChanged -> buildRepeatsChangedIntent(viewEvent.count)
         }
+    }
+
+    private fun buildRepeatsChangedIntent(count: Int): Intent<RecorderState> = intent {
+        copy(repeats = count)
     }
 
     private fun buildRecordPermissionGrantedIntent(granted: Boolean) = intent<RecorderState> {

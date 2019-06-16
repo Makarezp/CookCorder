@@ -12,7 +12,7 @@ import javax.inject.Singleton
 class RecordModelStore @Inject constructor() : ModelStore<RecorderState>(RecorderState(
         titleForFinishedRecording = "",
         minsToSchedule = 0,
-        repeats = 1,
+        repeats = 0,
         recorderStatus = Idle
 )) {
     fun applyRecordIntent(block: RecorderStatus.() -> RecorderStatus) {
