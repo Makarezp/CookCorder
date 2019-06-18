@@ -51,9 +51,22 @@ sealed class RecorderStatus {
             // that state transitioned from idle to recording
             val justStarted: Boolean = true) : RecorderStatus() {
 
+        val currentTimeString: String
+            get() {
+                val miliseconds = (currentTime * 10) % 100
+                val seconds = (currentTime / 10) % 60
+                val minutes = currentTime / 600
+                return "${if (minutes == 0L) {
+                    "00"
+                } else String.format("%02d", minutes)
+                }:${String.format("%02d", seconds)}:${
+                if (miliseconds == 0L) String.format("%02d", miliseconds) else miliseconds.toString()}"
+            }
+
         fun cancel(): RecorderStatus = Cancelled
         fun finishRecording() = Success
         fun failRecording() = Failed
+
     }
 
     object Cancelled : RecorderStatus(), Idlable

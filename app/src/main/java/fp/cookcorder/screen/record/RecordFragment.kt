@@ -72,8 +72,6 @@ class RecordFragment : DaggerFragment(),
     private var finishRecordingRelay = PublishRelay.create<Unit>()
     private var cancelRecordingRelay = PublishRelay.create<Unit>()
 
-    private lateinit var viewModel: RecordViewModel
-
     @Inject
     lateinit var prefs: SharedPreferences
 
@@ -153,7 +151,7 @@ class RecordFragment : DaggerFragment(),
     }
 
     private fun handleRecording(recording: Recording) {
-        timeTV.text = recording.currentTime.toString()
+        timeTV.text = recording.currentTimeString
         if (recording.justStarted) {
             startRecordingAnimation()
         }
