@@ -79,6 +79,28 @@ class RecordViewProcessorTest {
     }
 
     @Test
+    fun `if is already recording don't start new recording`() {
+        // GIVEN
+        val recordingStatus = Recording(300, false)
+
+        recordModelStore.process(intent {
+            copy(isRecordPermissionGranted = true,
+                    recorderStatus = recordingStatus)
+        })
+
+        // WHEN
+        recordViewProcessor.process(RequestRecordingClick)
+
+        testScheduler.triggerActions()
+
+        // THEN
+        testObserver.assertValueCount(3)
+        testObserver.assertValueAt(0) { it.recorderStatus == Idle }
+        testObserver.assertValueAt(1) { it.recorderStatus == recordingStatus }
+        testObserver.assertValueAt(2) { it.recorderStatus == recordingStatus }
+    }
+
+    @Test
     fun `fires request permission event when start recording without permission granted`() {
         // WHEN
         recordViewProcessor.process(RequestRecordingClick)

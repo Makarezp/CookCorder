@@ -65,18 +65,20 @@ class RecordViewProcessor @Inject constructor(
     private fun buildStartRecordingIntent(): Intent<RecorderState> = sideEffect {
 
         if (this.isRecordPermissionGranted) {
-            var firsRecordingEvent = true
+            if (this.recorderStatus == Idle) {
+                var firsRecordingEvent = true
 
-            fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
-                val recordState = copy(recorderStatus = Recording(timer, firsRecordingEvent))
-                firsRecordingEvent = false
-                recordState
-            })
+                fun updateRecordingState(timer: Long) = recordModelStore.process(intent {
+                    val recordState = copy(recorderStatus = Recording(timer, firsRecordingEvent))
+                    firsRecordingEvent = false
+                    recordState
+                })
 
-            timerDisposable += recorderInteractor
-                    .startRecordingNewTask()
-                    .applySchedulers()
-                    .subscribe({ updateRecordingState(it) }, Timber::e)
+                timerDisposable += recorderInteractor
+                        .startRecordingNewTask()
+                        .applySchedulers()
+                        .subscribe({ updateRecordingState(it) }, Timber::e)
+            }
         } else {
             recordModelStore.processInstantEvent(intent {
                 copy(event = RequestRecordingPermission)
