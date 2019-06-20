@@ -3,6 +3,7 @@ package fp.cookcorder.utils
 import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.LiveData
 import android.arch.lifecycle.Observer
+import io.reactivex.Flowable
 import io.reactivex.Maybe
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -27,6 +28,10 @@ fun Int.minutestToMilliseconds(): Long {
 
 
 fun <T> Observable<T>.applySchedulers(): Observable<T> = this
+        .subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread())
+
+fun <T> Flowable<T>.applyShcedulers(): Flowable<T> = this
         .subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
 
