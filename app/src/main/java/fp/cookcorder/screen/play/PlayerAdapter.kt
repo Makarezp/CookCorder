@@ -15,6 +15,7 @@ import fp.cookcorder.intentmodel.play.PlayerState
 import fp.cookcorder.intentmodel.play.TaskState
 import fp.cookcorder.intentmodel.play.TaskStatus.NotPlaying
 import fp.cookcorder.intentmodel.play.TaskStatus.Playing
+import fp.cookcorder.utils.invisible
 import fp.cookcorder.utils.setTextInvisibleIfEmptyOrNull
 import fp.cookcorder.utils.visible
 import io.reactivex.Observable
@@ -22,6 +23,7 @@ import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.rxkotlin.plusAssign
 import kotlinx.android.synthetic.main.item_task.view.*
+import kotlinx.android.synthetic.main.options_fragment.view.*
 import javax.inject.Inject
 
 
@@ -79,10 +81,13 @@ class TaskViewHolderMVI(view: View) : ViewHolder(view) {
     fun bind(taskState: TaskState) {
         fun setNotPlaying() {
             itemView.itemTaskPlayIB.setImageResource(R.drawable.ic_play)
+            itemView.seekBar.invisible()
+            itemView.seekBar.progress = 0
         }
 
         fun setIsPlaying() {
             itemView.itemTaskPlayIB.setImageResource(R.drawable.ic_stop)
+            itemView.seekBar.visible()
         }
 
         with(itemView) {
