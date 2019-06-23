@@ -2,7 +2,9 @@ package fp.cookcorder.intentmodel.play
 
 import com.nhaarman.mockito_kotlin.any
 import fp.cookcorder.ReplaceJavaSchedulersWithTestScheduler
+import fp.cookcorder.intentmodel.intent
 import fp.cookcorder.intentmodel.play.PlayerViewEvent.PlayTask
+import fp.cookcorder.intentmodel.play.PlayerViewEvent.StopPlayingTask
 import fp.cookcorder.intentmodel.play.TaskStatus.NotPlaying
 import fp.cookcorder.intentmodel.play.TaskStatus.Playing
 import fp.cookcorder.interactors.managetask.TaskInteractor
@@ -10,6 +12,7 @@ import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.interactors.play.PlayerInteractor
 import io.reactivex.Flowable
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.observers.TestObserver
 import io.reactivex.schedulers.TestScheduler
 import org.junit.Before
@@ -121,7 +124,6 @@ class PlayerViewProcessorTest {
         playerViewProcessor.process(PlayTask(task.id))
         testScheduler.triggerActions()
 
-
         // THEN
         with(testObserver) {
             assertValueAt(2) { it.findTaskState(1).taskStatus == NotPlaying }
@@ -130,6 +132,32 @@ class PlayerViewProcessorTest {
             assertValueAt(5) { it.findTaskState(1).taskStatus == Playing(2) }
             assertValueAt(6) { it.findTaskState(1).taskStatus == Playing(3) }
             assertValueAt(7) { it.findTaskState(1).taskStatus == NotPlaying }
+        }
+    }
+
+    @Test
+    fun `stop playing task`() {
+        // GIVEN
+        val task = taskFactory(1)
+        Mockito.`when`(taskInteractor.getCurrentTasks()).thenReturn(Flowable.just(listOf(task)))
+        Mockito.`when`(taskInteractor.getPastTasks()).thenReturn(Flowable.empty())
+        Mockito.`when`(playerInteractor.stopPlayingTask(any())).thenReturn(Single.just(Any()))
+        playerViewProcessor = PlayerViewProcessor(playerInteractor, taskInteractor, playerModelStore)
+        testScheduler.triggerActions()
+        playerModelStore.process(intent {
+            setPlayStatusForTask(task.id, 10)
+        })
+
+        // WHEN
+        playerViewProcessor.process(StopPlayingTask(task.id))
+        testScheduler.triggerActions()
+
+        // THEN
+        with(testObserver) {
+            assertValueAt(1) { it.findTaskState(1).taskStatus == NotPlaying }
+            assertValueAt(3) { it.findTaskState(1).taskStatus == Playing(10) }
+            assertValueAt(4) { it.findTaskState(1).taskStatus == NotPlaying }
+
         }
     }
 

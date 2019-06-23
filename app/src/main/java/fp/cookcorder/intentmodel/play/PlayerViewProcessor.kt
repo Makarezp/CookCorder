@@ -6,6 +6,7 @@ import fp.cookcorder.intentmodel.intent
 import fp.cookcorder.intentmodel.play.PlayerViewEvent.PlayTask
 import fp.cookcorder.intentmodel.play.PlayerViewEvent.StopPlayingTask
 import fp.cookcorder.intentmodel.play.TaskStatus.NotPlaying
+import fp.cookcorder.intentmodel.play.TaskStatus.Playing
 import fp.cookcorder.intentmodel.sideEffect
 import fp.cookcorder.interactors.managetask.TaskInteractor
 import fp.cookcorder.interactors.model.Task
@@ -48,18 +49,30 @@ class PlayerViewProcessor @Inject constructor(
         playerModelStore.process(toIntent(viewEvent))
     }
 
-    private fun toIntent(viewEvent: PlayerViewEvent): Intent<PlayerState> = when(viewEvent) {
+    private fun toIntent(viewEvent: PlayerViewEvent): Intent<PlayerState> = when (viewEvent) {
         is PlayTask -> buildPlayTaskIntent(viewEvent.taskId)
         is StopPlayingTask -> buildStopPlayingIntent(viewEvent.taskId)
     }
 
     private fun buildStopPlayingIntent(taskId: Long): Intent<PlayerState> = sideEffect {
+        val taskState = findTaskState(taskId)
+        if (taskState.taskStatus is Playing) {
+            fun stopPlaying() {
+                playerModelStore.process(intent {
+                    setNotPlayingStatusForTask(taskId)
+                })
+            }
 
+            fun onError(throwable: Throwable) {
+                Timber.e((throwable))
+            }
+            playerInteractor.stopPlayingTask(taskState.task).subscribe({ stopPlaying() }, ::onError)
+        }
     }
 
     private fun buildPlayTaskIntent(taskId: Long): Intent<PlayerState> = sideEffect {
         val taskState = findTaskState(taskId)
-        if(taskState.taskStatus is NotPlaying) {
+        if (taskState.taskStatus is NotPlaying) {
 
             fun updateProgress(progress: Progress) {
                 playerModelStore.process(intent {
@@ -73,13 +86,13 @@ class PlayerViewProcessor @Inject constructor(
                 })
             }
 
-            fun error(throwable: Throwable) {
+            fun onError(throwable: Throwable) {
                 Timber.e(throwable)
                 stopPlaying()
             }
 
             playerInteractor.playTask(taskState.task, 1)
-                    .subscribe(::updateProgress, ::error, ::stopPlaying)
+                    .subscribe(::updateProgress, ::onError, ::stopPlaying)
         }
     }
 
