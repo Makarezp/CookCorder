@@ -13,9 +13,10 @@ import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+typealias Progress = Int
 
 interface Player {
-    fun play(fileName: String, repeats: Int): Observable<Pair<Int, Int>>
+    fun play(fileName: String, repeats: Int): Observable<Progress>
     fun stopPlaying(fileName: String): Single<Any>
 }
 
@@ -30,7 +31,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
     }
 
-    override fun play(fileName: String, repeats: Int): Observable<Pair<Int, Int>> {
+    override fun play(fileName: String, repeats: Int): Observable<Progress> {
 //        val currentVolume = audioManager.getStreamVolume(STREAM_TYPE)
 //        val maxVolume = audioManager.getStreamMaxVolume(STREAM_TYPE)
 //        audioManager.setStreamVolume(STREAM_TYPE, maxVolume, 0)
@@ -42,7 +43,7 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
     }
 
 
-    private fun startPlaying(fileName: String, repeats: Int): Observable<Pair<Int, Int>> {
+    private fun startPlaying(fileName: String, repeats: Int): Observable<Int> {
         val mediaPlayer = MediaPlayer()
 
         return Observable.just(mediaPlayer)
@@ -89,15 +90,14 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         }
     }
 
-    private fun ticks(mediaPlayer: MediaPlayer): Observable<Pair<Int, Int>> {
-        var previousPosition = 0 to 0
+    private fun ticks(mediaPlayer: MediaPlayer): Observable<Int> {
+        var previousPosition = 0
         return Observable.interval(16, TimeUnit.MILLISECONDS)
                 .map {
                     try {
                         if (mediaPlayer.isPlaying) {
                             val currentPositionInSeconds = mediaPlayer.currentPosition
-                            val durationInSeconds = mediaPlayer.duration
-                            previousPosition = Pair(currentPositionInSeconds, durationInSeconds)
+                            previousPosition = currentPositionInSeconds
                         }
                         previousPosition
                     } catch (e: Exception) {
@@ -121,12 +121,12 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
 
 private interface FocusRequest {
 
-    fun requestAudioFocus(startPlaying: Observable<Pair<Int, Int>>): Observable<Pair<Int, Int>>
+    fun requestAudioFocus(startPlaying: Observable<Int>): Observable<Int>
 }
 
 private class FocusRequestAPI26(private val audioManager: AudioManager) : FocusRequest {
     @RequiresApi(26)
-    override fun requestAudioFocus(startPlaying: Observable<Pair<Int, Int>>): Observable<Pair<Int, Int>> {
+    override fun requestAudioFocus(startPlaying: Observable<Int>): Observable<Int> {
         requestFocusApi26().let { audioFocusRequest ->
             audioManager.requestAudioFocus(audioFocusRequest).let {
                 return startPlaying.doOnComplete {
@@ -160,7 +160,7 @@ private class FocusRequestBelowAPI26(private val audioManager: AudioManager) : F
 
     private val audioFocusChangeListener = AudioManager.OnAudioFocusChangeListener { }
 
-    override fun requestAudioFocus(startPlaying: Observable<Pair<Int, Int>>): Observable<Pair<Int, Int>> {
+    override fun requestAudioFocus(startPlaying: Observable<Int>): Observable<Int> {
         audioManager.requestAudioFocus(audioFocusChangeListener,
                 STREAM_TYPE,
                 AUDIO_FOCUS_TYPE)

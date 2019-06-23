@@ -161,8 +161,8 @@ class PlayService : DaggerService() {
                                         task.id,
                                         task.title,
                                         getTimeFromEpoch(task.scheduleTime),
-                                        it.first,
-                                        it.second)
+                                        it,
+                                        task.duration)
                             }
                             .doOnComplete {
                                 showNotif(

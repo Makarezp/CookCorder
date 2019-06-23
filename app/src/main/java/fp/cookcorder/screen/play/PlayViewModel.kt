@@ -14,6 +14,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import fp.cookcorder.R
 import fp.cookcorder.app.SchedulerFactory
+import fp.cookcorder.infrastructure.Progress
 import fp.cookcorder.interactors.managetask.TaskInteractor
 import fp.cookcorder.interactors.play.PlayerInteractor
 import fp.cookcorder.interactors.model.Task
@@ -52,7 +53,7 @@ class PlayViewModel @Inject constructor(
         }
     }
 
-    fun play(task: Task): Observable<Pair<Int, Int>> {
+    fun play(task: Task): Observable<Progress> {
         return playerInteractor.playTask(task)
     }
 
@@ -132,16 +133,16 @@ class PlayAdapter @Inject constructor(
                 if (!isPlaying) {
                     viewModel.play(task)
                             .subscribeOn(schedulerFactory.io())
-                            .observeOn(schedulerFactory.ui()).let { progressToMax ->
+                            .observeOn(schedulerFactory.ui()).let { progress ->
                                 recordCompositeDisposable.clear()
                                 seekBar.visible()
                                 isPlaying = true
                                 playButton.setImageResource(R.drawable.ic_stop)
-                                recordCompositeDisposable.addAll(progressToMax
+                                recordCompositeDisposable.addAll(progress
                                         .subscribe(
                                                 {
-                                                    seekBar.max = it.second
-                                                    seekBar.progress = it.first
+                                                    seekBar.max = it
+                                                    seekBar.progress = task.duration
 
                                                 },
                                                 { Timber.d(it) },
