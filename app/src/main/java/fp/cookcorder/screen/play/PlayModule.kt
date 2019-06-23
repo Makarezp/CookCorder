@@ -4,6 +4,8 @@ import dagger.Module
 import dagger.Provides
 import dagger.android.ContributesAndroidInjector
 import fp.cookcorder.app.ViewModelProviderFactory
+import fp.cookcorder.intentmodel.play.PlayerModelStore
+import fp.cookcorder.intentmodel.play.PlayerViewProcessor
 import fp.cookcorder.screen.MainActivity
 import javax.inject.Named
 
@@ -32,6 +34,13 @@ class PlayFragmentModule {
     @Provides
     fun provideIsCurrent(fragment: PlayFragment): Boolean {
         return fragment.arguments!!.getBoolean(PlayFragment.KEY_IS_CURRENT)
+    }
+
+    @Provides
+    fun provideTaskAdapter(@Named(NAMED_IS_CURRENT) isCurrent: Boolean,
+                           playerModelStore: PlayerModelStore,
+                           playerViewProcessor: PlayerViewProcessor): TaskAdapter {
+        return TaskAdapter(isCurrent, playerModelStore)
     }
 
 }

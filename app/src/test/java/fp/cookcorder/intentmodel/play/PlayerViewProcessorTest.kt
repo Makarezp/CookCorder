@@ -17,6 +17,7 @@ import org.mockito.junit.MockitoJUnit
 import org.mockito.junit.MockitoRule
 
 class PlayerViewProcessorTest {
+
     val testScheduler = TestScheduler()
 
     @get:Rule
@@ -64,6 +65,7 @@ class PlayerViewProcessorTest {
             assert(get(1).task.id == 2L)
             forEach {
                 assert(it.taskStatus == NotPlaying)
+                assert(!it.isCurrent)
             }
         }
     }
@@ -88,6 +90,7 @@ class PlayerViewProcessorTest {
             assert(get(1).task.id == 2L)
             forEach {
                 assert(it.taskStatus == NotPlaying)
+                assert(it.isCurrent)
             }
         }
     }

@@ -22,21 +22,19 @@ class PlayerViewProcessor @Inject constructor(
     private val disposable = CompositeDisposable()
 
     init {
-        disposable += subscribeToTasks(taskInteractor.getPastTasks()).subscribe {
+        disposable += subscribeToTasks(taskInteractor.getPastTasks(), false).subscribe {
             taskModelStore.process(intent {
                 copy(pastTaskStates = it)
             })
         }
-        disposable += subscribeToTasks(taskInteractor.getCurrentTasks()).subscribe {
+        disposable += subscribeToTasks(taskInteractor.getCurrentTasks(), true).subscribe {
             taskModelStore.process(intent {
                 copy(currentTaskStates = it)
             })
         }
     }
 
-    private fun subscribeToTasks(tasksStream: Flowable<List<Task>>) = tasksStream
-            .map { it.map { TaskState(task = it, taskStatus = NotPlaying) } }
+    private fun subscribeToTasks(tasksStream: Flowable<List<Task>>, isCurrent: Boolean) = tasksStream
+            .map { it.map { TaskState(task = it, taskStatus = NotPlaying, isCurrent = isCurrent) } }
             .applyShcedulers()
-
-
 }

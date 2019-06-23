@@ -126,29 +126,28 @@ class RecordFragment : DaggerFragment(),
         )
     }
 
-    override fun Observable<RecorderState>.subscribeToState(): Disposable {
-        return subscribe {
-            if (it.event is RequestRecordingPermission) {
-                requestAudioRecordingPermission()
-            }
+    override fun Observable<RecorderState>.subscribeToState(): Disposable = subscribe {
+        if (it.event is RequestRecordingPermission) {
+            requestAudioRecordingPermission()
+        }
 
-            it.isToday.let {
-                dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
-            }
-            it.uiAlarmTime.let { minTV.text = it }
+        it.isToday.let {
+            dateText.text = getString(if (it) R.string.today else R.string.tomorrow)
+        }
+        it.uiAlarmTime.let { minTV.text = it }
 
-            with(it.recorderStatus) {
-                when (this) {
-                    is Success -> showSuccess()
-                    is Cancelled -> showCancel()
-                    is Recording -> handleRecording(this)
-                }
-                if (this !is Recording) {
-                    stopRecordingAnimation()
-                }
+        with(it.recorderStatus) {
+            when (this) {
+                is Success -> showSuccess()
+                is Cancelled -> showCancel()
+                is Recording -> handleRecording(this)
+            }
+            if (this !is Recording) {
+                stopRecordingAnimation()
             }
         }
     }
+
 
     private fun handleRecording(recording: Recording) {
         timeTV.text = recording.currentTimeString

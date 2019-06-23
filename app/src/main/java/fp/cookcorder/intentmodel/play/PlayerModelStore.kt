@@ -4,7 +4,9 @@ import fp.cookcorder.intentmodel.ModelStore
 import fp.cookcorder.interactors.model.Task
 import fp.cookcorder.interactors.play.ProgressToMax
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class PlayerModelStore @Inject constructor() : ModelStore<PlayerState>(
         PlayerState(emptyList(), emptyList())
 )
@@ -17,6 +19,7 @@ data class PlayerState(
 
 data class TaskState(
         val task: Task,
+        val isCurrent: Boolean,
         val taskStatus: TaskStatus
 )
 

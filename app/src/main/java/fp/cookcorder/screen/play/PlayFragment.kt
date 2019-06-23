@@ -41,6 +41,9 @@ class PlayFragment : DaggerFragment() {
 
     private lateinit var viewModel: PlayViewModel
 
+    @Inject
+    lateinit var taskAdapter: TaskAdapter
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.play_fragment, container, false)
     }
@@ -111,7 +114,7 @@ class PlayFragment : DaggerFragment() {
     private fun setupRecycler() {
         layoutManager = ScrollEnabledLinearLayoutManager(context!!)
         playFragRV.layoutManager = layoutManager
-        playFragRV.adapter = viewModel.adapter
+        playFragRV.adapter = taskAdapter
     }
 
     private fun observeShowEditTask() {
