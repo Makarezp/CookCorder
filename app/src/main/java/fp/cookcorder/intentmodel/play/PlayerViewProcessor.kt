@@ -1,11 +1,11 @@
 package fp.cookcorder.intentmodel.play
 
+import fp.cookcorder.infrastructure.Progress
 import fp.cookcorder.intentmodel.Intent
 import fp.cookcorder.intentmodel.intent
 import fp.cookcorder.intentmodel.play.PlayerViewEvent.PlayTask
 import fp.cookcorder.intentmodel.play.PlayerViewEvent.StopPlayingTask
 import fp.cookcorder.intentmodel.play.TaskStatus.NotPlaying
-import fp.cookcorder.intentmodel.play.TaskStatus.Playing
 import fp.cookcorder.intentmodel.sideEffect
 import fp.cookcorder.interactors.managetask.TaskInteractor
 import fp.cookcorder.interactors.model.Task
@@ -14,6 +14,7 @@ import fp.cookcorder.utils.applyShcedulers
 import io.reactivex.Flowable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.rxkotlin.plusAssign
+import timber.log.Timber
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,19 +22,19 @@ import javax.inject.Singleton
 class PlayerViewProcessor @Inject constructor(
         private val playerInteractor: PlayerInteractor,
         private val taskInteractor: TaskInteractor,
-        private val taskModelStore: PlayerModelStore
+        private val playerModelStore: PlayerModelStore
 ) {
 
     private val disposable = CompositeDisposable()
 
     init {
         disposable += subscribeToTasks(taskInteractor.getPastTasks(), false).subscribe {
-            taskModelStore.process(intent {
+            playerModelStore.process(intent {
                 copy(pastTaskStates = it)
             })
         }
         disposable += subscribeToTasks(taskInteractor.getCurrentTasks(), true).subscribe {
-            taskModelStore.process(intent {
+            playerModelStore.process(intent {
                 copy(currentTaskStates = it)
             })
         }
@@ -43,8 +44,8 @@ class PlayerViewProcessor @Inject constructor(
             .map { it.map { TaskState(task = it, taskStatus = NotPlaying, isCurrent = isCurrent) } }
             .applyShcedulers()
 
-    private fun process(viewEvent: PlayerViewEvent) {
-        taskModelStore.process(toIntent(viewEvent))
+    fun process(viewEvent: PlayerViewEvent) {
+        playerModelStore.process(toIntent(viewEvent))
     }
 
     private fun toIntent(viewEvent: PlayerViewEvent): Intent<PlayerState> = when(viewEvent) {
@@ -57,18 +58,28 @@ class PlayerViewProcessor @Inject constructor(
     }
 
     private fun buildPlayTaskIntent(taskId: Long): Intent<PlayerState> = sideEffect {
-        val taskState = findTask(taskId)
+        val taskState = findTaskState(taskId)
         if(taskState.taskStatus is NotPlaying) {
 
-
-
-            fun onComplete() {
-
+            fun updateProgress(progress: Progress) {
+                playerModelStore.process(intent {
+                    setPlayStatusForTask(taskId, progress)
+                })
             }
 
+            fun stopPlaying() {
+                playerModelStore.process(intent {
+                    setNotPlayingStatusForTask(taskId)
+                })
+            }
+
+            fun error(throwable: Throwable) {
+                Timber.e(throwable)
+                stopPlaying()
+            }
 
             playerInteractor.playTask(taskState.task, 1)
-                    .subscribe()
+                    .subscribe(::updateProgress, ::error, ::stopPlaying)
         }
     }
 
