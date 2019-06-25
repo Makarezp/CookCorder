@@ -8,11 +8,13 @@ import android.support.v7.widget.RecyclerView.ViewHolder
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.jakewharton.rxbinding2.view.clicks
 import fp.cookcorder.R
+import fp.cookcorder.intentmodel.EventObservable
 import fp.cookcorder.intentmodel.StateSubscriber
-import fp.cookcorder.intentmodel.play.PlayerModelStore
-import fp.cookcorder.intentmodel.play.PlayerState
-import fp.cookcorder.intentmodel.play.TaskState
+import fp.cookcorder.intentmodel.play.*
+import fp.cookcorder.intentmodel.play.PlayerViewEvent.PlayTask
+import fp.cookcorder.intentmodel.play.PlayerViewEvent.StopPlayingTask
 import fp.cookcorder.intentmodel.play.TaskStatus.NotPlaying
 import fp.cookcorder.intentmodel.play.TaskStatus.Playing
 import fp.cookcorder.utils.invisible
@@ -27,11 +29,12 @@ import kotlinx.android.synthetic.main.options_fragment.view.*
 import javax.inject.Inject
 
 
-class TaskAdapter constructor(val isCurrent: Boolean,
-                              val playerModelStore: PlayerModelStore
+class TaskAdapter constructor(private val isCurrent: Boolean,
+                              private val playerModelStore: PlayerModelStore,
+                              private val playerViewProcessor: PlayerViewProcessor
 ) : Adapter<TaskViewHolderMVI>(), StateSubscriber<PlayerState> {
 
-    val disposable = CompositeDisposable()
+    private val disposable = CompositeDisposable()
 
     var tasks: List<TaskState> = emptyList()
         set(value) {
@@ -42,10 +45,8 @@ class TaskAdapter constructor(val isCurrent: Boolean,
     private val differ = AsyncListDiffer<TaskState>(this, DiffTaskStateCallback)
 
     init {
-        setHasStableIds(true)
         differ.submitList(emptyList())
     }
-
 
     override fun Observable<PlayerState>.subscribeToState(): Disposable = subscribe {
         tasks = if(isCurrent) it.currentTaskStates else it.pastTaskStates
@@ -65,7 +66,9 @@ class TaskAdapter constructor(val isCurrent: Boolean,
         val view = LayoutInflater
                 .from(parent.context)
                 .inflate(R.layout.item_task, parent, false)
-        return TaskViewHolderMVI(view)
+        return TaskViewHolderMVI(view).apply {
+            events().subscribe(playerViewProcessor::process)
+        }
     }
 
     override fun getItemCount(): Int = differ.currentList.size
@@ -76,18 +79,23 @@ class TaskAdapter constructor(val isCurrent: Boolean,
 }
 
 
-class TaskViewHolderMVI(view: View) : ViewHolder(view) {
+class TaskViewHolderMVI(view: View) : ViewHolder(view), EventObservable<PlayerViewEvent> {
+
+    lateinit var taskState: TaskState
 
     fun bind(taskState: TaskState) {
+        this.taskState = taskState
         fun setNotPlaying() {
             itemView.itemTaskPlayIB.setImageResource(R.drawable.ic_play)
-            itemView.seekBar.invisible()
-            itemView.seekBar.progress = 0
+            itemView.itemTaskSeekBar.invisible()
+            itemView.itemTaskSeekBar.progress = 0
         }
 
         fun setIsPlaying() {
             itemView.itemTaskPlayIB.setImageResource(R.drawable.ic_stop)
-            itemView.seekBar.visible()
+            itemView.itemTaskSeekBar.visible()
+            itemView.itemTaskSeekBar.max = taskState.task.duration
+            itemView.itemTaskSeekBar.progress = (taskState.taskStatus as Playing).progress
         }
 
         with(itemView) {
@@ -100,11 +108,21 @@ class TaskViewHolderMVI(view: View) : ViewHolder(view) {
             }
         }
     }
+
+    override fun events(): Observable<PlayerViewEvent> {
+        return itemView.itemTaskPlayIB.clicks().map {
+           return@map if(taskState.taskStatus is NotPlaying) {
+                PlayTask(taskState.task.id)
+            } else {
+               StopPlayingTask(taskState.task.id)
+           }
+        }
+    }
 }
 
 object DiffTaskStateCallback : DiffUtil.ItemCallback<TaskState>() {
     override fun areItemsTheSame(oldItem: TaskState, newItem: TaskState): Boolean {
-        return oldItem == newItem
+        return oldItem.task.id == newItem.task.id
     }
 
     override fun areContentsTheSame(oldItem: TaskState, newItem: TaskState): Boolean {

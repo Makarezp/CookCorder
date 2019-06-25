@@ -94,16 +94,12 @@ class PlayerImpl @Inject constructor(private val context: Context) : Player {
         var previousPosition = 0
         return Observable.interval(16, TimeUnit.MILLISECONDS)
                 .map {
-                    try {
-                        if (mediaPlayer.isPlaying) {
-                            val currentPositionInSeconds = mediaPlayer.currentPosition
-                            previousPosition = currentPositionInSeconds
-                        }
-                        previousPosition
-                    } catch (e: Exception) {
-                        previousPosition
+                    if (mediaPlayer.isPlaying) {
+                        val currentPositionInSeconds = mediaPlayer.currentPosition
+                        previousPosition = currentPositionInSeconds
                     }
-                }
+                    previousPosition
+                }.onErrorResumeNext(Observable.empty())
     }
 
     override fun stopPlaying(fileName: String): Single<Any> {

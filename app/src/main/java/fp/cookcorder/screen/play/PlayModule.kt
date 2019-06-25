@@ -40,7 +40,7 @@ class PlayFragmentModule {
     fun provideTaskAdapter(@Named(NAMED_IS_CURRENT) isCurrent: Boolean,
                            playerModelStore: PlayerModelStore,
                            playerViewProcessor: PlayerViewProcessor): TaskAdapter {
-        return TaskAdapter(isCurrent, playerModelStore)
+        return TaskAdapter(isCurrent, playerModelStore, playerViewProcessor)
     }
 
 }
